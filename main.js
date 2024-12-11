@@ -1,5 +1,33 @@
 const { app, BrowserWindow } = require('electron/main')
-const path = require('node:path')
+const path = require('node:path');
+const { spawn } = require('child_process');
+
+let pythonProcess
+
+// Function to start the Python server
+function startPythonServer() {
+    pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
+
+    pythonProcess.stdout.on('data', (data) => {
+        console.log(`Python stdout: ${data}`);
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`Python stderr: ${data}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        console.log(`Python process exited with code ${code}`);
+    });
+}
+
+// Function to stop the Python server
+function stopPythonServer() {
+    if (pythonProcess) {
+        pythonProcess.kill();
+        console.log('Python server stopped.');
+    }
+}
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -9,6 +37,8 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js')
         }
     })
+
+    startPythonServer()
 
     win.loadFile('index.html')
 }
@@ -22,6 +52,10 @@ app.whenReady().then(() => {
         }
     })
 })
+
+app.on('will-quit', () => {
+    stopPythonServer()
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
