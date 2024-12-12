@@ -6,6 +6,11 @@ let pythonProcess
 
 // Function to start the Python server
 function startPythonServer() {
+    if (pythonProcess) {
+        console.log("Python server is already running.");
+        return;
+    }
+
     pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
 
     pythonProcess.stdout.on('data', (data) => {
@@ -18,14 +23,18 @@ function startPythonServer() {
 
     pythonProcess.on('close', (code) => {
         console.log(`Python process exited with code ${code}`);
+        pythonProcess = null;
     });
 }
 
 // Function to stop the Python server
 function stopPythonServer() {
     if (pythonProcess) {
-        pythonProcess.kill();
+        pythonProcess.kill('SIGTERM');
         console.log('Python server stopped.');
+        pythonProcess = null;
+    } else {
+        console.log("No Python server is running.");
     }
 }
 

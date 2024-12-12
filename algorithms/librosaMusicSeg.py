@@ -339,7 +339,7 @@ def runSegmentation(song_path, algorithm1, algorithm2, numCluster):
     print(segmentOutputs)
     return segmentOutputs
 
-# runSegmentation("C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav", "CQT", "KMeans", 4)
+# runSegmentation("C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav", "Mel", "KMeans", 4)
 
 # dir_path = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs"
 

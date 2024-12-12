@@ -14,9 +14,25 @@
             Chromium <span id="chrome-version"></span>,
             and Electron <span id="electron-version"></span>.
         </p>
-        <button id="segment-button" class="btn btn-primary">
+        <button id="chooseSong" class="btn btn-primary">Choose Song</button>
+        <input type="file" id="fileInput" accept=".wav" style="display: none;">
+        <p id="filePath">Selected file path will appear here.</p>
+
+        <button id="segment-algorithm1" class="btn btn-primary">
             <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-            <span class="button-text">Segment Algorithm</span>
+            <span class="button-text">Algorithm 1</span>
+        </button>
+        <button id="segment-algorithm2" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            <span class="button-text">Algorithm 2</span>
+        </button>
+        <button id="segment-algorithm3" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            <span class="button-text">Algorithm 3</span>
+        </button>
+        <button id="segment-algorithm4" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            <span class="button-text">Algorithm 4</span>
         </button>
 
         <h2>Segment Elements</h2>
