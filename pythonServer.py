@@ -30,4 +30,4 @@ def call_python():
     return jsonify([[int(a), float(b), float(c), int(d)] for a, b, c, d in result])
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

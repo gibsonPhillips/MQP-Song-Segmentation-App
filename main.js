@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require('electron/main')
+// const { app, BrowserWindow } = require('electron/main')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path');
 const { spawn } = require('child_process');
 
@@ -11,7 +12,7 @@ function startPythonServer() {
         return;
     }
 
-    pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
+        pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
 
     pythonProcess.stdout.on('data', (data) => {
         console.log(`Python stdout: ${data}`);
@@ -43,7 +44,10 @@ function createWindow() {
         width: 800,
         height: 600,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: true,
+            contextIsolation: true,
+            enableRemoteModule: true
         }
     })
 
@@ -60,6 +64,13 @@ app.whenReady().then(() => {
             createWindow()
         }
     })
+
+    ipcMain.handle('dialog:openFile', async () => {
+        const result = await dialog.showOpenDialog({
+          properties: ['openFile'] // Add 'multiSelections' if needed
+        });
+        return result.filePaths; // Return file paths to renderer
+      });
 })
 
 app.on('will-quit', () => {
