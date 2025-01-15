@@ -11,13 +11,13 @@
 /* make this tied to the master vbox */
 #biggest.vbox {
     gap: 5px;
-    width: 100vw;
-    height: 100vh;
+    width: calc(100vw - 16px);
+    height: calc(100vh - 16px);
 }
 
 /* make this tied to the bottom two windows */
 #mod-time.hbox {
-    width: 100vw;
+    width: calc(100vw - 16px);
     gap: 5px;
 
     flex-grow: 1;
