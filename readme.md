@@ -3,7 +3,6 @@
 ### dev
 - Download latest node and npm (think current is around 23.3.0 and 10.9.0)
 - Run npm install node
-- Run npm install electron
 - To run the app, use "npm start"
 
 ### css
