@@ -1,0 +1,46 @@
+.hbox {
+    display: flex;
+    flex-direction: row;
+}
+
+.vbox {
+    display: flex;
+    flex-direction: column;
+}
+
+/* make this tied to the master vbox */
+#biggest.vbox {
+    gap: 5px;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* make this tied to the bottom two windows */
+#mod-time.hbox {
+    width: 100vw;
+    gap: 5px;
+
+    flex-grow: 1;
+}
+
+.window#button-bar {
+    display: flex;
+    height: 6em;
+    margin: 0px;
+
+}
+
+.window#modifiers {
+    display: flex;
+    margin: 0px;
+
+    flex-grow: 1;
+    max-width: fit-content;
+}
+
+.window#timeline {
+    display: flex;
+    margin: 0px;
+
+    flex-grow: 4;
+}

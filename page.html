@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>System.css Starter</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+    <link rel="stylesheet" href="page.css" />
+</head>
+
+
+<body>
+    <div class="vbox" id="biggest">
+        <div class="window" id="button-bar" style="width: (100vw - 24px);">
+            <div class="title-bar">
+                <button aria-label="Close" class="close"></button>
+                <h1 class="title">button-bar</h1>
+            </div>
+
+            <!-- Little Line Separator -->
+            <div class="separator"></div>
+
+            <div class="window-pane" id="main-buttons">
+                <button class="btn">Import </button>
+                <button class="btn">Export</button>
+            </div>
+        </div>
+
+        <div class="hbox" id="mod-time">
+            <div class="window" id="modifiers">
+                <div class="title-bar">
+                    <button aria-label="Close" class="close"></button>
+                    <h1 class="title">Modifiers</h1>
+                    <button aria-label="Resize" disabled class="hidden"></button>
+                </div>
+
+                <!-- Little line separator -->
+                <div class="separator"></div>
+
+                <div class="modeless-dialog">
+                    <button class="btn">apply </button>
+                    <button class="btn">apply </button>
+                    <button class="btn">apply </button>
+                    <button class="btn">apply </button>
+                    <button class="btn">apply </button>
+                </div>
+            </div>
+
+            <div class="window" id="timeline">
+
+
+                <!-- Little line separator -->
+                <div class="separator"></div>
+
+                <div class="modeless-dialog">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
