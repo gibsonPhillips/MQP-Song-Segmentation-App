@@ -8,7 +8,6 @@
     flex-direction: column;
 }
 
-/* make this tied to the master vbox */
 #biggest.vbox {
     gap: 5px;
     /* width: calc(100vw - 16px); */
@@ -16,7 +15,7 @@
     height: calc(100vh - 16px);
 }
 
-/* make this tied to the bottom two windows */
+/* the bottom two windows */
 #mod-time.hbox {
     /* width: calc(100vw - 16px); */
     width: 100%;
@@ -45,4 +44,14 @@
     margin: 0px;
 
     flex-grow: 4;
+}
+
+
+/* Collapse buttons */
+.close#mod {
+    display: flex;
+}
+
+.close#but::onhover {
+    display: flex;
 }
