@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>System.css Starter</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+    <link rel="stylesheet" href="page.css" />
+</head>
+
+
+<body>
+    <div class="vbox" id="biggest">
+        <div class="window" id="button-bar" style="width: (100vw - 24px);">
+            <div class="title-bar">
+                <button aria-label="Close" id="but"></button>
+                <h1 class="title">button-bar</h1>
+            </div>
+
+            <!-- Little Line Separator -->
+            <div class="separator"></div>
+
+            <div class="window-pane" id="main-buttons">
+                <button id="chooseSong" class="btn">Import </button>
+                <input type="file" id="fileInput" accept=".wav" style="display: none;">
+                <button class="btn">Export</button>
+                <p id="filePath">Selected file path will appear here.</p>
+            </div>
+        </div>
+
+        <div class="hbox" id="mod-time">
+            <div class="window" id="modifiers">
+                <div class="title-bar">
+                    <button aria-label="Close" class="close" id="mod"></button>
+                    <h1 class="title">Modifiers</h1>
+                    <button aria-label="Resize" disabled class="hidden"></button>
+                </div>
+
+                <!-- Little line separator -->
+                <div class="separator"></div>
+
+                <div class="modeless-dialog">
+                    <button id="segment-algorithm1" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 1</span>
+                    </button>
+                    <button id="segment-algorithm2" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 2</span>
+                    </button>
+                    <button id="segment-algorithm3" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 3</span>
+                    </button>
+                    <button id="segment-algorithm4" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 4</span>
+                    </button>
+                    <button class="btn">apply </button>
+                </div>
+            </div>
+
+            <div class="window" id="timeline">
+                <h2>Segment Elements</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Label</th>
+                        </tr>
+                    </thead>
+                    <tbody id="segment-elements">
+                    </tbody>
+                </table>
+
+
+                <!-- Little line separator -->
+                <div class="separator"></div>
+
+                <div class="modeless-dialog">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="page.js"></script>
+</body>
+
+</html>
