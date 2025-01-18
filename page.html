@@ -7,6 +7,19 @@
     <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
     <link rel="stylesheet" href="page.css" />
 </head>
+<style>
+    #waveform {
+      width: 100%;
+      height: 150px;
+      border: 1px solid #ccc;
+    }
+    .controls {
+      margin-top: 10px;
+    }
+    button {
+      margin-right: 5px;
+    }
+  </style>
 
 
 <body>
@@ -61,6 +74,12 @@
             </div>
 
             <div class="window" id="timeline">
+                <div id="waveform"></div>
+                <button id="play">Play/Pause</button>
+                <button id="backward">Backward 5s</button>
+                <button id="forward">Forward 5s</button>
+                <button id="zoom-in">Zoom In</button>
+                <button id="zoom-out">Zoom Out</button>
                 <h2>Segment Elements</h2>
                 <table>
                     <thead>
@@ -85,6 +104,47 @@
             </div>
         </div>
     </div>
+
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+    <script>
+        let minPxPerSec = 100
+        // Create an instance of WaveSurfer
+        const wavesurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
+            url: 'demo.wav',
+            minPxPerSec: 100,
+        })
+
+        const playButton = document.querySelector('#play')
+        const forwardButton = document.querySelector('#forward')
+        const backButton = document.querySelector('#backward')
+        const zoomInButton = document.querySelector('#zoom-in')
+        const zoomOutButton = document.querySelector('#zoom-out')
+
+        playButton.onclick = () => {
+            wavesurfer.playPause()
+        }
+
+        forwardButton.onclick = () => {
+            wavesurfer.skip(5)
+        }
+
+        backButton.onclick = () => {
+            wavesurfer.skip(-5)
+        }
+
+        zoomInButton.onclick = () => {
+            minPxPerSec = minPxPerSec + 10
+            wavesurfer.zoom(minPxPerSec)
+        }
+
+        zoomOutButton.onclick = () => {
+            minPxPerSec = minPxPerSec - 10
+            wavesurfer.zoom(minPxPerSec)
+        }
+      </script>
     <script src="page.js"></script>
 </body>
 
