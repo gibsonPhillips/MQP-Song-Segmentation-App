@@ -104,52 +104,7 @@
             </div>
         </div>
     </div>
-
-    <script src="https://unpkg.com/wavesurfer.js"></script>
-    <!-- <script>
-        let minPxPerSec = 100
-        // Create an instance of WaveSurfer
-        const wavesurfer = WaveSurfer.create({
-            container: '#waveform',
-            waveColor: 'rgb(200, 0, 200)',
-            progressColor: 'rgb(100, 0, 100)',
-            minPxPerSec: 100,
-        })
-
-        const playButton = document.querySelector('#play')
-        const forwardButton = document.querySelector('#forward')
-        const backButton = document.querySelector('#backward')
-        const zoomInButton = document.querySelector('#zoom-in')
-        const zoomOutButton = document.querySelector('#zoom-out')
-        const importSong = document.querySelector('#chooseSong')
-
-        playButton.onclick = () => {
-            wavesurfer.playPause()
-        }
-
-        forwardButton.onclick = () => {
-            wavesurfer.skip(5)
-        }
-
-        backButton.onclick = () => {
-            wavesurfer.skip(-5)
-        }
-
-        zoomInButton.onclick = () => {
-            minPxPerSec = minPxPerSec + 10
-            wavesurfer.zoom(minPxPerSec)
-        }
-
-        zoomOutButton.onclick = () => {
-            minPxPerSec = minPxPerSec - 10
-            wavesurfer.zoom(minPxPerSec)
-        }
-
-        importSong.onclick = () => {
-            waveSurfer.load('./demo.wav'); // Adjust the path to your audio file
-        }
-      </script> -->
-    <script src="page.js"></script>
+    <script type="module" src="page.js"></script>
 </body>
 
 </html>
