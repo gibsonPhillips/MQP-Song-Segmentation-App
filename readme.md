@@ -7,5 +7,4 @@
 
 ### css
 Using System.css project
-- install using some command
-- alternatively just be connected to the internet (not ideal for 1.0)
+- should be all set to be used offline. If there's gaps in the ui use the internet version with the link.
