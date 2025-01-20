@@ -1,5 +1,8 @@
 # This song goes to another school, you wouldn't know them
 
+### Purpose
+This 1.0 app can be used by people with no programming experience to segment songs into its form sections. 
+
 ### dev
 - Download latest node and npm (think current is around 23.3.0 and 10.9.0)
 - Run npm install node
