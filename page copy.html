@@ -4,8 +4,9 @@
 <head>
     <title>System.css Starter</title>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="CSS/page.css" />
     <link rel="stylesheet" href="CSS/system.css" />
+    <link rel="stylesheet" href="CSS/style.css" />
+    <link rel="stylesheet" href="CSS/page.css" />
 </head>
 
 
@@ -21,8 +22,10 @@
             <div class="separator"></div>
 
             <div class="window-pane" id="main-buttons">
-                <button class="btn">Import </button>
-                <button class="btn">Export</button>
+                <button id="chooseSong" class="btn">Import </button>
+                <input type="file" id="fileInput" accept=".wav" style="display: none;">
+                <a href="page.html"><button class="btn">Export</button></a>
+                <p id="filePath">Selected file path will appear here.</p>
             </div>
         </div>
 
@@ -38,14 +41,40 @@
                 <div class="separator"></div>
 
                 <div class="modeless-dialog">
-                    <a href="page.html"> <button class="btn">apply </button></a>
-                    <button class="btn">apply </button>
-                    <button class="btn">apply </button>
+                    <button id="segment-algorithm1" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 1</span>
+                    </button>
+                    <button id="segment-algorithm2" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 2</span>
+                    </button>
+                    <button id="segment-algorithm3" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 3</span>
+                    </button>
+                    <button id="segment-algorithm4" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Algorithm 4</span>
+                    </button>
                     <button class="btn">apply </button>
                 </div>
             </div>
 
             <div class="window" id="timeline">
+                <h2>Segment Elements</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Label</th>
+                        </tr>
+                    </thead>
+                    <tbody id="segment-elements">
+                    </tbody>
+                </table>
 
 
                 <!-- Little line separator -->
@@ -57,6 +86,7 @@
             </div>
         </div>
     </div>
+    <script src="page.js"></script>
 </body>
 
 </html>
