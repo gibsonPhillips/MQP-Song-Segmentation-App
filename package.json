@@ -21,6 +21,7 @@
     "electron": "^33.2.1"
   },
   "dependencies": {
-    "node": "^23.6.0"
+    "node": "^23.6.0",
+    "wavesurfer.js": "^7.8.16"
   }
 }
