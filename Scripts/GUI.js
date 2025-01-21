@@ -1,3 +1,5 @@
+
+// collapsing the windows button functionality
 var coll = document.getElementsByClassName("collapsible");
 var i;
 
