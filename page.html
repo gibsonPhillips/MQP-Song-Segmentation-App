@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="CSS/page.css" />
     <link rel="stylesheet" href="CSS/collapse.css" />
 </head>
+<style>
+    #waveform {
+        width: 100%;
+        height: 150px;
+        border: 1px solid #ccc;
+    }
+
+    .controls {
+        margin-top: 10px;
+    }
+
+    button {
+        margin-right: 5px;
+    }
+</style>
 
 
 <body>
@@ -62,6 +77,12 @@
             </div>
 
             <div class="window" id="timeline">
+                <div id="waveform"></div>
+                <button id="play">Play/Pause</button>
+                <button id="backward">Backward 5s</button>
+                <button id="forward">Forward 5s</button>
+                <button id="zoom-in">Zoom In</button>
+                <button id="zoom-out">Zoom Out</button>
                 <h2>Segment Elements</h2>
                 <table>
                     <thead>
