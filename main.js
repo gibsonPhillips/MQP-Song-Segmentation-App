@@ -12,7 +12,7 @@ function startPythonServer() {
         return;
     }
 
-        pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
+    pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
 
     pythonProcess.stdout.on('data', (data) => {
         console.log(`Python stdout: ${data}`);
@@ -25,6 +25,13 @@ function startPythonServer() {
     pythonProcess.on('close', (code) => {
         console.log(`Python process exited with code ${code}`);
         pythonProcess = null;
+        restartPythonServer();
+    });
+
+    pythonProcess.on('error', (error) => {
+        console.error(`Failed to start Python server: ${error.message}`);
+        pythonProcess = null;
+        restartPythonServer();
     });
 }
 
@@ -37,6 +44,14 @@ function stopPythonServer() {
     } else {
         console.log("No Python server is running.");
     }
+}
+
+// Function to restart the Python server with a delay
+function restartPythonServer() {
+    console.log("Attempting to restart Python server in 5 seconds...");
+    setTimeout(() => {
+        startPythonServer();
+    }, 5000);
 }
 
 function createWindow() {
