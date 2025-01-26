@@ -5,6 +5,7 @@ import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom
 
 let filePath = ''
 let minPxPerSec = 100
+let colorMap = new Map();
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create()
@@ -107,6 +108,7 @@ function updateSegmentElementsList(elements) {
     const tbody = document.getElementById('segment-elements');
     tbody.innerHTML = ''
     regions.clearRegions()
+    colorMap.clear();
     elements.forEach(element => {
         let tr = document.createElement('tr');
         element.forEach(item => {
@@ -116,10 +118,15 @@ function updateSegmentElementsList(elements) {
         });
         tbody.appendChild(tr);
 
+        if(!colorMap.has(element[3])) {
+            colorMap.set(element[3], randomColor());
+        }
+
         regions.addRegion({
             start: element[1],
             end: element[2],
-            color: randomColor(),
+            content: 'Section ' + element[3],
+            color: colorMap.get(element[3]),
             drag: false,
             resize: false,
         })
