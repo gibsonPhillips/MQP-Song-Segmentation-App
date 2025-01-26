@@ -1,5 +1,7 @@
-import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.0.0/dist/wavesurfer.esm.js';
-import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.0.0/dist/plugins/regions.esm.js';
+import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/wavesurfer.esm.js';
+import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/regions.esm.js';
+import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom.esm.js';
+
 
 let filePath = ''
 let minPxPerSec = 100
@@ -7,13 +9,18 @@ let minPxPerSec = 100
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create()
 
+const zoom = ZoomPlugin.create({
+    // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
+    scale: 0.1,
+  });
+
 // Create an instance of WaveSurfer
 const wavesurfer = WaveSurfer.create({
     container: '#waveform',
     waveColor: 'rgb(200, 0, 200)',
     progressColor: 'rgb(100, 0, 100)',
     minPxPerSec: 100,
-    plugins: [regions],
+    plugins: [regions, zoom],
 })
 
 // Give regions a random color when they are created
@@ -118,3 +125,40 @@ function updateSegmentElementsList(elements) {
         })
     });
 }
+
+
+
+
+
+
+
+
+
+
+// regions.enableDragSelection({
+//     color: 'rgba(255, 0, 0, 0.1)',
+// })
+
+// // Add event listener for region creation
+// regions.on('region-created', (region) => {
+//     console.log("REGION CREATED");
+//     zoomToRegion(region.start, region.end);
+//     region.remove();
+// });
+
+// // Function to zoom into a specific region
+// function zoomToRegion(start, end) {
+//     const totalDuration = wavesurfer.getDuration();
+//     const regionDuration = end - start;
+
+//     // Calculate zoom level and center
+//     const zoomLevel = totalDuration / regionDuration;
+//     const center = (start + end) / 2;
+
+//     // Set zoom level and scroll to the region
+//     wavesurfer.zoom(zoomLevel);
+
+//     // const pxPerSec = wavesurfer.minPxPerSec * zoomLevel;
+//     // const scrollPosition = Math.max(center * pxPerSec - wavesurfer.container.clientWidth / 2, 0);
+//     // wavesurfer.drawer.wrapper.scrollLeft = scrollPosition;
+// }
