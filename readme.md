@@ -11,7 +11,7 @@ Using System.css project
 - alternatively just be connected to the internet (not ideal for 1.0)
 
 ### Python
-- Run pip install for the following: numpy, librosa, flask
+- Run pip install for the following: numpy, librosa, flask, waitress
 - The application uses a Python Flask server to run Python code
 - The Python code is for running the segmentatation algorithms from Librosa
 - The Python server should start up and stop automatically with the application. Sometimes, it may take a little while for to start up at the beginning
