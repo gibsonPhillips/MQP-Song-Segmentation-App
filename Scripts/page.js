@@ -81,6 +81,7 @@ document.getElementById('chooseSong').addEventListener('click', async () => {
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
     const inputName = filePath;
+    let clusters = determineVariability();
     try {
         console.log("Segmenting begin");
 
@@ -90,7 +91,7 @@ async function segment(algorithm) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ song: inputName, algorithm : algorithm }),
+            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : clusters }),
         });
 
         console.log("Segmenting end");
@@ -133,6 +134,13 @@ function updateSegmentElementsList(elements) {
     });
 }
 
+// Determines the variability to be used for an algorithm
+function determineVariability() {
+    const target = document.getElementById('variability-slider');
+    let num = parseInt(Number(target.value)/100) + 1
+    console.log(num)
+    return num
+}
 
 
 

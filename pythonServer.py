@@ -15,17 +15,18 @@ def call_python():
     data = request.get_json()
     song_path = data['song']
     algorithm = data['algorithm']
+    clusters = data['clusters']
     print(algorithm)
 
     # Call the Python function
     if(algorithm == 1):
-        result = runSegmentation(song_path, "CQT", "Agglomerative", 4)
+        result = runSegmentation(song_path, "CQT", "Agglomerative", clusters)
     elif(algorithm == 2):
-        result = runSegmentation(song_path, "Mel", "KMeans", 4)
+        result = runSegmentation(song_path, "Mel", "KMeans", clusters)
     elif(algorithm == 3):
-        result = runSegmentation(song_path, "CQT", "GMM", 4)
+        result = runSegmentation(song_path, "CQT", "GMM", clusters)
     elif(algorithm == 4):
-        result = runSegmentation(song_path, "STFT", "KMeans", 4)
+        result = runSegmentation(song_path, "STFT", "KMeans", clusters)
     else:
         result = []
     # Return the result as a JSON response
