@@ -28,22 +28,46 @@ const wavesurfer = WaveSurfer.create({
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
+const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
+
+const exportButton = document.querySelector('#export')
+const segmentDetailsButton = document.querySelector('#segment-details')
+const closeDialogButton = document.querySelector('#close-dialog')
 const playButton = document.querySelector('#play')
 const forwardButton = document.querySelector('#forward')
 const backButton = document.querySelector('#backward')
 const zoomInButton = document.querySelector('#zoom-in')
 const zoomOutButton = document.querySelector('#zoom-out')
 
+
+// Button click actions
+segmentDetailsButton.onclick = () => {
+    segmentDetailsDialog.showModal();
+}
+
+closeDialogButton.onclick = () => {
+    segmentDetailsDialog.close();
+}
+
 playButton.onclick = () => {
-    wavesurfer.playPause()
+    if(wavesurfer.getDuration() > 0) {
+        wavesurfer.playPause()
+        if(wavesurfer.isPlaying()) {
+            // pause icon
+            playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+        } else {
+            // play icon
+            playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+        }
+    }
 }
 
 forwardButton.onclick = () => {
-    wavesurfer.skip(5)
+    wavesurfer.skip(15)
 }
 
 backButton.onclick = () => {
-    wavesurfer.skip(-5)
+    wavesurfer.skip(-15)
 }
 
 zoomInButton.onclick = () => {
@@ -81,6 +105,7 @@ document.getElementById('chooseSong').addEventListener('click', async () => {
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
     const inputName = filePath;
+    let clusters = determineVariability();
     try {
         console.log("Segmenting begin");
 
@@ -90,7 +115,7 @@ async function segment(algorithm) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ song: inputName, algorithm : algorithm }),
+            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : clusters }),
         });
 
         console.log("Segmenting end");
@@ -133,6 +158,13 @@ function updateSegmentElementsList(elements) {
     });
 }
 
+// Determines the variability to be used for an algorithm
+function determineVariability() {
+    const target = document.getElementById('variability-slider');
+    let num = parseInt(Number(target.value)/100) + 2
+    console.log(num)
+    return num
+}
 
 
 

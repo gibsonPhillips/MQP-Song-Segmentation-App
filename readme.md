@@ -9,6 +9,7 @@
 Using System.css project
 - install using some command
 - alternatively just be connected to the internet (not ideal for 1.0)
+- Icons used from https://iconoir.com/
 
 ### Python
 - Run pip install for the following: numpy, librosa, flask, waitress

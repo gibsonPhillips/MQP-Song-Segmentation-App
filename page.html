@@ -34,9 +34,25 @@
             <div class="separator"></div>
 
             <div class="window-pane" id="main-buttons">
-                <button id="chooseSong" class="btn">Import </button>
+                <button id="chooseSong" class="btn">Import</button>
                 <input type="file" id="fileInput" accept=".wav" style="display: none;">
-                <button class="btn">Export</button>
+                <button class="btn" id="export">Export</button>
+                <button class="btn" id="segment-details">Segment Details</button>
+                <button class="btn" id="play">
+                    <img src="resources/icons/play-solid.svg" alt="Play Button">
+                </button>
+                <button class="btn" id="backward">
+                    <img src="resources/icons/backward15-seconds.svg" alt="Backward Button">
+                </button>
+                <button class="btn" id="forward">
+                    <img src="resources/icons/forward15-seconds.svg" alt="Forward Button">
+                </button>
+                <button class="btn" id="zoom-out">
+                    <img src="resources/icons/zoom-out.svg" alt="Zoom Out Button">
+                </button>
+                <button class="btn" id="zoom-in">
+                    <img src="resources/icons/zoom-in.svg" alt="Zoom In Button">
+                </button>
                 <p id="filePath">Selected file path will appear here.</p>
             </div>
         </div>
@@ -69,31 +85,16 @@
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                         <span class="button-text">Algorithm 4</span>
                     </button>
-                    <button class="btn">apply </button>
+                    <button id="auto-segment" class="btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="button-text">Auto</span>
+                    </button>
+                    <input id="variability-slider" type="range" min="0" max="800" value="400"/>
                 </div>
             </div>
 
             <div class="window" id="timeline">
                 <div id="waveform"></div>
-                <button id="play">Play/Pause</button>
-                <button id="backward">Backward 5s</button>
-                <button id="forward">Forward 5s</button>
-                <button id="zoom-in">Zoom In</button>
-                <button id="zoom-out">Zoom Out</button>
-                <h2>Segment Elements</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Number</th>
-                            <th>Start</th>
-                            <th>End</th>
-                            <th>Label</th>
-                        </tr>
-                    </thead>
-                    <tbody id="segment-elements">
-                    </tbody>
-                </table>
-
 
                 <!-- Little line separator -->
                 <div class="separator"></div>
@@ -104,6 +105,26 @@
             </div>
         </div>
     </div>
+
+    <dialog id="segment-details-dialog">
+        <h2>Segment Details</h2>
+        <button class="btn" id="close-dialog">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Label</th>
+                </tr>
+            </thead>
+            <tbody id="segment-elements">
+            </tbody>
+        </table>
+    </dialog>
+
     <script type="module" src="scripts/page.js"></script>
 </body>
 
