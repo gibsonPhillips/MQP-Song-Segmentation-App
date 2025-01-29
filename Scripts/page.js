@@ -28,20 +28,37 @@ const wavesurfer = WaveSurfer.create({
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
+const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
+
+const exportButton = document.querySelector('#export')
+const segmentDetailsButton = document.querySelector('#segment-details')
+const closeDialogButton = document.querySelector('#close-dialog')
 const playButton = document.querySelector('#play')
 const forwardButton = document.querySelector('#forward')
 const backButton = document.querySelector('#backward')
 const zoomInButton = document.querySelector('#zoom-in')
 const zoomOutButton = document.querySelector('#zoom-out')
 
+
+// Button click actions
+segmentDetailsButton.onclick = () => {
+    segmentDetailsDialog.showModal();
+}
+
+closeDialogButton.onclick = () => {
+    segmentDetailsDialog.close();
+}
+
 playButton.onclick = () => {
-    wavesurfer.playPause()
-    if(wavesurfer.isPlaying()) {
-        // pause icon
-        playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
-    } else {
-        // play icon
-        playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+    if(wavesurfer.getDuration() > 0) {
+        wavesurfer.playPause()
+        if(wavesurfer.isPlaying()) {
+            // pause icon
+            playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+        } else {
+            // play icon
+            playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+        }
     }
 }
 
