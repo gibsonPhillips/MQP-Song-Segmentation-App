@@ -10,9 +10,16 @@ This 1.0 app can be used by people with no programming experience to segment son
 
 ### css
 Using System.css project
+<<<<<<< HEAD
 - should be all set to be used offline. If there's gaps in the ui use the internet version with the link.
+=======
+- install using some command
+- alternatively just be connected to the internet (not ideal for 1.0)
+- Icons used from https://iconoir.com/
+>>>>>>> main
 
 ### Python
+- Run pip install for the following: numpy, librosa, flask, waitress
 - The application uses a Python Flask server to run Python code
 - The Python code is for running the segmentatation algorithms from Librosa
 - The Python server should start up and stop automatically with the application. Sometimes, it may take a little while for to start up at the beginning

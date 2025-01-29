@@ -1,7 +1,7 @@
 // const { app, BrowserWindow } = require('electron/main')
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 
 let pythonProcess
 
@@ -11,8 +11,7 @@ function startPythonServer() {
         console.log("Python server is already running.");
         return;
     }
-
-        pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
+    pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
 
     pythonProcess.stdout.on('data', (data) => {
         console.log(`Python stdout: ${data}`);
@@ -25,18 +24,45 @@ function startPythonServer() {
     pythonProcess.on('close', (code) => {
         console.log(`Python process exited with code ${code}`);
         pythonProcess = null;
+        restartPythonServer();
+    });
+
+    pythonProcess.on('error', (error) => {
+        console.error(`Failed to start Python server: ${error.message}`);
+        pythonProcess = null;
+        restartPythonServer();
     });
 }
 
 // Function to stop the Python server
-function stopPythonServer() {
+async function stopPythonServer() {
     if (pythonProcess) {
-        pythonProcess.kill('SIGTERM');
-        console.log('Python server stopped.');
+        try {
+            console.log("Shut down begin");
+    
+            // Send a POST request to the Python server to shutdown
+            const response = await fetch('http://127.0.0.1:5000/shutdown', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ success: true }),
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
         pythonProcess = null;
     } else {
         console.log("No Python server is running.");
     }
+}
+
+// Function to restart the Python server with a delay
+function restartPythonServer() {
+    console.log("Attempting to restart Python server in 5 seconds...");
+    setTimeout(() => {
+        startPythonServer();
+    }, 5000);
 }
 
 function createWindow() {
@@ -74,11 +100,5 @@ app.whenReady().then(() => {
 })
 
 app.on('will-quit', () => {
-    stopPythonServer()
+    stopPythonServer();
 });
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
-})
