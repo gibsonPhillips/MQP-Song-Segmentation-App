@@ -36,14 +36,21 @@ const zoomOutButton = document.querySelector('#zoom-out')
 
 playButton.onclick = () => {
     wavesurfer.playPause()
+    if(wavesurfer.isPlaying()) {
+        // pause icon
+        playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+    } else {
+        // play icon
+        playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+    }
 }
 
 forwardButton.onclick = () => {
-    wavesurfer.skip(5)
+    wavesurfer.skip(15)
 }
 
 backButton.onclick = () => {
-    wavesurfer.skip(-5)
+    wavesurfer.skip(-15)
 }
 
 zoomInButton.onclick = () => {
@@ -137,7 +144,7 @@ function updateSegmentElementsList(elements) {
 // Determines the variability to be used for an algorithm
 function determineVariability() {
     const target = document.getElementById('variability-slider');
-    let num = parseInt(Number(target.value)/100) + 1
+    let num = parseInt(Number(target.value)/100) + 2
     console.log(num)
     return num
 }
