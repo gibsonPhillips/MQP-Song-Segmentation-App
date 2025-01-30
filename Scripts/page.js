@@ -16,13 +16,7 @@ const zoom = ZoomPlugin.create({
   });
 
 // Create an instance of WaveSurfer
-const wavesurfer = WaveSurfer.create({
-    container: '#waveform',
-    waveColor: 'rgb(200, 0, 200)',
-    progressColor: 'rgb(100, 0, 100)',
-    minPxPerSec: 100,
-    plugins: [regions, zoom],
-})
+let waveArr = []
 
 // Give regions a random color when they are created
 const random = (min, max) => Math.random() * (max - min) + min
@@ -50,9 +44,9 @@ closeDialogButton.onclick = () => {
 }
 
 playButton.onclick = () => {
-    if(wavesurfer.getDuration() > 0) {
-        wavesurfer.playPause()
-        if(wavesurfer.isPlaying()) {
+    if(waveArr[0].getDuration() > 0) {
+        waveArr[0].playPause()
+        if(waveArr[0].isPlaying()) {
             // pause icon
             playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
         } else {
@@ -63,21 +57,21 @@ playButton.onclick = () => {
 }
 
 forwardButton.onclick = () => {
-    wavesurfer.skip(15)
+    waveArr[0].skip(15)
 }
 
 backButton.onclick = () => {
-    wavesurfer.skip(-15)
+    waveArr[0].skip(-15)
 }
 
 zoomInButton.onclick = () => {
     minPxPerSec = minPxPerSec + 10
-    wavesurfer.zoom(minPxPerSec)
+    waveArr[0].zoom(minPxPerSec)
 }
 
 zoomOutButton.onclick = () => {
     minPxPerSec = minPxPerSec - 10
-    wavesurfer.zoom(minPxPerSec)
+    waveArr[0].zoom(minPxPerSec)
 }
 
 
@@ -86,15 +80,41 @@ document.getElementById("segment-algorithm2").addEventListener("click", () => {s
 document.getElementById("segment-algorithm3").addEventListener("click", () => {segment(3)});
 document.getElementById("segment-algorithm4").addEventListener("click", () => {segment(4)});
 
+// Import Button
 document.getElementById('chooseSong').addEventListener('click', async () => {
     const filePaths = await window.api.openFile();
+
     if (filePaths && filePaths.length > 0) {
         // Display the file path
+
+        //Creating the div for the wavesurfer
+        var newDiv = document.createElement('div');
+        var divId = 'waveform' + Date.now();
+        newDiv.id = divId
+
+        var newSeparator = document.createElement('div');
+        newSeparator.class = 'separator'
+        var newModelessDialog = document.createElement('div');
+        newModelessDialog.class = 'modeless-dialog'
+
+        var parentDiv = document.getElementById('timeline');
+        parentDiv.appendChild(newDiv);
+        parentDiv.appendChild(newSeparator);
+        parentDiv.appendChild(newModelessDialog);
+        //Creating the wavesurfer
+        const wavesurfer = WaveSurfer.create({
+            container: '#' + divId,
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
+            minPxPerSec: 100,
+            plugins: [regions, zoom],
+        })
         document.getElementById('filePath').textContent = `Selected file: ${filePaths[0]}`;
         console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
         filePath = filePaths[0];
         regions.clearRegions();
         wavesurfer.load(filePaths[0]);
+        waveArr.push(wavesurfer)
     } else {
         document.getElementById('filePath').textContent = 'No file selected.';
         console.log('No file selected');
