@@ -26,7 +26,7 @@ helpful to read along.
 #
 import numpy as np
 import scipy
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 import sklearn
 from IPython.display import Audio, display
