@@ -2,7 +2,7 @@ import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/wavesurfer.e
 import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/regions.esm.js';
 import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom.esm.js';
 
-
+// input audio file path
 let filePath = ''
 let minPxPerSec = 100
 let colorMap = new Map();

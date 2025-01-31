@@ -12,11 +12,13 @@ app = Flask(__name__)
 def call_python():
     # Get data from the request
     # input_data = request.json.get('name', 'Guest')
+
+    # get arguments from algopy
     data = request.get_json()
     song_path = data['song']
     algorithm = data['algorithm']
     clusters = data['clusters']
-    print(algorithm)
+    print(f"Algorithm: {algorithm}")
 
     # Call the Python function
     if(algorithm == 1):
