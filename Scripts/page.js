@@ -6,6 +6,8 @@ import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom
 let filePath = ''
 let minPxPerSec = 100
 let colorMap = new Map();
+var chosenDirectory
+var data
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create()
@@ -80,24 +82,82 @@ zoomOutButton.onclick = () => {
     wavesurfer.zoom(minPxPerSec)
 }
 
+// When the export button is clicked
+document.getElementById('select-workspace').addEventListener('click', async () => {
+
+    try {
+        chosenDirectory = await window.showDirectoryPicker();
+//      if (chosenDirectory)
+//      const writableFileStream = await fileHandle.createWritable();
+//      await writableFileStream.write('Hello world!');
+//      await writableFileStream.close();
+        console.log(chosenDirectory);
+
+    } catch (error) {
+        // Handle errors, e.g., user cancellation
+        console.error('No directory selected:', error);
+    }
+    //Check if the file path exists
+});
+
 
 document.getElementById("segment-algorithm1").addEventListener("click", () => {segment(1)});
 document.getElementById("segment-algorithm2").addEventListener("click", () => {segment(2)});
 document.getElementById("segment-algorithm3").addEventListener("click", () => {segment(3)});
 document.getElementById("segment-algorithm4").addEventListener("click", () => {segment(4)});
 
+// when import is pressed
 document.getElementById('chooseSong').addEventListener('click', async () => {
-    const filePaths = await window.api.openFile();
-    if (filePaths && filePaths.length > 0) {
-        // Display the file path
-        document.getElementById('filePath').textContent = `Selected file: ${filePaths[0]}`;
-        console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
-        filePath = filePaths[0];
-        regions.clearRegions();
-        wavesurfer.load(filePaths[0]);
+    if (chosenDirectory != null) {
+        const filePaths = await window.api.openFile();
+        if (filePaths && filePaths.length > 0) {
+            // Display the file path
+            document.getElementById('filePath').textContent = `Selected file: ${filePaths[0]}`;
+            console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
+            filePath = filePaths[0];
+            regions.clearRegions();
+            wavesurfer.load(filePaths[0]);
+        } else {
+            document.getElementById('filePath').textContent = 'No file selected.';
+            console.log('No file selected');
+        }
     } else {
-        document.getElementById('filePath').textContent = 'No file selected.';
-        console.log('No file selected');
+        console.log('No workspace selected')
+    }
+});
+
+// when load is clicked
+document.getElementById('load').addEventListener('click', async () => {
+    console.log('not implemented')
+    // Implement
+});
+
+// when save is clicked
+document.getElementById('save').addEventListener('click', async () => {
+    if (chosenDirectory != null) {
+        if (filePath != '') {
+            let filePathEnd = filePath.split("\\").pop();
+            filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
+            console.log(filePathEnd)
+            const newSaveFolder = await chosenDirectory.getDirectoryHandle(filePathEnd, { create: true });
+            if (data != null) {
+
+                //placeholder - implement the saving of save data
+                const helloFile = await newSaveFolder.getFileHandle('hello.txt', { create: true });
+                const writable = await helloFile.createWritable();
+                await writable.write(data);
+                await writable.close();
+            } else {
+                console.log('No data was saved')
+            }
+
+            // Implement Saving of the song file
+
+        } else {
+            console.log('No audio selected')
+        }
+    } else {
+        console.log('No workspace selected')
     }
 });
 
@@ -121,7 +181,8 @@ async function segment(algorithm) {
         console.log("Segmenting end");
 
         // Parse the JSON response
-        const data = await response.json();
+        data = await response.json();
+        console.log(data)
         updateSegmentElementsList(data)
     } catch (error) {
         console.error('Error:', error);
