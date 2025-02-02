@@ -6,6 +6,7 @@ import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom
 let filePath = ''
 let minPxPerSec = 100
 let colorMap = new Map();
+const headers = ["number", "start", "end", "label"];
 let boundaryData;
 let clusters;
 let addBoundaryMode = false;
@@ -130,7 +131,12 @@ async function segment(algorithm) {
         console.log("Segmenting end");
 
         // Parse the JSON response
-        boundaryData = await response.json();
+        const data = await response.json();
+
+        boundaryData = data.map(row => {
+            return Object.fromEntries(row.map((value, index) => [headers[index], value]));
+        });
+
         updateSegmentElementsList(boundaryData)
     } catch (error) {
         console.error('Error:', error);
@@ -145,22 +151,23 @@ function updateSegmentElementsList(elements) {
     colorMap.clear();
     elements.forEach(element => {
         let tr = document.createElement('tr');
-        element.forEach(item => {
+
+        for (let key in element) {
             let td = document.createElement('td');
-            td.textContent = item
+            td.textContent = element[key]
             tr.appendChild(td)
-        });
+        }
         tbody.appendChild(tr);
 
-        if(!colorMap.has(element[3])) {
-            colorMap.set(element[3], randomColor());
+        if(!colorMap.has(element.label)) {
+            colorMap.set(element.label, randomColor());
         }
 
         regions.addRegion({
-            start: element[1],
-            end: element[2],
-            content: 'Section ' + element[3],
-            color: colorMap.get(element[3]),
+            start: element.start,
+            end: element.end,
+            content: 'Section ' + element.label,
+            color: colorMap.get(element.label),
             drag: false,
             resize: false,
         })
@@ -184,21 +191,21 @@ function determineVariability() {
 
         // Determine location
         let i = 0;
-        let currentTime = boundaryData[i][1];
+        let currentTime = boundaryData[i].start;
         while(time > currentTime) {
             i++;
-            currentTime = boundaryData[i][1];
+            currentTime = boundaryData[i].start;
         }
 
         // Add to boundaryData
-        let element = [i+1, time, boundaryData[i][1], clusters];
+        let element = {"number": i+1, "start": time, "end": boundaryData[i].start, "label": clusters};
         clusters++;
         boundaryData.splice(i, 0, element);
 
         // Update segments
-        boundaryData[i-1][2] = time;
+        boundaryData[i-1].end = time;
         for(let j = i+1; j < boundaryData.length; j++) {
-            boundaryData[j][0] = j+1;
+            boundaryData[j].number = j+1;
         }
 
         updateSegmentElementsList(boundaryData);
