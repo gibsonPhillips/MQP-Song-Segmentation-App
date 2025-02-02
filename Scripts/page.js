@@ -6,6 +6,9 @@ import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom
 let filePath = ''
 let minPxPerSec = 100
 let colorMap = new Map();
+let boundaryData;
+let clusters;
+let addBoundaryMode = false;
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create()
@@ -32,6 +35,8 @@ const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
 
 const exportButton = document.querySelector('#export')
 const segmentDetailsButton = document.querySelector('#segment-details')
+const addBoundaryButton = document.querySelector('#add-boundary')
+const removeBoundaryButton = document.querySelector('#remove-boundary')
 const closeDialogButton = document.querySelector('#close-dialog')
 const playButton = document.querySelector('#play')
 const forwardButton = document.querySelector('#forward')
@@ -47,6 +52,10 @@ segmentDetailsButton.onclick = () => {
 
 closeDialogButton.onclick = () => {
     segmentDetailsDialog.close();
+}
+
+addBoundaryButton.onclick = () => {
+    addBoundaryMode = true;
 }
 
 playButton.onclick = () => {
@@ -105,7 +114,7 @@ document.getElementById('chooseSong').addEventListener('click', async () => {
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
     const inputName = filePath;
-    let clusters = determineVariability();
+    clusters = determineVariability();
     try {
         console.log("Segmenting begin");
 
@@ -121,8 +130,8 @@ async function segment(algorithm) {
         console.log("Segmenting end");
 
         // Parse the JSON response
-        const data = await response.json();
-        updateSegmentElementsList(data)
+        boundaryData = await response.json();
+        updateSegmentElementsList(boundaryData)
     } catch (error) {
         console.error('Error:', error);
     }
@@ -165,6 +174,40 @@ function determineVariability() {
     console.log(num)
     return num
 }
+
+
+  // Listen for clicks on the waveform
+  wavesurfer.on('interaction', (event) => {
+    if (boundaryData != null && addBoundaryMode) {
+        // Get click time (relative to waveform duration)
+        const time = wavesurfer.getCurrentTime();
+
+        // Determine location
+        let i = 0;
+        let currentTime = boundaryData[i][1];
+        while(time > currentTime) {
+            i++;
+            currentTime = boundaryData[i][1];
+        }
+
+        // Add to boundaryData
+        let element = [i+1, time, boundaryData[i][1], clusters];
+        clusters++;
+        boundaryData.splice(i, 0, element);
+
+        // Update segments
+        boundaryData[i-1][2] = time;
+        for(let j = i+1; j < boundaryData.length; j++) {
+            boundaryData[j][0] = j+1;
+        }
+
+        updateSegmentElementsList(boundaryData);
+
+        // Disable marker mode after placing one
+        addBoundaryMode = false;
+    }
+    return;
+  });
 
 
 
