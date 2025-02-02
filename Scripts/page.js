@@ -7,9 +7,10 @@ let filePath = ''
 let minPxPerSec = 100
 let colorMap = new Map();
 const headers = ["number", "start", "end", "label"];
-let boundaryData;
+let segmentData;
 let clusters;
 let addBoundaryMode = false;
+let removeBoundaryMode = false;
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create()
@@ -33,6 +34,7 @@ const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
 const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
+const removeBoundaryDialog = document.querySelector('#remove-boundary-dialog')
 
 const exportButton = document.querySelector('#export')
 const segmentDetailsButton = document.querySelector('#segment-details')
@@ -53,10 +55,15 @@ segmentDetailsButton.onclick = () => {
 
 closeDialogButton.onclick = () => {
     segmentDetailsDialog.close();
+    removeBoundaryDialog.close();
 }
 
 addBoundaryButton.onclick = () => {
     addBoundaryMode = true;
+}
+
+removeBoundaryButton.onclick = () => {
+    removeBoundaryMode = true;
 }
 
 playButton.onclick = () => {
@@ -133,11 +140,11 @@ async function segment(algorithm) {
         // Parse the JSON response
         const data = await response.json();
 
-        boundaryData = data.map(row => {
+        segmentData = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [headers[index], value]));
         });
 
-        updateSegmentElementsList(boundaryData)
+        updateSegmentElementsList(segmentData)
     } catch (error) {
         console.error('Error:', error);
     }
@@ -184,37 +191,98 @@ function determineVariability() {
 
 
   // Listen for clicks on the waveform
-  wavesurfer.on('interaction', (event) => {
-    if (boundaryData != null && addBoundaryMode) {
+  wavesurfer.on('interaction', async (event) => {
+    if (segmentData != null && addBoundaryMode) {
         // Get click time (relative to waveform duration)
         const time = wavesurfer.getCurrentTime();
 
         // Determine location
         let i = 0;
-        let currentTime = boundaryData[i].start;
+        let currentTime = segmentData[i].start;
         while(time > currentTime) {
             i++;
-            currentTime = boundaryData[i].start;
+            currentTime = segmentData[i].start;
         }
 
         // Add to boundaryData
-        let element = {"number": i+1, "start": time, "end": boundaryData[i].start, "label": clusters};
+        let element = {"number": i+1, "start": time, "end": segmentData[i].start, "label": clusters};
         clusters++;
-        boundaryData.splice(i, 0, element);
+        segmentData.splice(i, 0, element);
 
         // Update segments
-        boundaryData[i-1].end = time;
-        for(let j = i+1; j < boundaryData.length; j++) {
-            boundaryData[j].number = j+1;
+        segmentData[i-1].end = time;
+        for(let j = i+1; j < segmentData.length; j++) {
+            segmentData[j].number = j+1;
         }
 
-        updateSegmentElementsList(boundaryData);
+        updateSegmentElementsList(segmentData);
 
         // Disable marker mode after placing one
         addBoundaryMode = false;
+    } else if (segmentData != null && removeBoundaryMode) {
+        // Get click time (relative to waveform duration)
+        const time = wavesurfer.getCurrentTime();
+
+        // Find closest boundary
+        let closestBoundaryIndex = 0;
+        let closetBoundaryTime = Math.abs(segmentData[0].start - time);
+        segmentData.forEach(element => {
+            if(Math.abs(element.start - time) < closetBoundaryTime) {
+                closetBoundaryTime = Math.abs(element.start - time);
+                closestBoundaryIndex = element.number - 1;
+            }
+        });
+
+        if(closestBoundaryIndex != 0) {
+            // TODO Choose to combine with previous or next
+            removeBoundaryDialog.showModal();
+            const previous = await removeBoundaryButtonClick();
+            removeBoundaryDialog.close();
+
+            if(previous) {
+                // Combine with previous (get rid of current index, add to previous)
+                segmentData[closestBoundaryIndex-1].end = segmentData[closestBoundaryIndex].end;
+                segmentData.splice(closestBoundaryIndex, 1);
+                for(let i = closestBoundaryIndex; i < segmentData.length; i++) {
+                    segmentData[i].number = i+1;
+                }
+            } else {
+                // Combine with next (keep current index, get rid of next to combine with current)
+                segmentData[closestBoundaryIndex].start = segmentData[closestBoundaryIndex-1].start;
+                segmentData.splice(closestBoundaryIndex-1, 1);
+                for(let i = closestBoundaryIndex-1; i < segmentData.length; i++) {
+                    segmentData[i].number = i+1;
+                }
+            }
+
+            updateSegmentElementsList(segmentData);
+        }
+
+        // Disable marker mode after placing one
+        removeBoundaryMode = false;
     }
     return;
   });
+
+
+function removeBoundaryButtonClick() {
+    return new Promise(resolve => {
+        const combinePreviousButton = document.querySelector('#combine-previous');
+        const combineNextButton = document.querySelector('#combine-next');
+    
+        const handler = (event) => {
+            if(event.target == combinePreviousButton)
+                resolve(true);
+            else
+                resolve(false);
+            combinePreviousButton.removeEventListener('click', handler);
+            combineNextButton.removeEventListener('click', handler);
+        };
+    
+        combinePreviousButton.addEventListener('click', handler);
+        combineNextButton.addEventListener('click', handler);
+      });
+}
 
 
 
