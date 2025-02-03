@@ -46,3 +46,7 @@
 
     flex-grow: 4;
 }
+
+#expanders {
+    display: inline-block;
+}

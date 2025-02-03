@@ -224,12 +224,14 @@ document.getElementById("mod").addEventListener("click", function() {
 
     // resizes the whole mod window
     document.querySelectorAll("#modifiers").forEach(item => {
-        item.style.width = item.style.width === "30px" ? "15%" : "30px";
+        item.style.width = item.style.width === "50px" ? "15%" : "50px";
     });
 
     // swaps out buttons for collapsing and expanding
+    // also cull other items in mod window
     document.getElementById("expand").style.display = "flex"
-    document.getElementById("title-bar").style.display = "none"
+    document.getElementById("expand-button").style.display = "flex"
+    document.getElementsByClassName("cull")[0].style.setProperty("display","none")
 
     // failed experiment
     // document.querySelectorAll("#modifiers").forEach(item => {
@@ -262,6 +264,7 @@ document.getElementById("expand").addEventListener("click", function() {
 
     // swap out the expand button for the collapse button
     document.getElementById("expand").style.display = "none"
-    document.getElementById("title-bar").style.display = "flex"
+    document.getElementById("expand-button").style.display = "none"
+    document.getElementsByClassName("cull")[0].style.setProperty("display","flex")
 
 });

@@ -63,10 +63,19 @@
 
         <div class="hbox" id="mod-time">
             <div class="window" id="modifiers">
-                <button aria-label="Close" class="collapsible coll" id="expand" style="display:none"></button>
+                <div id="expanders">
+                    <div class="title-bar" id="expand" style="display:none">
+                        <button aria-label="Close" class="collapsible coll" id="expand-button" style="display:none">
+                            <div style="width:40px"></div>
+                        </button>
+                    </div>
+                </div>
 
                 <div class="title-bar cull">
-                    <button aria-label="Close" class="collapsible coll" id="mod"></button>
+                    <button aria-label="Close" class="collapsible coll" id="mod">
+                        <!-- this keeps the button from collapsing width :*) -->
+                        <div style="width:20px"></div>
+                    </button>
                     <h1 class="title">Modifiers</h1>
                     <button aria-label="Resize" disabled class="hidden"></button>
                 </div>
@@ -74,7 +83,7 @@
                 <!-- Little line separator -->
                 <div class="separator"></div>
 
-                <div class="modeless-dialog vbox">
+                <div class="modeless-dialog vbox cull">
                     <button id="segment-algorithm1" class="btn">
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                         <span class="button-text">Algorithm 1</span>
