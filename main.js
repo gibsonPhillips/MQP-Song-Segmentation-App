@@ -38,9 +38,34 @@ ipcMain.handle('create-directory', async (event, dirPath) => {
         }
     } catch (error) {
         console.error('Error creating directory:', error);
-        throw error;
+        throw error
     }
 });
+
+ipcMain.handle('get-file', async (event, filePath) => {
+  try {
+    const fileContents = await fs.promises.readFile(filePath, 'utf-8');
+    return { success: true, content: fileContents }; // Return the file content
+  } catch (error) {
+    console.error('Error reading file:', error);
+    return { success: false, error: error.message }; // Return error message if something goes wrong
+  }
+});
+
+ipcMain.handle('write-to-file', async (event, filePath, data) => {
+  try {
+    // Open the file (will create it if it doesn't exist, 'wx' flag will fail if it exists)
+    const fileHandle = await fs.promises.open(filePath, 'w'); // 'w' flag means "write", creates the file if not exists
+    await fileHandle.writeFile(data, 'utf-8'); // Write the data to the file
+    await fileHandle.close(); // Close the file after writing
+    console.log(`File created or written to: ${filePath}`);
+    return { success: true }; // Return success
+  } catch (error) {
+    console.error('Error creating or writing to file:', error);
+    return { success: false, error: error.message }; // Return error if something goes wrong
+  }
+});
+
 
 // Function to start the Python server
 function startPythonServer() {

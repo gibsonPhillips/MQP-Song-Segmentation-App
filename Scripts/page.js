@@ -16,16 +16,18 @@ let appdataPromise = window.api.getAppData().then((appdata) => {
     console.log(appdata);
     workspace = appdata + '\\Song Segmentation'
     console.log(workspace)
-    try {
-        let files = window.api.getDirectoryContents(workspace);
+
+    // Create a directory if it doesnt already exist
+    window.api.createDirectory(workspace).then((result) => {
+
         console.log('Directory handled successfully.');
-        console.log(files)
-    } catch (error) {
-        console.error('Error handling directory:', error);
-    }
-})
-.catch((error) => {
-    // Handle errors that occurred during the promise
+
+    }).catch((error) => {
+        // Throw error if there is an issue creating the directory
+        console.error(error);
+    });
+}).catch((error) => {
+    // Throw error if there is an issue getting the appdata environment variable
     console.error(error);
 });
 var data
@@ -119,21 +121,17 @@ document.getElementById("segment-algorithm4").addEventListener("click", () => {s
 
 // when import is pressed
 document.getElementById('chooseSong').addEventListener('click', async () => {
-    if (chosenDirectory != null) {
-        const filePaths = await window.api.openFile();
-        if (filePaths && filePaths.length > 0) {
-            // Display the file path
-            document.getElementById('filePath').textContent = `Selected file: ${filePaths[0]}`;
-            console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
-            filePath = filePaths[0];
-            regions.clearRegions();
-            wavesurfer.load(filePaths[0]);
-        } else {
-            document.getElementById('filePath').textContent = 'No file selected.';
-            console.log('No file selected');
-        }
+    const filePaths = await window.api.openFile();
+    if (filePaths && filePaths.length > 0) {
+        // Display the file path
+        document.getElementById('filePath').textContent = `Selected file: ${filePaths[0]}`;
+        console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
+        filePath = filePaths[0];
+        regions.clearRegions();
+        wavesurfer.load(filePaths[0]);
     } else {
-        console.log('No workspace selected')
+        document.getElementById('filePath').textContent = 'No file selected.';
+        console.log('No file selected');
     }
 });
 
@@ -145,30 +143,42 @@ document.getElementById('load').addEventListener('click', async () => {
 
 // when save is clicked
 document.getElementById('save').addEventListener('click', async () => {
-    if (chosenDirectory != null) {
-        if (filePath != '') {
-            let filePathEnd = filePath.split("\\").pop();
-            filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
-            console.log(filePathEnd)
-            const newSaveFolder = await chosenDirectory.getDirectoryHandle(filePathEnd, { create: true });
+
+    if (filePath != '') {
+        let filePathEnd = filePath.split("\\").pop();
+        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
+        console.log(filePathEnd)
+
+        // Get the save files
+        window.api.getDirectoryContents(workspace).then((files) => {
+
+            // Implement selecting the project
+            //placeholders
+            let saveFilePath = workspace + "\\" + filePathEnd + ".txt"
+            data = "hello world!"
+
+            console.log(files);
             if (data != null) {
 
-                //placeholder - implement the saving of save data
-                const helloFile = await newSaveFolder.getFileHandle('hello.txt', { create: true });
-                const writable = await helloFile.createWritable();
-                await writable.write(data);
-                await writable.close();
+                try {
+                    const result = window.api.writeToFile(saveFilePath, data);
+
+                } catch (error) {
+                    console.error('Error in writing to file:', error);
+                }
             } else {
                 console.log('No data was saved')
             }
 
-            // Implement Saving of the song file
+        // Implement Saving of the song file
 
-        } else {
-            console.log('No audio selected')
-        }
+        }).catch((error) => {
+            // Throw error if there is an issue getting the files within the directory
+            console.error(error);
+        });
+
     } else {
-        console.log('No workspace selected')
+        console.log('No audio selected')
     }
 });
 
