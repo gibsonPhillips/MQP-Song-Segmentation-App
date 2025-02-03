@@ -58,6 +58,8 @@ const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
 const exportButton = document.querySelector('#export')
 const segmentDetailsButton = document.querySelector('#segment-details')
 const closeDialogButton = document.querySelector('#close-dialog')
+const saveMenuDialog = document.querySelector('#save-dialog')
+const closeSaveDialogButton = document.querySelector('#close-save-dialog')
 const playButton = document.querySelector('#play')
 const forwardButton = document.querySelector('#forward')
 const backButton = document.querySelector('#backward')
@@ -72,6 +74,10 @@ segmentDetailsButton.onclick = () => {
 
 closeDialogButton.onclick = () => {
     segmentDetailsDialog.close();
+}
+
+closeSaveDialogButton.onclick = () => {
+    saveMenuDialog.close();
 }
 
 playButton.onclick = () => {
@@ -110,7 +116,6 @@ document.getElementById('select-workspace').addEventListener('click', async () =
     //Gets the appdata
     console.log(workspace)
 
-
 });
 
 
@@ -141,6 +146,57 @@ document.getElementById('load').addEventListener('click', async () => {
     // Implement
 });
 
+// Queues the pop-up to save the project
+async function selectSaveProject() {
+    // Get the save files
+    let chosenProject = ''
+        window.api.getDirectoryContents(workspace).then((files) => {
+            const tbody = document.getElementById('save-files');
+            if (files.length != 0) {
+            // Implement selecting the project
+            //placeholders
+
+                files.forEach(file => {
+
+                    // Create a button for each existing project
+                    let newButton = document.createElement('button');
+                    newButton.textContent = file
+                    newButton.addEventListener('click', async () => {
+                        chosenProject = file
+                        console.log(chosenProject);
+                        saveMenuDialog.close();
+                        saveTheData(chosenProject)
+                    })
+                    tbody.appendChild(newButton);
+                });
+            }
+            // New Project button
+            let newButton = document.createElement('button');
+            newButton.textContent = 'New Project'
+            newButton.addEventListener('click', async () => {
+                // Place holder for new project textbox
+                chosenProject = 'New Project - ' + '1'
+                console.log(chosenProject);
+                saveMenuDialog.close();
+                window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
+                   console.log('Directory creation handled successfully.');
+                }).catch((error) => {
+                    // Throw error if there is an issue creating the directory
+                    console.error(error);
+                });
+                saveTheData(chosenProject)
+            })
+            tbody.appendChild(newButton);
+
+            //Show the dialog
+            saveMenuDialog.showModal();
+}).catch((error) => {
+            // Throw error if there is an issue getting the files within the directory
+            console.error(error);
+});
+}
+
+
 // when save is clicked
 document.getElementById('save').addEventListener('click', async () => {
 
@@ -148,39 +204,41 @@ document.getElementById('save').addEventListener('click', async () => {
         let filePathEnd = filePath.split("\\").pop();
         filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
         console.log(filePathEnd)
-
-        // Get the save files
-        window.api.getDirectoryContents(workspace).then((files) => {
-
-            // Implement selecting the project
-            //placeholders
-            let saveFilePath = workspace + "\\" + filePathEnd + ".txt"
-            data = "hello world!"
-
-            console.log(files);
-            if (data != null) {
-
-                try {
-                    const result = window.api.writeToFile(saveFilePath, data);
-
-                } catch (error) {
-                    console.error('Error in writing to file:', error);
-                }
-            } else {
-                console.log('No data was saved')
-            }
-
-        // Implement Saving of the song file
-
-        }).catch((error) => {
-            // Throw error if there is an issue getting the files within the directory
-            console.error(error);
-        });
+        selectSaveProject();
 
     } else {
         console.log('No audio selected')
     }
 });
+
+//save the project data
+function saveTheData(chosenProject) {
+    if (chosenProject != '') {
+        let saveDirectoryPath = workspace + "\\" + chosenProject
+        console.log('saveDirectoryPath: ' + saveDirectoryPath);
+        data = "hello world!"
+        if (data != null) {
+
+            try {
+                // Writing the save data to the file
+                let saveDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-data.txt';
+                const result = window.api.writeToFile(saveDataFilePath, data);
+
+            } catch (error) {
+                console.error('Error in writing to file:', error);
+            }
+
+
+
+        } else {
+            console.log('No data was saved')
+        }
+    } else {
+        console.log('No data was saved (2)')
+    }
+
+    // Implement Saving of the song file
+}
 
 // runs the segmentation algorithm
 async function segment(algorithm) {
