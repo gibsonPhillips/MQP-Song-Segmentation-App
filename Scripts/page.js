@@ -201,3 +201,67 @@ function determineVariability() {
 //     // const scrollPosition = Math.max(center * pxPerSec - wavesurfer.container.clientWidth / 2, 0);
 //     // wavesurfer.drawer.wrapper.scrollLeft = scrollPosition;
 // }
+
+/*
+document.getElementById("thisisn").addEventListener("click", function() {
+
+    // resizes the whole mod window
+    document.querySelectorAll("#modifiers").forEach(item => {
+        item.style.width = item.style.width === "30px" ? "15%" : "30px";
+    });
+
+});
+*/
+
+// collapsing functions
+// toggles every time the x button is clicked
+document.getElementById("mod").addEventListener("click", function() {
+
+    // cull
+    document.querySelectorAll(".cull").forEach(item => {
+        item.style.display = "none"
+    });
+
+    // resizes the whole mod window
+    document.querySelectorAll("#modifiers").forEach(item => {
+        item.style.width = item.style.width === "30px" ? "15%" : "30px";
+    });
+
+    // swaps out buttons for collapsing and expanding
+    document.getElementById("expand").style.display = "flex"
+    document.getElementById("title-bar").style.display = "none"
+
+    // failed experiment
+    // document.querySelectorAll("#modifiers").forEach(item => {
+    //     item.style.display = item.style.display === "none" ? "flex" : "none";
+
+    // gets rid of the extra stuff in the way
+    // document.querySelectorAll(".cull").forEach(item => {
+    //     item.style.display = item.style.display === "none" ? "flex" : "none";
+    // });
+
+    // resizes the button so it doesn't get squashed
+    // document.getElementById("mod").style.setProperty("max-width","unset")
+
+    // document.getElementById("mod").style.setProperty("width","30px")
+
+});
+
+
+document.getElementById("expand").addEventListener("click", function() {
+        
+    // uncull
+    document.querySelectorAll(".cull").forEach(item => {
+        item.style.display = "flex"
+    });
+
+    // reset the window size
+    document.querySelectorAll("#modifiers").forEach(item => {
+        item.style.width = "15%";
+    });
+
+    // swap out the expand button for the collapse button
+    document.getElementById("expand").style.display = "none"
+    document.getElementById("title-bar").style.display = "flex"
+
+});
