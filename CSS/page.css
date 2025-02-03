@@ -34,9 +34,10 @@
 .window#modifiers {
     display: flex;
     margin: 0px;
-
-    flex-grow: 1;
+    width: 100vw;
     max-width: fit-content;
+    min-width: 0px;
+    overflow: hidden;
 }
 
 .window#timeline {
@@ -44,4 +45,8 @@
     margin: 0px;
 
     flex-grow: 4;
+}
+
+#expanders {
+    display: inline-block;
 }
