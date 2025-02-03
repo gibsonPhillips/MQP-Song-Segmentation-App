@@ -11,6 +11,8 @@ let segmentData;
 let clusters;
 let addBoundaryMode = false;
 let removeBoundaryMode = false;
+let changeBoundaryMode = false;
+let segmentRegions;
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create()
@@ -40,6 +42,7 @@ const exportButton = document.querySelector('#export')
 const segmentDetailsButton = document.querySelector('#segment-details')
 const addBoundaryButton = document.querySelector('#add-boundary')
 const removeBoundaryButton = document.querySelector('#remove-boundary')
+const changeBoundaryButton = document.querySelector('#change-boundary')
 const closeDialogButton = document.querySelector('#close-dialog')
 const playButton = document.querySelector('#play')
 const forwardButton = document.querySelector('#forward')
@@ -64,6 +67,18 @@ addBoundaryButton.onclick = () => {
 
 removeBoundaryButton.onclick = () => {
     removeBoundaryMode = true;
+}
+
+changeBoundaryButton.onclick = () => {
+    changeBoundaryMode = !changeBoundaryMode;
+    console.log(changeBoundaryMode);
+    // Update region settings based on toggle state
+    segmentRegions.forEach(element => {
+        element.setOptions({
+            drag: changeBoundaryMode,
+            resize: changeBoundaryMode
+        });
+    });
 }
 
 playButton.onclick = () => {
@@ -156,6 +171,7 @@ function updateSegmentElementsList(elements) {
     tbody.innerHTML = ''
     regions.clearRegions()
     colorMap.clear();
+    segmentRegions = [];
     elements.forEach(element => {
         let tr = document.createElement('tr');
 
@@ -170,14 +186,14 @@ function updateSegmentElementsList(elements) {
             colorMap.set(element.label, randomColor());
         }
 
-        regions.addRegion({
+        segmentRegions.push(regions.addRegion({
             start: element.start,
             end: element.end,
             content: 'Section ' + element.label,
             color: colorMap.get(element.label),
             drag: false,
             resize: false,
-        })
+        }))
     });
 }
 
@@ -190,79 +206,79 @@ function determineVariability() {
 }
 
 
-  // Listen for clicks on the waveform
-  wavesurfer.on('interaction', async (event) => {
-    if (segmentData != null && addBoundaryMode) {
-        // Get click time (relative to waveform duration)
-        const time = wavesurfer.getCurrentTime();
+// Listen for clicks on the waveform
+wavesurfer.on('interaction', async (event) => {
+if (segmentData != null && addBoundaryMode) {
+    // Get click time (relative to waveform duration)
+    const time = wavesurfer.getCurrentTime();
 
-        // Determine location
-        let i = 0;
-        let currentTime = segmentData[i].start;
-        while(time > currentTime) {
-            i++;
-            currentTime = segmentData[i].start;
+    // Determine location
+    let i = 0;
+    let currentTime = segmentData[i].start;
+    while(time > currentTime) {
+        i++;
+        currentTime = segmentData[i].start;
+    }
+
+    // Add to boundaryData
+    let element = {"number": i+1, "start": time, "end": segmentData[i].start, "label": clusters};
+    clusters++;
+    segmentData.splice(i, 0, element);
+
+    // Update segments
+    segmentData[i-1].end = time;
+    for(let j = i+1; j < segmentData.length; j++) {
+        segmentData[j].number = j+1;
+    }
+
+    updateSegmentElementsList(segmentData);
+
+    // Disable marker mode after placing one
+    addBoundaryMode = false;
+} else if (segmentData != null && removeBoundaryMode) {
+    // Get click time (relative to waveform duration)
+    const time = wavesurfer.getCurrentTime();
+
+    // Find closest boundary
+    let closestBoundaryIndex = 0;
+    let closetBoundaryTime = Math.abs(segmentData[0].start - time);
+    segmentData.forEach(element => {
+        if(Math.abs(element.start - time) < closetBoundaryTime) {
+            closetBoundaryTime = Math.abs(element.start - time);
+            closestBoundaryIndex = element.number - 1;
         }
+    });
 
-        // Add to boundaryData
-        let element = {"number": i+1, "start": time, "end": segmentData[i].start, "label": clusters};
-        clusters++;
-        segmentData.splice(i, 0, element);
+    if(closestBoundaryIndex != 0) {
+        // TODO Choose to combine with previous or next
+        removeBoundaryDialog.showModal();
+        const previous = await removeBoundaryButtonClick();
+        removeBoundaryDialog.close();
 
-        // Update segments
-        segmentData[i-1].end = time;
-        for(let j = i+1; j < segmentData.length; j++) {
-            segmentData[j].number = j+1;
+        if(previous) {
+            // Combine with previous (get rid of current index, add to previous)
+            segmentData[closestBoundaryIndex-1].end = segmentData[closestBoundaryIndex].end;
+            segmentData.splice(closestBoundaryIndex, 1);
+            for(let i = closestBoundaryIndex; i < segmentData.length; i++) {
+                segmentData[i].number = i+1;
+            }
+        } else {
+            // Combine with next (keep current index, get rid of next to combine with current)
+            segmentData[closestBoundaryIndex].start = segmentData[closestBoundaryIndex-1].start;
+            segmentData.splice(closestBoundaryIndex-1, 1);
+            for(let i = closestBoundaryIndex-1; i < segmentData.length; i++) {
+                segmentData[i].number = i+1;
+            }
         }
 
         updateSegmentElementsList(segmentData);
-
-        // Disable marker mode after placing one
-        addBoundaryMode = false;
-    } else if (segmentData != null && removeBoundaryMode) {
-        // Get click time (relative to waveform duration)
-        const time = wavesurfer.getCurrentTime();
-
-        // Find closest boundary
-        let closestBoundaryIndex = 0;
-        let closetBoundaryTime = Math.abs(segmentData[0].start - time);
-        segmentData.forEach(element => {
-            if(Math.abs(element.start - time) < closetBoundaryTime) {
-                closetBoundaryTime = Math.abs(element.start - time);
-                closestBoundaryIndex = element.number - 1;
-            }
-        });
-
-        if(closestBoundaryIndex != 0) {
-            // TODO Choose to combine with previous or next
-            removeBoundaryDialog.showModal();
-            const previous = await removeBoundaryButtonClick();
-            removeBoundaryDialog.close();
-
-            if(previous) {
-                // Combine with previous (get rid of current index, add to previous)
-                segmentData[closestBoundaryIndex-1].end = segmentData[closestBoundaryIndex].end;
-                segmentData.splice(closestBoundaryIndex, 1);
-                for(let i = closestBoundaryIndex; i < segmentData.length; i++) {
-                    segmentData[i].number = i+1;
-                }
-            } else {
-                // Combine with next (keep current index, get rid of next to combine with current)
-                segmentData[closestBoundaryIndex].start = segmentData[closestBoundaryIndex-1].start;
-                segmentData.splice(closestBoundaryIndex-1, 1);
-                for(let i = closestBoundaryIndex-1; i < segmentData.length; i++) {
-                    segmentData[i].number = i+1;
-                }
-            }
-
-            updateSegmentElementsList(segmentData);
-        }
-
-        // Disable marker mode after placing one
-        removeBoundaryMode = false;
     }
-    return;
-  });
+
+    // Disable marker mode after placing one
+    removeBoundaryMode = false;
+}
+return;
+});
 
 
 function removeBoundaryButtonClick() {
@@ -281,8 +297,33 @@ function removeBoundaryButtonClick() {
     
         combinePreviousButton.addEventListener('click', handler);
         combineNextButton.addEventListener('click', handler);
-      });
+    });
 }
+
+// Handle region update, handling constraints
+regions.on('region-updated', (region) => {
+    if (!changeBoundaryMode) return;
+
+    let index = segmentRegions.findIndex(r => r.id === region.id);
+    if (index === -1) return;
+
+    let prevRegion = segmentRegions[index - 1];
+    let nextRegion = segmentRegions[index + 1];
+
+    // Enforce limits so you can't go before previous or after nextr segment
+    let minStart = prevRegion ? prevRegion.start : 0; // Can't move before previous start
+    let maxEnd = nextRegion ? nextRegion.end : wavesurfer.getDuration(); // Can't extend beyond next region
+
+    let newStart = Math.max(region.start, minStart);
+    let newEnd = Math.min(region.end, maxEnd);
+
+    // Apply the constraints
+    region.setOptions({ start: newStart, end: newEnd });
+
+    // Adjust adjacent regions to stay connected
+    if (nextRegion) nextRegion.setOptions({ start: newEnd });
+    if (prevRegion) prevRegion.setOptions({ end: newStart });
+});
 
 
 
