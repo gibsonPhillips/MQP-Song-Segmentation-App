@@ -159,19 +159,21 @@ async function segment(algorithm) {
             return Object.fromEntries(row.map((value, index) => [headers[index], value]));
         });
 
-        updateSegmentElementsList(segmentData)
+        updateSegmentElementsList(segmentData, true)
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
 // Updates the segment elements and display in table
-function updateSegmentElementsList(elements) {
+function updateSegmentElementsList(elements, updateWaveform) {
     const tbody = document.getElementById('segment-elements');
     tbody.innerHTML = ''
-    regions.clearRegions()
-    colorMap.clear();
-    segmentRegions = [];
+    if(updateWaveform) {
+        regions.clearRegions()
+        colorMap.clear();
+        segmentRegions = [];
+    }
     elements.forEach(element => {
         let tr = document.createElement('tr');
 
@@ -186,14 +188,16 @@ function updateSegmentElementsList(elements) {
             colorMap.set(element.label, randomColor());
         }
 
-        segmentRegions.push(regions.addRegion({
-            start: element.start,
-            end: element.end,
-            content: 'Section ' + element.label,
-            color: colorMap.get(element.label),
-            drag: false,
-            resize: false,
-        }))
+        if(updateWaveform) {
+            segmentRegions.push(regions.addRegion({
+                start: element.start,
+                end: element.end,
+                content: 'Section ' + element.label,
+                color: colorMap.get(element.label),
+                drag: false,
+                resize: false,
+            }))
+        }
     });
 }
 
@@ -231,7 +235,7 @@ if (segmentData != null && addBoundaryMode) {
         segmentData[j].number = j+1;
     }
 
-    updateSegmentElementsList(segmentData);
+    updateSegmentElementsList(segmentData, true);
 
     // Disable marker mode after placing one
     addBoundaryMode = false;
@@ -271,7 +275,7 @@ if (segmentData != null && addBoundaryMode) {
             }
         }
 
-        updateSegmentElementsList(segmentData);
+        updateSegmentElementsList(segmentData, true);
     }
 
     // Disable marker mode after placing one
@@ -307,6 +311,8 @@ regions.on('region-updated', (region) => {
     let index = segmentRegions.findIndex(r => r.id === region.id);
     if (index === -1) return;
 
+    let movedStart = segmentData[index].start !== region.start;
+
     let prevRegion = segmentRegions[index - 1];
     let nextRegion = segmentRegions[index + 1];
 
@@ -323,6 +329,24 @@ regions.on('region-updated', (region) => {
     // Adjust adjacent regions to stay connected
     if (nextRegion) nextRegion.setOptions({ start: newEnd });
     if (prevRegion) prevRegion.setOptions({ end: newStart });
+
+    // Update segment data
+    if(movedStart) {
+        // Update start of current
+        segmentData[index].start = newStart;
+        // Update end of prev
+        if(index > 0)
+            segmentData[index-1].end = newStart;
+    } else {
+        // Update end of current
+        segmentData[index].end = newEnd;
+        // Update start of next
+        if(index+1 < segmentData.length)
+            segmentData[index+1].start = newEnd;
+    }
+
+    updateSegmentElementsList(segmentData, false);
+
 });
 
 
