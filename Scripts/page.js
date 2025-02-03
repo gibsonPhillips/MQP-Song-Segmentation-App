@@ -6,7 +6,28 @@ import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom
 let filePath = ''
 let minPxPerSec = 100
 let colorMap = new Map();
-var chosenDirectory
+
+
+
+// Sort out the save file system
+let workspace = ''
+
+let appdataPromise = window.api.getAppData().then((appdata) => {
+    console.log(appdata);
+    workspace = appdata + '\\Song Segmentation'
+    console.log(workspace)
+    try {
+        let files = window.api.getDirectoryContents(workspace);
+        console.log('Directory handled successfully.');
+        console.log(files)
+    } catch (error) {
+        console.error('Error handling directory:', error);
+    }
+})
+.catch((error) => {
+    // Handle errors that occurred during the promise
+    console.error(error);
+});
 var data
 
 // Initialize the Regions plugin
@@ -84,20 +105,10 @@ zoomOutButton.onclick = () => {
 
 // When the export button is clicked
 document.getElementById('select-workspace').addEventListener('click', async () => {
+    //Gets the appdata
+    console.log(workspace)
 
-    try {
-        chosenDirectory = await window.showDirectoryPicker();
-//      if (chosenDirectory)
-//      const writableFileStream = await fileHandle.createWritable();
-//      await writableFileStream.write('Hello world!');
-//      await writableFileStream.close();
-        console.log(chosenDirectory);
 
-    } catch (error) {
-        // Handle errors, e.g., user cancellation
-        console.error('No directory selected:', error);
-    }
-    //Check if the file path exists
 });
 
 

@@ -2,8 +2,45 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path');
 const { spawn, exec } = require('child_process');
+const fs = require('fs');
 
 let pythonProcess
+
+// Gets appdata environment variable
+ipcMain.handle('get-appdata', () => {
+    // Access APPDATA environment variable
+    return process.env.APPDATA;
+});
+
+// Gets the directory contents
+ipcMain.handle('get-directory-contents', async (event, dirPath) => {
+    try {
+        const files = await fs.promises.readdir(dirPath);
+        return files;
+    } catch (error) {
+        throw new Error('Unable to read directory: ' + error.message);
+    }
+});
+
+ipcMain.handle('create-directory', async (event, dirPath) => {
+    try {
+        // Check if the directory exists
+        const directoryExists = await fs.promises.access(dirPath, fs.constants.F_OK)
+        .then(() => true) // Directory exists
+        .catch(() => false); // Directory doesn't exist
+
+        if (!directoryExists) {
+            // Create the directory if it doesn't exist
+            await fs.promises.mkdir(dirPath, { recursive: true }); // `recursive: true` ensures parent dirs are also created if needed
+            console.log(`Directory created at: ${dirPath}`);
+        } else {
+            console.log(`Directory already exists: ${dirPath}`);
+        }
+    } catch (error) {
+        console.error('Error creating directory:', error);
+        throw error;
+    }
+});
 
 // Function to start the Python server
 function startPythonServer() {
