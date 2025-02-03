@@ -2,10 +2,22 @@ import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/wavesurfer.e
 import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/regions.esm.js';
 import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom.esm.js';
 
+class EditMode {
+    static NONE = 'none';
+    static ADD = 'add';
+    static REMOVE = 'remove';
+    static CHANGE = 'change';
+}
+
 // input audio file path
 let filePath = ''
 let minPxPerSec = 100
 let colorMap = new Map();
+const headers = ["number", "start", "end", "label"];
+let segmentData;
+let clusters;
+let mode = EditMode.NONE;
+let segmentRegions;
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create()
@@ -29,9 +41,13 @@ const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
 const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
+const removeBoundaryDialog = document.querySelector('#remove-boundary-dialog')
 
 const exportButton = document.querySelector('#export')
 const segmentDetailsButton = document.querySelector('#segment-details')
+const addBoundaryButton = document.querySelector('#add-boundary')
+const removeBoundaryButton = document.querySelector('#remove-boundary')
+const changeBoundaryButton = document.querySelector('#change-boundary')
 const closeDialogButton = document.querySelector('#close-dialog')
 const playButton = document.querySelector('#play')
 const forwardButton = document.querySelector('#forward')
@@ -47,6 +63,41 @@ segmentDetailsButton.onclick = () => {
 
 closeDialogButton.onclick = () => {
     segmentDetailsDialog.close();
+    removeBoundaryDialog.close();
+}
+
+addBoundaryButton.onclick = () => {
+    toggleMode(addBoundaryButton, EditMode.ADD);
+}
+
+removeBoundaryButton.onclick = () => {
+    toggleMode(removeBoundaryButton, EditMode.REMOVE);
+}
+
+changeBoundaryButton.onclick = () => {
+    toggleMode(changeBoundaryButton, EditMode.CHANGE);
+}
+
+// Used to determine the current mode and update appropriate states
+function toggleMode(button, newMode) {
+    addBoundaryButton.style.backgroundColor = "white";
+    removeBoundaryButton.style.backgroundColor = "white";
+    changeBoundaryButton.style.backgroundColor = "white";
+
+    if (mode === newMode) {
+        mode = EditMode.NONE;
+        button.style.backgroundColor = "white";
+    } else {
+        mode = newMode;
+        button.style.backgroundColor = "rgb(255,197,61)";
+    }
+
+    segmentRegions.forEach(element => {
+        element.setOptions({
+            drag: mode === EditMode.CHANGE,
+            resize: mode === EditMode.CHANGE
+        });
+    });
 }
 
 playButton.onclick = () => {
@@ -105,7 +156,7 @@ document.getElementById('chooseSong').addEventListener('click', async () => {
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
     const inputName = filePath;
-    let clusters = determineVariability();
+    clusters = determineVariability();
     try {
         console.log("Segmenting begin");
 
@@ -122,39 +173,50 @@ async function segment(algorithm) {
 
         // Parse the JSON response
         const data = await response.json();
-        updateSegmentElementsList(data)
+
+        segmentData = data.map(row => {
+            return Object.fromEntries(row.map((value, index) => [headers[index], value]));
+        });
+
+        updateSegmentElementsList(segmentData, true)
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
 // Updates the segment elements and display in table
-function updateSegmentElementsList(elements) {
+function updateSegmentElementsList(elements, updateWaveform) {
     const tbody = document.getElementById('segment-elements');
     tbody.innerHTML = ''
-    regions.clearRegions()
-    colorMap.clear();
+    if(updateWaveform) {
+        regions.clearRegions()
+        colorMap.clear();
+        segmentRegions = [];
+    }
     elements.forEach(element => {
         let tr = document.createElement('tr');
-        element.forEach(item => {
+
+        for (let key in element) {
             let td = document.createElement('td');
-            td.textContent = item
+            td.textContent = element[key]
             tr.appendChild(td)
-        });
+        }
         tbody.appendChild(tr);
 
-        if(!colorMap.has(element[3])) {
-            colorMap.set(element[3], randomColor());
+        if(!colorMap.has(element.label)) {
+            colorMap.set(element.label, randomColor());
         }
 
-        regions.addRegion({
-            start: element[1],
-            end: element[2],
-            content: 'Section ' + element[3],
-            color: colorMap.get(element[3]),
-            drag: false,
-            resize: false,
-        })
+        if(updateWaveform) {
+            segmentRegions.push(regions.addRegion({
+                start: element.start,
+                end: element.end,
+                content: 'Section ' + element.label,
+                color: colorMap.get(element.label),
+                drag: false,
+                resize: false,
+            }))
+        }
     });
 }
 
@@ -165,6 +227,148 @@ function determineVariability() {
     console.log(num)
     return num
 }
+
+
+// Listen for clicks on the waveform
+wavesurfer.on('interaction', async (event) => {
+if (segmentData != null && mode === EditMode.ADD) {
+    // Get click time (relative to waveform duration)
+    const time = wavesurfer.getCurrentTime();
+
+    // Determine location
+    let i = 0;
+    let currentTime = segmentData[i].start;
+    while(time > currentTime) {
+        i++;
+        currentTime = segmentData[i].start;
+    }
+
+    // Add to boundaryData
+    let element = {"number": i+1, "start": time, "end": segmentData[i].start, "label": clusters};
+    clusters++;
+    segmentData.splice(i, 0, element);
+
+    // Update segments
+    segmentData[i-1].end = time;
+    for(let j = i+1; j < segmentData.length; j++) {
+        segmentData[j].number = j+1;
+    }
+
+    updateSegmentElementsList(segmentData, true);
+
+    // Disable marker mode after placing one
+    mode = EditMode.NONE;
+    addBoundaryButton.style.backgroundColor = "white";
+} else if (segmentData != null && mode === EditMode.REMOVE) {
+    // Get click time (relative to waveform duration)
+    const time = wavesurfer.getCurrentTime();
+
+    // Find closest boundary
+    let closestBoundaryIndex = 0;
+    let closetBoundaryTime = Math.abs(segmentData[0].start - time);
+    segmentData.forEach(element => {
+        if(Math.abs(element.start - time) < closetBoundaryTime) {
+            closetBoundaryTime = Math.abs(element.start - time);
+            closestBoundaryIndex = element.number - 1;
+        }
+    });
+
+    if(closestBoundaryIndex != 0) {
+        // TODO Choose to combine with previous or next
+        removeBoundaryDialog.showModal();
+        const previous = await removeBoundaryButtonClick();
+        removeBoundaryDialog.close();
+
+        if(previous) {
+            // Combine with previous (get rid of current index, add to previous)
+            segmentData[closestBoundaryIndex-1].end = segmentData[closestBoundaryIndex].end;
+            segmentData.splice(closestBoundaryIndex, 1);
+            for(let i = closestBoundaryIndex; i < segmentData.length; i++) {
+                segmentData[i].number = i+1;
+            }
+        } else {
+            // Combine with next (keep current index, get rid of next to combine with current)
+            segmentData[closestBoundaryIndex].start = segmentData[closestBoundaryIndex-1].start;
+            segmentData.splice(closestBoundaryIndex-1, 1);
+            for(let i = closestBoundaryIndex-1; i < segmentData.length; i++) {
+                segmentData[i].number = i+1;
+            }
+        }
+
+        updateSegmentElementsList(segmentData, true);
+    }
+
+    // Disable marker mode after placing one
+    mode = EditMode.REMOVE
+    removeBoundaryButton.style.backgroundColor = "white";
+}
+return;
+});
+
+
+function removeBoundaryButtonClick() {
+    return new Promise(resolve => {
+        const combinePreviousButton = document.querySelector('#combine-previous');
+        const combineNextButton = document.querySelector('#combine-next');
+    
+        const handler = (event) => {
+            if(event.target == combinePreviousButton)
+                resolve(true);
+            else
+                resolve(false);
+            combinePreviousButton.removeEventListener('click', handler);
+            combineNextButton.removeEventListener('click', handler);
+        };
+    
+        combinePreviousButton.addEventListener('click', handler);
+        combineNextButton.addEventListener('click', handler);
+    });
+}
+
+// Handle region update, handling constraints
+regions.on('region-updated', (region) => {
+    if (mode !== EditMode.CHANGE) return;
+
+    let index = segmentRegions.findIndex(r => r.id === region.id);
+    if (index === -1) return;
+
+    let movedStart = segmentData[index].start !== region.start;
+
+    let prevRegion = segmentRegions[index - 1];
+    let nextRegion = segmentRegions[index + 1];
+
+    // Enforce limits so you can't go before previous or after nextr segment
+    let minStart = prevRegion ? prevRegion.start : 0; // Can't move before previous start
+    let maxEnd = nextRegion ? nextRegion.end : wavesurfer.getDuration(); // Can't extend beyond next region
+
+    let newStart = Math.max(region.start, minStart);
+    let newEnd = Math.min(region.end, maxEnd);
+
+    // Apply the constraints
+    region.setOptions({ start: newStart, end: newEnd });
+
+    // Adjust adjacent regions to stay connected
+    if (nextRegion) nextRegion.setOptions({ start: newEnd });
+    if (prevRegion) prevRegion.setOptions({ end: newStart });
+
+    // Update segment data
+    if(movedStart) {
+        // Update start of current
+        segmentData[index].start = newStart;
+        // Update end of prev
+        if(index > 0)
+            segmentData[index-1].end = newStart;
+    } else {
+        // Update end of current
+        segmentData[index].end = newEnd;
+        // Update start of next
+        if(index+1 < segmentData.length)
+            segmentData[index+1].start = newEnd;
+    }
+
+    updateSegmentElementsList(segmentData, false);
+
+});
 
 
 
