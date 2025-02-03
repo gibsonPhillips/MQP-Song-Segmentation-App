@@ -2,6 +2,13 @@ import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/wavesurfer.e
 import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/regions.esm.js';
 import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom.esm.js';
 
+class EditMode {
+    static NONE = 'none';
+    static ADD = 'add';
+    static REMOVE = 'remove';
+    static CHANGE = 'change';
+}
+
 // input audio file path
 let filePath = ''
 let minPxPerSec = 100
@@ -9,9 +16,7 @@ let colorMap = new Map();
 const headers = ["number", "start", "end", "label"];
 let segmentData;
 let clusters;
-let addBoundaryMode = false;
-let removeBoundaryMode = false;
-let changeBoundaryMode = false;
+let mode = EditMode.NONE;
 let segmentRegions;
 
 // Initialize the Regions plugin
@@ -62,21 +67,35 @@ closeDialogButton.onclick = () => {
 }
 
 addBoundaryButton.onclick = () => {
-    addBoundaryMode = true;
+    toggleMode(addBoundaryButton, EditMode.ADD);
 }
 
 removeBoundaryButton.onclick = () => {
-    removeBoundaryMode = true;
+    toggleMode(removeBoundaryButton, EditMode.REMOVE);
 }
 
 changeBoundaryButton.onclick = () => {
-    changeBoundaryMode = !changeBoundaryMode;
-    console.log(changeBoundaryMode);
-    // Update region settings based on toggle state
+    toggleMode(changeBoundaryButton, EditMode.CHANGE);
+}
+
+// Used to determine the current mode and update appropriate states
+function toggleMode(button, newMode) {
+    addBoundaryButton.style.backgroundColor = "white";
+    removeBoundaryButton.style.backgroundColor = "white";
+    changeBoundaryButton.style.backgroundColor = "white";
+
+    if (mode === newMode) {
+        mode = EditMode.NONE;
+        button.style.backgroundColor = "white";
+    } else {
+        mode = newMode;
+        button.style.backgroundColor = "rgb(255,197,61)";
+    }
+
     segmentRegions.forEach(element => {
         element.setOptions({
-            drag: changeBoundaryMode,
-            resize: changeBoundaryMode
+            drag: mode === EditMode.CHANGE,
+            resize: mode === EditMode.CHANGE
         });
     });
 }
@@ -212,7 +231,7 @@ function determineVariability() {
 
 // Listen for clicks on the waveform
 wavesurfer.on('interaction', async (event) => {
-if (segmentData != null && addBoundaryMode) {
+if (segmentData != null && mode === EditMode.ADD) {
     // Get click time (relative to waveform duration)
     const time = wavesurfer.getCurrentTime();
 
@@ -238,8 +257,9 @@ if (segmentData != null && addBoundaryMode) {
     updateSegmentElementsList(segmentData, true);
 
     // Disable marker mode after placing one
-    addBoundaryMode = false;
-} else if (segmentData != null && removeBoundaryMode) {
+    mode = EditMode.NONE;
+    addBoundaryButton.style.backgroundColor = "white";
+} else if (segmentData != null && mode === EditMode.REMOVE) {
     // Get click time (relative to waveform duration)
     const time = wavesurfer.getCurrentTime();
 
@@ -279,7 +299,8 @@ if (segmentData != null && addBoundaryMode) {
     }
 
     // Disable marker mode after placing one
-    removeBoundaryMode = false;
+    mode = EditMode.REMOVE
+    removeBoundaryButton.style.backgroundColor = "white";
 }
 return;
 });
@@ -306,7 +327,7 @@ function removeBoundaryButtonClick() {
 
 // Handle region update, handling constraints
 regions.on('region-updated', (region) => {
-    if (!changeBoundaryMode) return;
+    if (mode !== EditMode.CHANGE) return;
 
     let index = segmentRegions.findIndex(r => r.id === region.id);
     if (index === -1) return;
