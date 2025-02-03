@@ -112,9 +112,13 @@ zoomOutButton.onclick = () => {
 }
 
 // When the export button is clicked
-document.getElementById('select-workspace').addEventListener('click', async () => {
-    //Gets the appdata
-    console.log(workspace)
+document.getElementById('open-workspace').addEventListener('click', async () => {
+    // Gets the appdata
+    window.api.openDirectory(workspace).then((result) => {
+        console.log('Directory Opened Successfully')
+    }).catch((error) => {
+        console.error(error);
+    });
 
 });
 
@@ -151,7 +155,7 @@ async function selectSaveProject() {
     // Get the save files
     let chosenProject = ''
         window.api.getDirectoryContents(workspace).then((files) => {
-            const tbody = document.getElementById('save-files');
+            const vbox = document.getElementById('save-files');
             if (files.length != 0) {
             // Implement selecting the project
             //placeholders
@@ -167,7 +171,7 @@ async function selectSaveProject() {
                         saveMenuDialog.close();
                         saveTheData(chosenProject)
                     })
-                    tbody.appendChild(newButton);
+                    vbox.appendChild(newButton);
                 });
             }
             // New Project button
@@ -186,7 +190,7 @@ async function selectSaveProject() {
                 });
                 saveTheData(chosenProject)
             })
-            tbody.appendChild(newButton);
+            vbox.appendChild(newButton);
 
             //Show the dialog
             saveMenuDialog.showModal();

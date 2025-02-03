@@ -1,5 +1,5 @@
 // const { app, BrowserWindow } = require('electron/main')
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
 const path = require('node:path');
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
@@ -40,6 +40,17 @@ ipcMain.handle('create-directory', async (event, dirPath) => {
         console.error('Error creating directory:', error);
         throw error
     }
+});
+
+// Open the directory in the file explorer (Windows Explorer, Finder, etc.)
+ipcMain.handle('open-directory', async (event, dirPath) => {
+  try {
+    await shell.openPath(dirPath); // This will open the directory in the default file explorer
+    return { success: true };
+  } catch (error) {
+    console.error('Error opening directory:', error);
+    return { success: false, error: error.message };
+  }
 });
 
 ipcMain.handle('get-file', async (event, filePath) => {

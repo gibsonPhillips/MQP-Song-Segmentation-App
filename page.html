@@ -38,7 +38,7 @@
             <div class="separator"></div>
 
             <div class="window-pane" id="main-buttons">
-                <button class="btn" id="select-workspace">Select Workspace</button>
+                <button class="btn" id="open-workspace">Open Workspace</button>
                 <button id="chooseSong" class="btn">Import</button>
                 <input type="file" id="fileInput" accept=".wav" style="display: none;">
                 <button class="btn" id="load">Load</button>
@@ -137,15 +137,9 @@
         <button class="btn" id="close-save-dialog">
             <img src="resources/icons/xmark.svg" alt="Close Button">
         </button>
-        <table>
-            <thead>
-                <tr>
-                    <th>Projects</th>
-                </tr>
-            </thead>
-            <tbody id="save-files">
-            </tbody>
-        </table>
+            <vbox id="save-files">
+                <head>Projects</head>>
+            </vbox>
     </dialog>
 
     <script type="module" src="scripts/page.js"></script>
