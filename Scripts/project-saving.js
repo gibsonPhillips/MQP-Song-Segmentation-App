@@ -1,8 +1,9 @@
+let workspace = ''
+
 function getWorkspace() {
-    let workspace = ''
-    let appdataPromise = window.api.getAppData().then((appdata) => {
+    window.api.getAppData().then((appdata) => {
         console.log(appdata);
-        workspace = appdata + '\\Song Segmentation'
+        setWorkspace(appdata + '\\Song Segmentation')
         console.log(workspace)
     
         // Create a directory if it doesnt already exist
@@ -18,5 +19,9 @@ function getWorkspace() {
         // Throw error if there is an issue getting the appdata environment variable
         console.error(error);
     });
-    return workspace;
+    return workspace
+}
+
+function setWorkspace(path) {
+    workspace = path
 }
