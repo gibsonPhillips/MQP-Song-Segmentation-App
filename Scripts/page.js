@@ -11,7 +11,6 @@ let colorMap = new Map();
 
 // Sort out the save file system
 let workspace = getWorkspace()
-console.log(workspace)
 
 var data
 
