@@ -54,6 +54,8 @@ const forwardButton = document.querySelector('#forward')
 const backButton = document.querySelector('#backward')
 const zoomInButton = document.querySelector('#zoom-in')
 const zoomOutButton = document.querySelector('#zoom-out')
+const labelsContainer = document.getElementById("labels-container")
+const waveformContainer = document.getElementById("waveform")
 
 
 // Button click actions
@@ -191,6 +193,7 @@ function updateSegmentElementsList(elements, updateWaveform) {
     if(updateWaveform) {
         regions.clearRegions()
         colorMap.clear();
+        labelsContainer.textContent = "";
         segmentRegions = [];
     }
     elements.forEach(element => {
@@ -208,15 +211,66 @@ function updateSegmentElementsList(elements, updateWaveform) {
         }
 
         if(updateWaveform) {
-            segmentRegions.push(regions.addRegion({
+            let region = regions.addRegion({
                 start: element.start,
                 end: element.end,
-                content: 'Section ' + element.label,
+                // content: 'Section ' + element.label,
                 color: colorMap.get(element.label),
                 drag: false,
                 resize: false,
-            }))
+            });
+
+            segmentRegions.push(region);
+
+            let labelInput = document.createElement("input");
+            labelInput.type = "text";
+            labelInput.value = "Section " + element.label;
+            labelInput.className = "region-label-input";
+
+            labelsContainer.appendChild(labelInput);
+
+            function updateLabelPosition() {
+                let waveform = document.getElementById('waveform');
+                let waveformRect = waveform.getBoundingClientRect();
+                let regionRect = region.element.getBoundingClientRect();
+
+                console.log(regionRect.left);
+            
+                // Ensure labels are positioned correctly relative to the waveform
+                labelInput.style.left = `${regionRect.left - waveformRect.left + waveform.offsetLeft}px`;
+                labelInput.style.width = `${regionRect.width}px`;
+            }
+
+            updateLabelPosition();
+
+            // Sync text input value with region data
+            labelInput.addEventListener("input", () => {
+                region.data = region.data || {}; 
+                region.data.label = labelInput.value;
+            });
+
+            // Update position when region is moved/resized
+            region.on("update-end", updateLabelPosition);
         }
+    });
+    wavesurfer.on("scroll", () => {
+        updateLabelPositions();
+    });
+}
+
+// Handle zooming
+wavesurfer.on("zoom", () => {
+    updateLabelPositions();
+});
+
+function updateLabelPositions() {
+    document.querySelectorAll(".region-label-input").forEach((label, index) => {
+        let region = segmentRegions[index];
+        let regionRect = region.element.getBoundingClientRect();
+        let waveform = document.getElementById('waveform');
+
+        label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
+        label.style.width = `${regionRect.width}px`;
     });
 }
 
@@ -227,7 +281,6 @@ function determineVariability() {
     console.log(num)
     return num
 }
-
 
 // Listen for clicks on the waveform
 wavesurfer.on('interaction', async (event) => {

@@ -50,3 +50,30 @@
 #expanders {
     display: inline-block;
 }
+
+#timeline {
+    position: relative;
+}
+
+#waveform {
+    position: relative;
+    top: 30px;
+}
+
+#labels-container {
+    position: absolute;
+    top: 0px;
+    /* left: 0; */
+    width: 100%;
+    display: flex;
+    pointer-events: none; /* Prevent interference with clicks */
+}
+.region-label-input {
+    position: absolute;
+    pointer-events: auto; /* Allow text editing */
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ccc;
+    padding: 2px;
+    font-size: 12px;
+    text-align: center;
+}
