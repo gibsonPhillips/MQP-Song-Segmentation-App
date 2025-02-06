@@ -12,11 +12,15 @@ class EditMode {
 // input audio file path
 let filePath = ''
 let minPxPerSec = 100
+// stores label color map
 let colorMap = new Map();
+// headers for segment data
 const headers = ["number", "start", "end", "label"];
+// stores all the segment data
 let segmentData;
 let clusters;
 let mode = EditMode.NONE;
+// stores the wavesurfer regions for segments
 let segmentRegions;
 
 // Initialize the Regions plugin
@@ -40,6 +44,7 @@ const wavesurfer = WaveSurfer.create({
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
+// Constants for HTML elements
 const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
 const removeBoundaryDialog = document.querySelector('#remove-boundary-dialog')
 
@@ -133,12 +138,13 @@ zoomOutButton.onclick = () => {
     wavesurfer.zoom(minPxPerSec)
 }
 
-
+// Algorithm buttons
 document.getElementById("segment-algorithm1").addEventListener("click", () => {segment(1)});
 document.getElementById("segment-algorithm2").addEventListener("click", () => {segment(2)});
 document.getElementById("segment-algorithm3").addEventListener("click", () => {segment(3)});
 document.getElementById("segment-algorithm4").addEventListener("click", () => {segment(4)});
 
+// Import button
 document.getElementById('chooseSong').addEventListener('click', async () => {
     const filePaths = await window.api.openFile();
     if (filePaths && filePaths.length > 0) {
@@ -190,15 +196,17 @@ async function segment(algorithm) {
 function updateSegmentElementsList(elements, updateWaveform) {
     const tbody = document.getElementById('segment-elements');
     tbody.innerHTML = ''
+
+    // If waveform is being updated
     if(updateWaveform) {
         regions.clearRegions()
         colorMap.clear();
         labelsContainer.textContent = "";
         segmentRegions = [];
     }
+
     elements.forEach(element => {
         let tr = document.createElement('tr');
-
         for (let key in element) {
             let td = document.createElement('td');
             td.textContent = element[key]
@@ -210,11 +218,12 @@ function updateSegmentElementsList(elements, updateWaveform) {
             colorMap.set(element.label, randomColor());
         }
 
+
         if(updateWaveform) {
+            // Create new region
             let region = regions.addRegion({
                 start: element.start,
                 end: element.end,
-                // content: 'Section ' + element.label,
                 color: colorMap.get(element.label),
                 drag: false,
                 resize: false,
@@ -222,26 +231,13 @@ function updateSegmentElementsList(elements, updateWaveform) {
 
             segmentRegions.push(region);
 
+            // Create segment label for region
             let labelInput = document.createElement("input");
             labelInput.type = "text";
-            labelInput.value = "Section " + element.label;
+            labelInput.value = element.label;
             labelInput.className = "region-label-input";
-
             labelsContainer.appendChild(labelInput);
-
-            function updateLabelPosition() {
-                let waveform = document.getElementById('waveform');
-                let waveformRect = waveform.getBoundingClientRect();
-                let regionRect = region.element.getBoundingClientRect();
-
-                console.log(regionRect.left);
-            
-                // Ensure labels are positioned correctly relative to the waveform
-                labelInput.style.left = `${regionRect.left - waveformRect.left + waveform.offsetLeft}px`;
-                labelInput.style.width = `${regionRect.width}px`;
-            }
-
-            updateLabelPosition();
+            updateLabelPositions();
 
             // Sync text input value with region data
             labelInput.addEventListener("input", () => {
@@ -250,19 +246,22 @@ function updateSegmentElementsList(elements, updateWaveform) {
             });
 
             // Update position when region is moved/resized
-            region.on("update-end", updateLabelPosition);
+            region.on("update-end", updateLabelPositions);
         }
-    });
-    wavesurfer.on("scroll", () => {
-        updateLabelPositions();
     });
 }
 
-// Handle zooming
+// Update labels on scroll
+wavesurfer.on("scroll", () => {
+    updateLabelPositions();
+});
+
+// Update labels on zoom
 wavesurfer.on("zoom", () => {
     updateLabelPositions();
 });
 
+// Updates label positions with the most up to date waveform
 function updateLabelPositions() {
     document.querySelectorAll(".region-label-input").forEach((label, index) => {
         let region = segmentRegions[index];
@@ -327,7 +326,7 @@ if (segmentData != null && mode === EditMode.ADD) {
     });
 
     if(closestBoundaryIndex != 0) {
-        // TODO Choose to combine with previous or next
+        // Choose to combine with previous or next
         removeBoundaryDialog.showModal();
         const previous = await removeBoundaryButtonClick();
         removeBoundaryDialog.close();
@@ -358,7 +357,7 @@ if (segmentData != null && mode === EditMode.ADD) {
 return;
 });
 
-
+// Deal with remove boundary click with 
 function removeBoundaryButtonClick() {
     return new Promise(resolve => {
         const combinePreviousButton = document.querySelector('#combine-previous');
