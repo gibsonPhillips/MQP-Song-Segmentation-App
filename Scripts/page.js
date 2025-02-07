@@ -16,8 +16,20 @@ let minPxPerSec = 100
 let colorMap = new Map();
 // default colors
 let defaultColors = [
-    `rgba(213, 133, 42, 0.5)`
+    `rgba(213, 133, 42, 0.5)`,
+    `rgba(79, 120, 176, 0.5)`,
+    `rgba(132, 192, 63, 0.5)`,
+    `rgba(142, 87, 168, 0.5)`,
+    `rgba(169, 86, 88, 0.5)`,
+    `rgba(180, 205, 50, 0.5)`,
+    `rgba(62, 66, 193, 0.5)`,
+    `rgba(186, 69, 144, 0.5)`,
+    `rgba(88, 167, 109, 0.5)`    
 ]
+// Give regions a random color when there are no more default colors
+const random = (min, max) => Math.random() * (max - min) + min
+const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
+
 // headers for segment data
 const headers = ["number", "start", "end", "label"];
 // stores all the segment data
@@ -43,10 +55,6 @@ const wavesurfer = WaveSurfer.create({
     minPxPerSec: 100,
     plugins: [regions, zoom],
 })
-
-// Give regions a random color when they are created
-const random = (min, max) => Math.random() * (max - min) + min
-const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
 // Constants for HTML elements
 const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
@@ -219,7 +227,7 @@ function updateSegmentElementsList(elements, updateWaveform) {
         tbody.appendChild(tr);
 
         if(!colorMap.has(element.label)) {
-            colorMap.set(element.label, randomColor());
+            colorMap.set(element.label, getColor(colorMap.size));
         }
 
 
@@ -275,7 +283,6 @@ function updateLabelPositions() {
         let region = segmentRegions[index];
         let regionRect = region.element.getBoundingClientRect();
         let waveform = document.getElementById('waveform');
-
         label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
         label.style.width = `${regionRect.width}px`;
     });
@@ -435,6 +442,15 @@ regions.on('region-updated', (region) => {
     updateSegmentElementsList(segmentData, false);
 
 });
+
+// Gets the next color to be used for segment region
+function getColor(length) {
+    if(length > 10) {
+        return randomColor();
+    } else {
+        return defaultColors[length];
+    }
+}
 
 
 
