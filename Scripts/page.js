@@ -14,6 +14,10 @@ let filePath = ''
 let minPxPerSec = 100
 // stores label color map
 let colorMap = new Map();
+// default colors
+let defaultColors = [
+    `rgba(213, 133, 42, 0.5)`
+]
 // headers for segment data
 const headers = ["number", "start", "end", "label"];
 // stores all the segment data
@@ -236,6 +240,10 @@ function updateSegmentElementsList(elements, updateWaveform) {
             labelInput.type = "text";
             labelInput.value = element.label;
             labelInput.className = "region-label-input";
+            labelInput.style.backgroundColor = colorMap.get(element.label);
+            labelInput.addEventListener("input", (event) => {
+                updateSegmentLabel(element, event.target.value);
+            });
             labelsContainer.appendChild(labelInput);
             updateLabelPositions();
 
@@ -271,6 +279,12 @@ function updateLabelPositions() {
         label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
         label.style.width = `${regionRect.width}px`;
     });
+}
+
+// Updates the specified segment elements label value
+function updateSegmentLabel(segmentElement, value) {
+    segmentElement.label = value;
+    updateSegmentElementsList(segmentData, false);
 }
 
 // Determines the variability to be used for an algorithm
