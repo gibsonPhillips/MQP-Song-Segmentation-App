@@ -1,10 +1,8 @@
-import { globalState } from './globalData.js';
+import { globalState, updateSegmentElementsList } from './globalData.js';
 import htmlElements from './globalData.js';
-import * as page from './page.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     htmlElements.addBoundaryButton.onclick = () => {
-        console.log("ADD");
         toggleMode(htmlElements.addBoundaryButton, globalState.EditMode.ADD);
     }
 });
@@ -64,7 +62,7 @@ htmlElements.wavesurfer.on('interaction', async (event) => {
             globalState.segmentData[j].number = j+1;
         }
     
-        page.updateSegmentElementsList(globalState.segmentData, true);
+        updateSegmentElementsList(globalState.segmentData, true);
     
         // Disable marker mode after placing one
         globalState.mode = globalState.EditMode.NONE;
@@ -105,7 +103,7 @@ htmlElements.wavesurfer.on('interaction', async (event) => {
                 }
             }
     
-            page.updateSegmentElementsList(globalState.segmentData, true);
+            updateSegmentElementsList(globalState.segmentData, true);
         }
     
         // Disable marker mode after placing one
@@ -177,6 +175,6 @@ htmlElements.regions.on('region-updated', (region) => {
             globalState.segmentData[index+1].start = newEnd;
     }
 
-    page.updateSegmentElementsList(globalState.segmentData, false);
+    updateSegmentElementsList(globalState.segmentData, false);
 
 });
