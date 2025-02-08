@@ -1,14 +1,5 @@
-import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/wavesurfer.esm.js';
-import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/regions.esm.js';
-import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom.esm.js';
 import { globalState } from './globalData.js';
-
-class EditMode {
-    static NONE = 'none';
-    static ADD = 'add';
-    static REMOVE = 'remove';
-    static CHANGE = 'change';
-}
+import htmlElements from './globalData.js';
 
 let minPxPerSec = 100
 // default colors
@@ -27,115 +18,45 @@ let defaultColors = [
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
-// Initialize the Regions plugin
-const regions = RegionsPlugin.create()
-
-const zoom = ZoomPlugin.create({
-    // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
-    scale: 0.1,
-  });
-
-// Create an instance of WaveSurfer
-const wavesurfer = WaveSurfer.create({
-    container: '#waveform',
-    waveColor: 'rgb(200, 0, 200)',
-    progressColor: 'rgb(100, 0, 100)',
-    minPxPerSec: 100,
-    plugins: [regions, zoom],
-})
-
-// Constants for HTML elements
-const segmentDetailsDialog = document.querySelector('#segment-details-dialog')
-const removeBoundaryDialog = document.querySelector('#remove-boundary-dialog')
-
-const exportButton = document.querySelector('#export')
-const segmentDetailsButton = document.querySelector('#segment-details')
-const addBoundaryButton = document.querySelector('#add-boundary')
-const removeBoundaryButton = document.querySelector('#remove-boundary')
-const changeBoundaryButton = document.querySelector('#change-boundary')
-const closeDialogButton = document.querySelector('#close-dialog')
-const playButton = document.querySelector('#play')
-const forwardButton = document.querySelector('#forward')
-const backButton = document.querySelector('#backward')
-const zoomInButton = document.querySelector('#zoom-in')
-const zoomOutButton = document.querySelector('#zoom-out')
-const labelsContainer = document.getElementById("labels-container")
-const waveformContainer = document.getElementById("waveform")
-
-
 // Button click actions
-segmentDetailsButton.onclick = () => {
-    segmentDetailsDialog.showModal();
+htmlElements.segmentDetailsButton.onclick = () => {
+    htmlElements.segmentDetailsDialog.showModal();
 }
 
-closeDialogButton.onclick = () => {
-    segmentDetailsDialog.close();
-    removeBoundaryDialog.close();
+htmlElements.closeDialogButton.onclick = () => {
+    htmlElements.segmentDetailsDialog.close();
+    htmlElements.removeBoundaryDialog.close();
 }
 
-addBoundaryButton.onclick = () => {
-    toggleMode(addBoundaryButton, EditMode.ADD);
-}
-
-removeBoundaryButton.onclick = () => {
-    toggleMode(removeBoundaryButton, EditMode.REMOVE);
-}
-
-changeBoundaryButton.onclick = () => {
-    toggleMode(changeBoundaryButton, EditMode.CHANGE);
-}
-
-// Used to determine the current mode and update appropriate states
-function toggleMode(button, newMode) {
-    addBoundaryButton.style.backgroundColor = "white";
-    removeBoundaryButton.style.backgroundColor = "white";
-    changeBoundaryButton.style.backgroundColor = "white";
-
-    if (globalState.mode === newMode) {
-        globalState.mode = EditMode.NONE;
-        button.style.backgroundColor = "white";
-    } else {
-        globalState.mode = newMode;
-        button.style.backgroundColor = "rgb(255,197,61)";
-    }
-
-    globalState.segmentRegions.forEach(element => {
-        element.setOptions({
-            drag: globalState.mode === EditMode.CHANGE,
-            resize: globalState.mode === EditMode.CHANGE
-        });
-    });
-}
-
-playButton.onclick = () => {
-    if(wavesurfer.getDuration() > 0) {
-        wavesurfer.playPause()
-        if(wavesurfer.isPlaying()) {
+htmlElements.playButton.onclick = () => {
+    if(htmlElements.wavesurfer.getDuration() > 0) {
+        htmlElements.wavesurfer.playPause()
+        if(htmlElements.wavesurfer.isPlaying()) {
             // pause icon
-            playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
         } else {
             // play icon
-            playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
         }
     }
 }
 
-forwardButton.onclick = () => {
-    wavesurfer.skip(15)
+htmlElements.forwardButton.onclick = () => {
+    htmlElements.wavesurfer.skip(15)
 }
 
-backButton.onclick = () => {
-    wavesurfer.skip(-15)
+htmlElements.backButton.onclick = () => {
+    htmlElements.wavesurfer.skip(-15)
 }
 
-zoomInButton.onclick = () => {
+htmlElements.zoomInButton.onclick = () => {
     minPxPerSec = minPxPerSec + 10
-    wavesurfer.zoom(minPxPerSec)
+    htmlElements.wavesurfer.zoom(minPxPerSec)
 }
 
-zoomOutButton.onclick = () => {
+htmlElements.zoomOutButton.onclick = () => {
     minPxPerSec = minPxPerSec - 10
-    wavesurfer.zoom(minPxPerSec)
+    htmlElements.wavesurfer.zoom(minPxPerSec)
 }
 
 // Algorithm buttons
@@ -152,8 +73,8 @@ document.getElementById('chooseSong').addEventListener('click', async () => {
         document.getElementById('filePath').textContent = `Selected file: ${filePaths[0]}`;
         console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
         globalState.filePath = filePaths[0];
-        regions.clearRegions();
-        wavesurfer.load(filePaths[0]);
+        htmlElements.regions.clearRegions();
+        htmlElements.wavesurfer.load(filePaths[0]);
     } else {
         document.getElementById('filePath').textContent = 'No file selected.';
         console.log('No file selected');
@@ -193,15 +114,15 @@ async function segment(algorithm) {
 }
 
 // Updates the segment elements and display in table
-function updateSegmentElementsList(elements, updateWaveform) {
+export function updateSegmentElementsList(elements, updateWaveform) {
     const tbody = document.getElementById('segment-elements');
     tbody.innerHTML = ''
 
     // If waveform is being updated
     if(updateWaveform) {
-        regions.clearRegions()
+        htmlElements.regions.clearRegions()
         globalState.colorMap.clear();
-        labelsContainer.textContent = "";
+        htmlElements.labelsContainer.textContent = "";
         globalState.segmentRegions = [];
     }
 
@@ -221,7 +142,7 @@ function updateSegmentElementsList(elements, updateWaveform) {
 
         if(updateWaveform) {
             // Create new region
-            let region = regions.addRegion({
+            let region = htmlElements.regions.addRegion({
                 start: element.start,
                 end: element.end,
                 color: globalState.colorMap.get(element.label),
@@ -240,7 +161,7 @@ function updateSegmentElementsList(elements, updateWaveform) {
             labelInput.addEventListener("input", (event) => {
                 updateSegmentLabel(element, event.target.value);
             });
-            labelsContainer.appendChild(labelInput);
+            htmlElements.labelsContainer.appendChild(labelInput);
             updateLabelPositions();
 
             // Sync text input value with region data
@@ -256,12 +177,12 @@ function updateSegmentElementsList(elements, updateWaveform) {
 }
 
 // Update labels on scroll
-wavesurfer.on("scroll", () => {
+htmlElements.wavesurfer.on("scroll", () => {
     updateLabelPositions();
 });
 
 // Update labels on zoom
-wavesurfer.on("zoom", () => {
+htmlElements.wavesurfer.on("zoom", () => {
     updateLabelPositions();
 });
 
@@ -289,147 +210,6 @@ function determineVariability() {
     console.log(num)
     return num
 }
-
-// Listen for clicks on the waveform
-wavesurfer.on('interaction', async (event) => {
-if (globalState.segmentData != null && globalState.mode === EditMode.ADD) {
-    // Get click time (relative to waveform duration)
-    const time = wavesurfer.getCurrentTime();
-
-    // Determine location
-    let i = 0;
-    let currentTime = globalState.segmentData[i].start;
-    while(time > currentTime) {
-        i++;
-        currentTime = globalState.segmentData[i].start;
-    }
-
-    // Add to boundaryData
-    let element = {"number": i+1, "start": time, "end": globalState.segmentData[i].start, "label": globalState.clusters};
-    globalState.clusters++;
-    globalState.segmentData.splice(i, 0, element);
-
-    // Update segments
-    globalState.segmentData[i-1].end = time;
-    for(let j = i+1; j < globalState.segmentData.length; j++) {
-        globalState.segmentData[j].number = j+1;
-    }
-
-    updateSegmentElementsList(globalState.segmentData, true);
-
-    // Disable marker mode after placing one
-    globalState.mode = EditMode.NONE;
-    addBoundaryButton.style.backgroundColor = "white";
-} else if (globalState.segmentData != null && globalState.mode === EditMode.REMOVE) {
-    // Get click time (relative to waveform duration)
-    const time = wavesurfer.getCurrentTime();
-
-    // Find closest boundary
-    let closestBoundaryIndex = 0;
-    let closetBoundaryTime = Math.abs(globalState.segmentData[0].start - time);
-    globalState.segmentData.forEach(element => {
-        if(Math.abs(element.start - time) < closetBoundaryTime) {
-            closetBoundaryTime = Math.abs(element.start - time);
-            closestBoundaryIndex = element.number - 1;
-        }
-    });
-
-    if(closestBoundaryIndex != 0) {
-        // Choose to combine with previous or next
-        removeBoundaryDialog.showModal();
-        const previous = await removeBoundaryButtonClick();
-        removeBoundaryDialog.close();
-
-        if(previous) {
-            // Combine with previous (get rid of current index, add to previous)
-            globalState.segmentData[closestBoundaryIndex-1].end = globalState.segmentData[closestBoundaryIndex].end;
-            globalState.segmentData.splice(closestBoundaryIndex, 1);
-            for(let i = closestBoundaryIndex; i < globalState.segmentData.length; i++) {
-                globalState.segmentData[i].number = i+1;
-            }
-        } else {
-            // Combine with next (keep current index, get rid of next to combine with current)
-            globalState.segmentData[closestBoundaryIndex].start = globalState.segmentData[closestBoundaryIndex-1].start;
-            globalState.segmentData.splice(closestBoundaryIndex-1, 1);
-            for(let i = closestBoundaryIndex-1; i < globalState.segmentData.length; i++) {
-                globalState.segmentData[i].number = i+1;
-            }
-        }
-
-        updateSegmentElementsList(globalState.segmentData, true);
-    }
-
-    // Disable marker mode after placing one
-    globalState.mode = EditMode.REMOVE
-    removeBoundaryButton.style.backgroundColor = "white";
-}
-return;
-});
-
-// Deal with remove boundary click with 
-function removeBoundaryButtonClick() {
-    return new Promise(resolve => {
-        const combinePreviousButton = document.querySelector('#combine-previous');
-        const combineNextButton = document.querySelector('#combine-next');
-    
-        const handler = (event) => {
-            if(event.target == combinePreviousButton)
-                resolve(true);
-            else
-                resolve(false);
-            combinePreviousButton.removeEventListener('click', handler);
-            combineNextButton.removeEventListener('click', handler);
-        };
-    
-        combinePreviousButton.addEventListener('click', handler);
-        combineNextButton.addEventListener('click', handler);
-    });
-}
-
-// Handle region update, handling constraints
-regions.on('region-updated', (region) => {
-    if (globalState.mode !== EditMode.CHANGE) return;
-
-    let index = globalState.segmentRegions.findIndex(r => r.id === region.id);
-    if (index === -1) return;
-
-    let movedStart = globalState.segmentData[index].start !== region.start;
-
-    let prevRegion = globalState.segmentRegions[index - 1];
-    let nextRegion = globalState.segmentRegions[index + 1];
-
-    // Enforce limits so you can't go before previous or after nextr segment
-    let minStart = prevRegion ? prevRegion.start : 0; // Can't move before previous start
-    let maxEnd = nextRegion ? nextRegion.end : wavesurfer.getDuration(); // Can't extend beyond next region
-
-    let newStart = Math.max(region.start, minStart);
-    let newEnd = Math.min(region.end, maxEnd);
-
-    // Apply the constraints
-    region.setOptions({ start: newStart, end: newEnd });
-
-    // Adjust adjacent regions to stay connected
-    if (nextRegion) nextRegion.setOptions({ start: newEnd });
-    if (prevRegion) prevRegion.setOptions({ end: newStart });
-
-    // Update segment data
-    if(movedStart) {
-        // Update start of current
-        globalState.segmentData[index].start = newStart;
-        // Update end of prev
-        if(index > 0)
-            globalState.segmentData[index-1].end = newStart;
-    } else {
-        // Update end of current
-        globalState.segmentData[index].end = newEnd;
-        // Update start of next
-        if(index+1 < globalState.segmentData.length)
-            globalState.segmentData[index+1].start = newEnd;
-    }
-
-    updateSegmentElementsList(globalState.segmentData, false);
-
-});
 
 // Gets the next color to be used for segment region
 function getColor(length) {
