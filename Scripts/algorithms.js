@@ -1,4 +1,4 @@
-import { globalState, updateSegmentElementsList } from './globalData.js';
+import { globalState, updateSegmentElementsList, updateTimeline } from './globalData.js';
 import htmlElements from './globalData.js';
 
 // Algorithm buttons
@@ -16,6 +16,8 @@ htmlElements.importButton.addEventListener('click', async () => {
         globalState.filePath = filePaths[0];
         htmlElements.regions.clearRegions();
         htmlElements.wavesurfer.load(filePaths[0]);
+        globalState.currentZoom = 10;
+        updateTimeline();
     } else {
         console.log('No file selected');
     }

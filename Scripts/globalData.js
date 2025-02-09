@@ -1,6 +1,7 @@
 import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/wavesurfer.esm.js';
 import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/regions.esm.js';
 import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom.esm.js';
+import TimelinePlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/timeline.esm.js';
 
 class EditMode {
     static NONE = 'none';
@@ -30,7 +31,8 @@ export const globalState = {
     mode: EditMode.NONE,
     // stores the wavesurfer regions for segments
     segmentRegions: [],
-    EditMode: EditMode
+    EditMode: EditMode,
+    currentZoom: zoom.options.minPxPerSec
 };
 
 const htmlElements = {
@@ -57,6 +59,7 @@ const htmlElements = {
     algorithm4Button: document.getElementById("segment-algorithm4"),
     regions: regions,
     zoom: zoom,
+    timeline: null,
 
     // Create an instance of WaveSurfer
     wavesurfer: WaveSurfer.create({
@@ -171,4 +174,34 @@ function getColor(length) {
     } else {
         return defaultColors[length];
     }
+}
+
+// Updates the timeline based on the current zoom level
+export function updateTimeline() {
+    const timeInterval = calculateTimeInterval(globalState.currentZoom);
+    if(htmlElements.timeline != null) {
+        htmlElements.timeline.destroy(); // Remove the old timeline
+    }
+    htmlElements.timeline = TimelinePlugin.create({
+        height: 20,
+        insertPosition: 'beforebegin',
+        timeInterval: timeInterval,
+        primaryLabelInterval: timeInterval * 5,
+        secondaryLabelInterval: timeInterval,
+        style: {
+          fontSize: '20px',
+          color: '#2D5B88',
+        }
+    });
+    htmlElements.wavesurfer.registerPlugin(htmlElements.timeline);
+}
+
+// Determines time interval for given zoom level
+function calculateTimeInterval(zoomLevel) {
+    if (zoomLevel > 300) return 0.1;
+    if (zoomLevel > 200) return 0.25;
+    if (zoomLevel > 150) return 0.5;
+    if (zoomLevel > 100) return 1;
+    if (zoomLevel > 50) return 2;
+    return 5;
 }

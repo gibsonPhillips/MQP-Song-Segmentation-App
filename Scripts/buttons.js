@@ -1,7 +1,5 @@
-import { updateLabelPositions } from './globalData.js';
+import { updateLabelPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
-
-let minPxPerSec = 100
 
 // Button click actions
 htmlElements.segmentDetailsButton.onclick = () => {
@@ -35,13 +33,15 @@ htmlElements.backButton.onclick = () => {
 }
 
 htmlElements.zoomInButton.onclick = () => {
-    minPxPerSec = minPxPerSec + 10
-    htmlElements.wavesurfer.zoom(minPxPerSec)
+    globalState.currentZoom += 10;
+    htmlElements.wavesurfer.zoom(globalState.currentZoom);
+    updateTimeline();
 }
 
 htmlElements.zoomOutButton.onclick = () => {
-    minPxPerSec = minPxPerSec - 10
-    htmlElements.wavesurfer.zoom(minPxPerSec)
+    globalState.currentZoom -= 10;
+    htmlElements.wavesurfer.zoom(globalState.currentZoom);
+    updateTimeline();
 }
 
 // Update labels on scroll
@@ -50,8 +50,10 @@ htmlElements.wavesurfer.on("scroll", () => {
 });
 
 // Update labels on zoom
-htmlElements.wavesurfer.on("zoom", () => {
+htmlElements.wavesurfer.on("zoom", (newPxPerSec) => {
+    globalState.currentZoom = newPxPerSec;
     updateLabelPositions();
+    updateTimeline();
 });
 
 /*
