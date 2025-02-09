@@ -1,142 +1,87 @@
 import { globalState, updateSegmentElementsList } from './globalData.js';
 import htmlElements from './globalData.js';
 
-document.addEventListener("DOMContentLoaded", () => {
-    htmlElements.addBoundaryButton.onclick = () => {
-        toggleMode(htmlElements.addBoundaryButton, globalState.EditMode.ADD);
+let editBoundaryMode = false;
+
+htmlElements.addBoundaryButton.onclick = () => {
+    // Reset edit mode
+    editBoundaryMode = false;
+    htmlElements.changeBoundaryButton.style.backgroundColor = "white";
+
+    // Get click time (relative to waveform duration)
+    const time = htmlElements.wavesurfer.getCurrentTime();
+    if(time === 0) return;
+
+    // Determine location
+    let i = 0;
+    let currentTime = globalState.segmentData[i].start;
+    while(time > currentTime) {
+        i++;
+        currentTime = globalState.segmentData[i].start;
     }
-});
+
+    // Add to boundaryData
+    let element = {"number": i+1, "start": time, "end": globalState.segmentData[i].start, "label": globalState.clusters};
+    globalState.clusters++;
+    globalState.segmentData.splice(i, 0, element);
+
+    // Update segments
+    globalState.segmentData[i-1].end = time;
+    for(let j = i+1; j < globalState.segmentData.length; j++) {
+        globalState.segmentData[j].number = j+1;
+    }
+
+    updateSegmentElementsList(globalState.segmentData, true);
+}
 
 htmlElements.removeBoundaryButton.onclick = () => {
-    toggleMode(htmlElements.removeBoundaryButton, globalState.EditMode.REMOVE);
+    // Reset edit mode
+    editBoundaryMode = false;
+    htmlElements.changeBoundaryButton.style.backgroundColor = "white";
+
+    // Get click time (relative to waveform duration)
+    const time = htmlElements.wavesurfer.getCurrentTime();
+    
+    // Find closest boundary
+    let closestBoundaryIndex = 0;
+    let closetBoundaryTime = Math.abs(globalState.segmentData[0].start - time);
+    globalState.segmentData.forEach(element => {
+        if(Math.abs(element.start - time) < closetBoundaryTime) {
+            closetBoundaryTime = Math.abs(element.start - time);
+            closestBoundaryIndex = element.number - 1;
+        }
+    });
+
+    if(closestBoundaryIndex != 0 && closestBoundaryIndex != globalState.segmentData.length-1) {
+        // Combine with previous (get rid of current index, add to previous)
+        globalState.segmentData[closestBoundaryIndex-1].end = globalState.segmentData[closestBoundaryIndex].end;
+        globalState.segmentData.splice(closestBoundaryIndex, 1);
+        for(let i = closestBoundaryIndex; i < globalState.segmentData.length; i++) {
+            globalState.segmentData[i].number = i+1;
+        }
+        updateSegmentElementsList(globalState.segmentData, true);
+    }
 }
 
 htmlElements.changeBoundaryButton.onclick = () => {
-    toggleMode(htmlElements.changeBoundaryButton, globalState.EditMode.CHANGE);
-}
+    editBoundaryMode = !editBoundaryMode;
 
-// Used to determine the current mode and update appropriate states
-function toggleMode(button, newMode) {
-    htmlElements.addBoundaryButton.style.backgroundColor = "white";
-    htmlElements.removeBoundaryButton.style.backgroundColor = "white";
-    htmlElements.changeBoundaryButton.style.backgroundColor = "white";
-
-    if (globalState.mode === newMode) {
-        globalState.mode = globalState.EditMode.NONE;
-        button.style.backgroundColor = "white";
+    if (!editBoundaryMode) {
+        htmlElements.changeBoundaryButton.style.backgroundColor = "white";
     } else {
-        globalState.mode = newMode;
-        button.style.backgroundColor = "rgb(255,197,61)";
+        htmlElements.changeBoundaryButton.style.backgroundColor = "rgb(255,197,61)";
     }
 
     globalState.segmentRegions.forEach(element => {
         element.setOptions({
-            drag: globalState.mode === globalState.EditMode.CHANGE,
-            resize: globalState.mode === globalState.EditMode.CHANGE
+            resize: editBoundaryMode
         });
     });
 }
 
-// Listen for clicks on the waveform
-htmlElements.wavesurfer.on('interaction', async (event) => {
-    if (globalState.segmentData != null && globalState.mode === globalState.EditMode.ADD) {
-        // Get click time (relative to waveform duration)
-        const time = htmlElements.wavesurfer.getCurrentTime();
-    
-        // Determine location
-        let i = 0;
-        let currentTime = globalState.segmentData[i].start;
-        while(time > currentTime) {
-            i++;
-            currentTime = globalState.segmentData[i].start;
-        }
-    
-        // Add to boundaryData
-        let element = {"number": i+1, "start": time, "end": globalState.segmentData[i].start, "label": globalState.clusters};
-        globalState.clusters++;
-        globalState.segmentData.splice(i, 0, element);
-    
-        // Update segments
-        globalState.segmentData[i-1].end = time;
-        for(let j = i+1; j < globalState.segmentData.length; j++) {
-            globalState.segmentData[j].number = j+1;
-        }
-    
-        updateSegmentElementsList(globalState.segmentData, true);
-    
-        // Disable marker mode after placing one
-        globalState.mode = globalState.EditMode.NONE;
-        htmlElements.addBoundaryButton.style.backgroundColor = "white";
-    } else if (globalState.segmentData != null && globalState.mode === globalState.EditMode.REMOVE) {
-        // Get click time (relative to waveform duration)
-        const time = htmlElements.wavesurfer.getCurrentTime();
-    
-        // Find closest boundary
-        let closestBoundaryIndex = 0;
-        let closetBoundaryTime = Math.abs(globalState.segmentData[0].start - time);
-        globalState.segmentData.forEach(element => {
-            if(Math.abs(element.start - time) < closetBoundaryTime) {
-                closetBoundaryTime = Math.abs(element.start - time);
-                closestBoundaryIndex = element.number - 1;
-            }
-        });
-    
-        if(closestBoundaryIndex != 0) {
-            // Choose to combine with previous or next
-            htmlElements.removeBoundaryDialog.showModal();
-            const previous = await removeBoundaryButtonClick();
-            htmlElements.removeBoundaryDialog.close();
-    
-            if(previous) {
-                // Combine with previous (get rid of current index, add to previous)
-                globalState.segmentData[closestBoundaryIndex-1].end = globalState.segmentData[closestBoundaryIndex].end;
-                globalState.segmentData.splice(closestBoundaryIndex, 1);
-                for(let i = closestBoundaryIndex; i < globalState.segmentData.length; i++) {
-                    globalState.segmentData[i].number = i+1;
-                }
-            } else {
-                // Combine with next (keep current index, get rid of next to combine with current)
-                globalState.segmentData[closestBoundaryIndex].start = globalState.segmentData[closestBoundaryIndex-1].start;
-                globalState.segmentData.splice(closestBoundaryIndex-1, 1);
-                for(let i = closestBoundaryIndex-1; i < globalState.segmentData.length; i++) {
-                    globalState.segmentData[i].number = i+1;
-                }
-            }
-    
-            updateSegmentElementsList(globalState.segmentData, true);
-        }
-    
-        // Disable marker mode after placing one
-        globalState.mode = globalState.EditMode.REMOVE
-        htmlElements.removeBoundaryButton.style.backgroundColor = "white";
-    }
-    return;
-});    
-
-
-// Deal with remove boundary click with 
-function removeBoundaryButtonClick() {
-    return new Promise(resolve => {
-        const combinePreviousButton = document.querySelector('#combine-previous');
-        const combineNextButton = document.querySelector('#combine-next');
-    
-        const handler = (event) => {
-            if(event.target == combinePreviousButton)
-                resolve(true);
-            else
-                resolve(false);
-            combinePreviousButton.removeEventListener('click', handler);
-            combineNextButton.removeEventListener('click', handler);
-        };
-    
-        combinePreviousButton.addEventListener('click', handler);
-        combineNextButton.addEventListener('click', handler);
-    });
-}
-
-// Handle region update, handling constraints
+// Handle region update for editing boundaries
 htmlElements.regions.on('region-updated', (region) => {
-    if (globalState.mode !== globalState.EditMode.CHANGE) return;
+    if (!editBoundaryMode) return;
 
     let index = globalState.segmentRegions.findIndex(r => r.id === region.id);
     if (index === -1) return;
@@ -176,5 +121,4 @@ htmlElements.regions.on('region-updated', (region) => {
     }
 
     updateSegmentElementsList(globalState.segmentData, false);
-
 });

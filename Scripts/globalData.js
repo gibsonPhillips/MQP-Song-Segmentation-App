@@ -3,13 +3,6 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-class EditMode {
-    static NONE = 'none';
-    static ADD = 'add';
-    static REMOVE = 'remove';
-    static CHANGE = 'change';
-}
-
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create();
 
@@ -28,10 +21,8 @@ export const globalState = {
     // stores all the segment data
     segmentData: [],
     clusters: 0,
-    mode: EditMode.NONE,
     // stores the wavesurfer regions for segments
     segmentRegions: [],
-    EditMode: EditMode,
     currentZoom: zoom.options.minPxPerSec
 };
 
