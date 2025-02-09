@@ -1,7 +1,7 @@
-import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/wavesurfer.esm.js';
-import RegionsPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/regions.esm.js';
-import ZoomPlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/zoom.esm.js';
-import TimelinePlugin from 'https://unpkg.com/wavesurfer.js@7.8.16/dist/plugins/timeline.esm.js';
+import WaveSurfer from '../resources/wavesurfer/wavesurfer.esm.js';
+import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
+import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
+import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
 class EditMode {
     static NONE = 'none';
