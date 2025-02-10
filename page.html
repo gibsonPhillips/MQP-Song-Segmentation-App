@@ -60,7 +60,6 @@
                 <button class="btn" id="zoom-in">
                     <img src="resources/icons/zoom-in.svg" alt="Zoom In Button">
                 </button>
-                <p id="filePath">Selected file path will appear here.</p>
             </div>
         </div>
 
@@ -112,10 +111,11 @@
             </div>
 
             <div class="window" id="timeline">
+                <div id="labels-container"></div>
                 <div id="waveform"></div>
 
                 <!-- Little line separator -->
-                <div class="separator"></div>
+                <!-- <div class="separator"></div> -->
 
                 <div class="modeless-dialog">
 
@@ -150,7 +150,10 @@
     </dialog>
 
     <!-- <script src="scripts/algopy.js"></script> -->
-    <script type="module" src="scripts/page.js"></script>
+    <script type="module" src="scripts/globalData.js"></script>
+    <script type="module" src="scripts/buttons.js"></script>
+    <script type="module" src="scripts/editBoudaries.js"></script>
+    <script type="module" src="scripts/algorithms.js"></script>
 </body>
 
 </html>

@@ -312,8 +312,8 @@ def runSegmentation(song_path, algorithm1, algorithm2, numCluster):
 
         if(start != end):
             segment = y[start:end]
-            print(f"Playing segment {i} from {start_time} to {end_time} seconds")
-            print(f"Segment Label: {bound_segs[i-1]}")
+            # print(f"Playing segment {i} from {start_time} to {end_time} seconds")
+            # print(f"Segment Label: {bound_segs[i-1]}")
             display(Audio(data=segment, rate=sr))
             segmentOutputs.append([i, start_time, end_time, bound_segs[i-1]])
 
@@ -336,7 +336,7 @@ def runSegmentation(song_path, algorithm1, algorithm2, numCluster):
 
     #         if(i < len(bound_times)-1):
     #             i = i + 1
-    print(segmentOutputs)
+    # print(segmentOutputs)
     return segmentOutputs
 
 # runSegmentation("C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav", "Mel", "KMeans", 4)
