@@ -1,4 +1,5 @@
 import htmlElements from './globalData.js';
+import globalState from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -44,9 +45,10 @@ htmlElements.loadButton.addEventListener('click', async () => {
 
 // when save is clicked
 htmlElements.saveButton.addEventListener('click', async () => {
+    console.log(globalState.filePath)
 
-    if (filePath != '') {
-        let filePathEnd = filePath.split("\\").pop();
+    if (globalState.filePath != '' && globalState.filePath != null) {
+        let filePathEnd = globalState.filePath.split("\\").pop();
         filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
         console.log(filePathEnd)
         selectSaveProject();
@@ -66,7 +68,7 @@ async function selectSaveProject() {
     // Get the save files
     let chosenProject = ''
         window.api.getDirectoryContents(workspace).then((files) => {
-            const vbox = document.getElementById('save-files');
+            const hbox = document.getElementById('save-files');
             if (files.length != 0) {
             // Implement selecting the project
             //placeholders
@@ -82,15 +84,18 @@ async function selectSaveProject() {
                         saveMenuDialog.close();
                         saveTheData(chosenProject)
                     })
-                    vbox.appendChild(newButton);
+                    hbox.appendChild(newButton);
                 });
             }
             // New Project button
+            let vbox = document.createElement('vbox');
             let newButton = document.createElement('button');
-            newButton.textContent = 'New Project'
+            newButton.textContent = 'Create New Project'
+            let newInput = document.createElement('input');
+            newInput.textContent = 'New Project'
             newButton.addEventListener('click', async () => {
                 // Place holder for new project textbox
-                chosenProject = 'New Project - ' + '1'
+                chosenProject = newInput.textContext
                 console.log(chosenProject);
                 saveMenuDialog.close();
                 window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
@@ -101,7 +106,11 @@ async function selectSaveProject() {
                 });
                 saveTheData(chosenProject)
             })
+
+            vbox.appendChild(newInput);
             vbox.appendChild(newButton);
+
+            hbox.appendChild(vbox);
 
             //Show the dialog
             saveMenuDialog.showModal();
