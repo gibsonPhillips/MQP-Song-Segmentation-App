@@ -44,6 +44,9 @@
                 <button class="btn" id="load">Load</button>
                 <button class="btn" id="save">Save</button>
                 <button class="btn" id="segment-details">Segment Details</button>
+                <button class="btn" id="add-boundary">Add Boundary</button>
+                <button class="btn" id="remove-boundary">Remove Boundary</button>
+                <button class="btn" id="change-boundary">Change Boundary</button>
                 <button class="btn" id="play">
                     <img src="resources/icons/play-solid.svg" alt="Play Button">
                 </button>
@@ -59,14 +62,24 @@
                 <button class="btn" id="zoom-in">
                     <img src="resources/icons/zoom-in.svg" alt="Zoom In Button">
                 </button>
-                <p id="filePath">Selected file path will appear here.</p>
             </div>
         </div>
 
         <div class="hbox" id="mod-time">
             <div class="window" id="modifiers">
-                <div class="title-bar">
-                    <button aria-label="Close" class="collapsible coll" id="mod"></button>
+                <div id="expanders">
+                    <div class="title-bar" id="expand" style="display:none">
+                        <button aria-label="Close" class="collapsible coll" id="expand-button" style="display:none">
+                            <div style="width:40px"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="title-bar cull">
+                    <button aria-label="Close" class="collapsible coll" id="mod">
+                        <!-- this keeps the button from collapsing width :*) -->
+                        <div style="width:20px"></div>
+                    </button>
                     <h1 class="title">Modifiers</h1>
                     <button aria-label="Resize" disabled class="hidden"></button>
                 </div>
@@ -74,7 +87,7 @@
                 <!-- Little line separator -->
                 <div class="separator"></div>
 
-                <div class="modeless-dialog">
+                <div class="modeless-dialog vbox cull">
                     <button id="segment-algorithm1" class="btn">
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                         <span class="button-text">Algorithm 1</span>
@@ -95,15 +108,16 @@
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                         <span class="button-text">Auto</span>
                     </button>
-                    <input id="variability-slider" type="range" min="0" max="800" value="400"/>
+                    <input id="variability-slider" type="range" min="0" max="800" value="400" />
                 </div>
             </div>
 
             <div class="window" id="timeline">
+                <div id="labels-container"></div>
                 <div id="waveform"></div>
 
                 <!-- Little line separator -->
-                <div class="separator"></div>
+                <!-- <div class="separator"></div> -->
 
                 <div class="modeless-dialog">
 
@@ -111,7 +125,6 @@
             </div>
         </div>
     </div>
-    <script src="scripts/algopy.js"></script>
 
     <dialog id="segment-details-dialog">
         <h2>Segment Details</h2>
@@ -142,7 +155,17 @@
             </vbox>
     </dialog>
 
-    <script type="module" src="scripts/page.js"></script>
+    <dialog id="remove-boundary-dialog">
+        <h2>Choose Remove Option</h2>
+        <button class="btn" id="combine-previous">Combine with Previous</button>
+        <button class="btn" id="combine-next">Combine with Next</button>
+    </dialog>
+
+    <!-- <script src="scripts/algopy.js"></script> -->
+    <script type="module" src="scripts/globalData.js"></script>
+    <script type="module" src="scripts/buttons.js"></script>
+    <script type="module" src="scripts/editBoudaries.js"></script>
+    <script type="module" src="scripts/algorithms.js"></script>
 </body>
 
 </html>

@@ -34,9 +34,10 @@
 .window#modifiers {
     display: flex;
     margin: 0px;
-
-    flex-grow: 1;
+    width: 100vw;
     max-width: fit-content;
+    min-width: 0px;
+    overflow: hidden;
 }
 
 .window#timeline {
@@ -44,4 +45,35 @@
     margin: 0px;
 
     flex-grow: 4;
+}
+
+#expanders {
+    display: inline-block;
+}
+
+#timeline {
+    position: relative;
+}
+
+#waveform {
+    position: relative;
+    top: 20px;
+}
+
+#labels-container {
+    position: absolute;
+    top: 0px;
+    height: 20px;
+    width: 100%;
+    display: flex;
+    pointer-events: none; /* Prevent interference with clicks */
+}
+.region-label-input {
+    position: absolute;
+    pointer-events: auto; /* Allow text editing */
+    /* background: rgba(255, 255, 255, 0.8); */
+    /* border: 1px solid #ccc; */
+    height: 20px;
+    font-size: 24px;
+    text-align: center;
 }
