@@ -65,7 +65,7 @@ function determineVariability() {
 
 
 async function autoSegment(clusters, closestClusters, closestAverage, finalCall) {
-    const inputName = globalState.filePath;
+    const inputName = window.filePath;
     try {
         console.log("Segmenting begin");
 
@@ -90,9 +90,9 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall)
         let average = determineAverageSegmentLength(segmentData);
 
         if(finalCall) {
-            globalState.segmentData = segmentData;
-            globalState.clusters = closestClusters;
-            updateSegmentElementsList(globalState.segmentData, true);
+            window.segmentData = segmentData;
+            window.clusters = closestClusters;
+            updateSegmentElementsList(window.segmentData, true);
             return;
         }
 
