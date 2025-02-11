@@ -15,6 +15,10 @@ htmlElements.closeSaveDialogButton.onclick = () => {
     htmlElements.saveMenuDialog.close();
 }
 
+htmlElements.closeErrorDialogButton.onclick = () => {
+    htmlElements.errorDialog.close();
+}
+
 htmlElements.playButton.onclick = () => {
     if(htmlElements.wavesurfer.getDuration() > 0) {
         htmlElements.wavesurfer.playPause()

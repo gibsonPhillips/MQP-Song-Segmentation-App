@@ -150,7 +150,17 @@
         <button class="btn" id="close-save-dialog">
             <img src="resources/icons/xmark.svg" alt="Close Button">
         </button>
-        <div class="vbox" id="save-files"></div>
+        <div class="window-pane">
+            <div class="vbox" id="save-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="error-dialog">
+        <h2>Error!</h2>
+        <button class="btn" id="close-error-dialog">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div id="error-message"></div>
     </dialog>
 
     <dialog id="remove-boundary-dialog">
