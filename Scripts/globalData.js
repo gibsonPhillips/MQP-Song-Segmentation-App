@@ -4,7 +4,8 @@ import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
 window.filePath = '';
-
+window.segmentData = [];
+window.clusters = 0;
 //function updateGlobalVar(newValue) {
 //  window.myGlobalVar = newValue;
 //}
@@ -22,8 +23,6 @@ export let globalState = {
     colorMap: new Map(),
     // headers for segment data
     headers: ["number", "start", "end", "label"],
-    // stores all the segment data
-    segmentData: [],
     clusters: 0,
     // stores the wavesurfer regions for segments
     segmentRegions: [],

@@ -27,7 +27,7 @@ htmlElements.importButton.addEventListener('click', async () => {
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
     const inputName = globalState.filePath;
-    globalState.clusters = determineVariability();
+    window.clusters = determineVariability();
     try {
         console.log("Segmenting begin");
 
@@ -37,19 +37,18 @@ async function segment(algorithm) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : globalState.clusters }),
+            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : window.clusters }),
         });
 
         console.log("Segmenting end");
 
         // Parse the JSON response
         const data = await response.json();
-
-        globalState.segmentData = data.map(row => {
+        window.segmentData = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
 
-        updateSegmentElementsList(globalState.segmentData, true)
+        updateSegmentElementsList(window.segmentData, true)
     } catch (error) {
         console.error('Error:', error);
     }

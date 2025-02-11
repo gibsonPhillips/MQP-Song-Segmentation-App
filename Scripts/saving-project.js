@@ -145,7 +145,7 @@ function saveTheData(chosenProject) {
             try {
                 // Writing the save data to the file
                 let saveDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-data.txt';
-                const result = window.api.writeToFile(saveDataFilePath, data);
+                const result = window.api.writeToFile(saveDataFilePath, window.segmentData);
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
