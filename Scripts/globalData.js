@@ -23,7 +23,6 @@ export let globalState = {
     colorMap: new Map(),
     // headers for segment data
     headers: ["number", "start", "end", "label"],
-    clusters: 0,
     // stores the wavesurfer regions for segments
     segmentRegions: [],
     currentZoom: zoom.options.minPxPerSec
