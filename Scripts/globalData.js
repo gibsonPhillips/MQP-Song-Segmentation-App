@@ -59,6 +59,7 @@ const htmlElements = {
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
+    algorithmAutoButton: document.getElementById("auto-segment"),
     regions: regions,
     zoom: zoom,
     timeline: null,
