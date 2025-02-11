@@ -48,6 +48,7 @@ const htmlElements = {
     algorithm2Button: document.getElementById("segment-algorithm2"),
     algorithm3Button: document.getElementById("segment-algorithm3"),
     algorithm4Button: document.getElementById("segment-algorithm4"),
+    algorithmAutoButton: document.getElementById("auto-segment"),
     regions: regions,
     zoom: zoom,
     timeline: null,
