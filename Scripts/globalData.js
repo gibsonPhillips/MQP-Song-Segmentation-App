@@ -53,6 +53,7 @@ const htmlElements = {
     algorithm3Button: document.getElementById("segment-algorithm3"),
     algorithm4Button: document.getElementById("segment-algorithm4"),
     saveMenuDialog: document.querySelector('#save-dialog'),
+    saveFiles: document.getElementById('save-files'),
     closeSaveDialogButton: document.querySelector('#close-save-dialog'),
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
