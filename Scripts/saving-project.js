@@ -45,10 +45,10 @@ htmlElements.loadButton.addEventListener('click', async () => {
 
 // when save is clicked
 htmlElements.saveButton.addEventListener('click', async () => {
-    console.log(globalState.filePath)
+    console.log(window.filePath)
 
-    if (globalState.filePath != '' && globalState.filePath != null) {
-        let filePathEnd = globalState.filePath.split("\\").pop();
+    if (window.filePath != '' && window.filePath != null) {
+        let filePathEnd = window.filePath.split("\\").pop();
         filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
         console.log(filePathEnd)
         selectSaveProject();

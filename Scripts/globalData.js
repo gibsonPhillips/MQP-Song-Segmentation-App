@@ -3,6 +3,12 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
+window.filePath = '';
+
+//function updateGlobalVar(newValue) {
+//  window.myGlobalVar = newValue;
+//}
+
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create();
 
@@ -11,9 +17,7 @@ const zoom = ZoomPlugin.create({
     scale: 0.1,
 });
 
-export const globalState = {
-    // input audio file path
-    filePath: '',
+export let globalState = {
     // stores label color map
     colorMap: new Map(),
     // headers for segment data

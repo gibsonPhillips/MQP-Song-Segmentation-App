@@ -13,7 +13,7 @@ htmlElements.importButton.addEventListener('click', async () => {
     if (filePaths && filePaths.length > 0) {
         // Display the file path
         console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
-        globalState.filePath = filePaths[0];
+        window.filePath = filePaths[0];
         htmlElements.regions.clearRegions();
         htmlElements.wavesurfer.load(filePaths[0]);
         globalState.currentZoom = 10;

@@ -5,6 +5,7 @@ const { spawn, exec } = require('child_process');
 const fs = require('fs');
 
 let pythonProcess
+let filePath = '';
 
 // Gets appdata environment variable
 ipcMain.handle('get-appdata', () => {
