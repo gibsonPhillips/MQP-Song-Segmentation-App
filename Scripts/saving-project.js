@@ -139,13 +139,20 @@ function saveTheData(chosenProject) {
     if (chosenProject != '') {
         let saveDirectoryPath = workspace + "\\" + chosenProject
         console.log('saveDirectoryPath: ' + saveDirectoryPath);
-        let data = "hello world!"
-        if (data != null) {
+
+        console.log(window.segmentData)
+        if (window.segmentData != null && window.segmentData.length != 0) {
 
             try {
-                // Writing the save data to the file
-                let saveDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-data.txt';
-                const result = window.api.writeToFile(saveDataFilePath, window.segmentData);
+                // Writing the segment data to the file
+                let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
+
+                let segmentDataText = createFileText();
+                window.api.writeToFile(saveSegmentDataFilePath, segmentDataText);
+
+                // Writing the metadata to the file
+                let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
+                window.api.writeToFile(saveMetadataFilePath, 'Not Implemented');
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
@@ -162,6 +169,17 @@ function saveTheData(chosenProject) {
     }
 
     // Implement Saving of the song file
+}
+
+// Helper Functions
+
+function createFileText() {
+    let text = '';
+    window.segmentData.forEach(segment => {
+        text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + '\n'
+    });
+    window.segmentData
+    return text;
 }
 
 function presentErrorDialog(message) {

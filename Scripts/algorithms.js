@@ -26,7 +26,7 @@ htmlElements.importButton.addEventListener('click', async () => {
 // runs the segmentation algorithm
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
-    const inputName = globalState.filePath;
+    const inputName = window.filePath;
     window.clusters = determineVariability();
     try {
         console.log("Segmenting begin");

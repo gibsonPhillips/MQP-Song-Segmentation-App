@@ -166,7 +166,7 @@ export function updateLabelPositions() {
 // Updates the specified segment elements label value
 function updateSegmentLabel(segmentElement, value) {
     segmentElement.label = value;
-    updateSegmentElementsList(globalState.segmentData, false);
+    updateSegmentElementsList(window.segmentData, false);
 }
 
 // Gets the next color to be used for segment region
