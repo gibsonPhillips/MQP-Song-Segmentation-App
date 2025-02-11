@@ -80,7 +80,6 @@ async function selectSaveProject() {
 
                 // Create a button for each existing project
                 let newButton = document.createElement('button');
-                console.log(file)
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
@@ -103,11 +102,13 @@ async function selectSaveProject() {
             chosenProject = newInput.value
             console.log(chosenProject);
             htmlElements.saveMenuDialog.close();
-            window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
+            await window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
                console.log('Directory creation handled successfully.');
+               saveTheData(chosenProject)
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
                 console.error(error);
+
             });
             saveTheData(chosenProject)
         })
@@ -130,7 +131,7 @@ function saveTheData(chosenProject) {
     if (chosenProject != '') {
         let saveDirectoryPath = workspace + "\\" + chosenProject
         console.log('saveDirectoryPath: ' + saveDirectoryPath);
-        data = "hello world!"
+        let data = "hello world!"
         if (data != null) {
 
             try {
