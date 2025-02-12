@@ -108,16 +108,16 @@ async function selectSaveProject() {
             chosenProject = newInput.value
             console.log(chosenProject);
             htmlElements.saveMenuDialog.close();
+
             await window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
-               console.log('Directory creation handled successfully.');
-               saveTheData(chosenProject)
+                console.log('Directory creation handled successfully.');
+                saveTheData(chosenProject)
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
                 console.error(error);
                 presentErrorDialog('Issue creating directory:\n' + error);
 
             });
-            saveTheData(chosenProject)
         })
 
         hbox.appendChild(newInput);
@@ -136,11 +136,13 @@ async function selectSaveProject() {
 
 //save the project data
 function saveTheData(chosenProject) {
+
     if (chosenProject != '') {
+
         let saveDirectoryPath = workspace + "\\" + chosenProject
         console.log('saveDirectoryPath: ' + saveDirectoryPath);
 
-        console.log(window.segmentData)
+        // console.log(window.segmentData)
         if (window.segmentData != null && window.segmentData.length != 0) {
 
             try {
@@ -164,8 +166,27 @@ function saveTheData(chosenProject) {
             }
 
         } else {
-            console.log('No data was saved')
-            presentErrorDialog('No data was saved')
+
+            // Saves no data but saves the song
+            try {
+
+                // Writing the segment data to the file
+                let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
+                window.api.writeToFile(saveSegmentDataFilePath, 'No data');
+
+                // Writing the metadata to the file
+                let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
+                window.api.writeToFile(saveMetadataFilePath, 'No data');
+
+                let filePathEnd = window.songFilePath.split("\\").pop();
+                window.api.moveSongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+
+            } catch (error) {
+                console.error('Error in writing to file:\n', error);
+                presentErrorDialog('Error in writing to file:\n' + error)
+            }
+            console.log('Song was saved, no data was saved')
+            presentErrorDialog('Song was saved, no data was saved')
         }
     } else {
         console.log('No data was saved (2)')
