@@ -14,24 +14,24 @@ htmlElements.addBoundaryButton.onclick = () => {
 
     // Determine location
     let i = 0;
-    let currentTime = globalState.segmentData[i].start;
+    let currentTime = window.segmentData[i].start;
     while(time > currentTime) {
         i++;
-        currentTime = globalState.segmentData[i].start;
+        currentTime = window.segmentData[i].start;
     }
 
     // Add to boundaryData
-    let element = {"number": i+1, "start": time, "end": globalState.segmentData[i].start, "label": globalState.clusters};
-    globalState.clusters++;
-    globalState.segmentData.splice(i, 0, element);
+    let element = {"number": i+1, "start": time, "end": window.segmentData[i].start, "label": window.clusters};
+    window.clusters++;
+    window.segmentData.splice(i, 0, element);
 
     // Update segments
-    globalState.segmentData[i-1].end = time;
-    for(let j = i+1; j < globalState.segmentData.length; j++) {
-        globalState.segmentData[j].number = j+1;
+    window.segmentData[i-1].end = time;
+    for(let j = i+1; j < window.segmentData.length; j++) {
+        window.segmentData[j].number = j+1;
     }
 
-    updateSegmentElementsList(globalState.segmentData, true);
+    updateSegmentElementsList(window.segmentData, true);
 }
 
 htmlElements.removeBoundaryButton.onclick = () => {
@@ -44,22 +44,22 @@ htmlElements.removeBoundaryButton.onclick = () => {
     
     // Find closest boundary
     let closestBoundaryIndex = 0;
-    let closetBoundaryTime = Math.abs(globalState.segmentData[0].start - time);
-    globalState.segmentData.forEach(element => {
+    let closetBoundaryTime = Math.abs(window.segmentData[0].start - time);
+    window.segmentData.forEach(element => {
         if(Math.abs(element.start - time) < closetBoundaryTime) {
             closetBoundaryTime = Math.abs(element.start - time);
             closestBoundaryIndex = element.number - 1;
         }
     });
 
-    if(closestBoundaryIndex != 0 && closestBoundaryIndex != globalState.segmentData.length-1) {
+    if(closestBoundaryIndex != 0 && closestBoundaryIndex != window.segmentData.length-1) {
         // Combine with previous (get rid of current index, add to previous)
-        globalState.segmentData[closestBoundaryIndex-1].end = globalState.segmentData[closestBoundaryIndex].end;
-        globalState.segmentData.splice(closestBoundaryIndex, 1);
-        for(let i = closestBoundaryIndex; i < globalState.segmentData.length; i++) {
-            globalState.segmentData[i].number = i+1;
+        window.segmentData[closestBoundaryIndex-1].end = window.segmentData[closestBoundaryIndex].end;
+        window.segmentData.splice(closestBoundaryIndex, 1);
+        for(let i = closestBoundaryIndex; i < window.segmentData.length; i++) {
+            window.segmentData[i].number = i+1;
         }
-        updateSegmentElementsList(globalState.segmentData, true);
+        updateSegmentElementsList(window.segmentData, true);
     }
 }
 
@@ -86,7 +86,7 @@ htmlElements.regions.on('region-updated', (region) => {
     let index = globalState.segmentRegions.findIndex(r => r.id === region.id);
     if (index === -1) return;
 
-    let movedStart = globalState.segmentData[index].start !== region.start;
+    let movedStart = window.segmentData[index].start !== region.start;
 
     let prevRegion = globalState.segmentRegions[index - 1];
     let nextRegion = globalState.segmentRegions[index + 1];
@@ -108,17 +108,17 @@ htmlElements.regions.on('region-updated', (region) => {
     // Update segment data
     if(movedStart) {
         // Update start of current
-        globalState.segmentData[index].start = newStart;
+        window.segmentData[index].start = newStart;
         // Update end of prev
         if(index > 0)
-            globalState.segmentData[index-1].end = newStart;
+            window.segmentData[index-1].end = newStart;
     } else {
         // Update end of current
-        globalState.segmentData[index].end = newEnd;
+        window.segmentData[index].end = newEnd;
         // Update start of next
-        if(index+1 < globalState.segmentData.length)
-            globalState.segmentData[index+1].start = newEnd;
+        if(index+1 < window.segmentData.length)
+            window.segmentData[index+1].start = newEnd;
     }
 
-    updateSegmentElementsList(globalState.segmentData, false);
+    updateSegmentElementsList(window.segmentData, false);
 });

@@ -12,5 +12,13 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 contextBridge.exposeInMainWorld('api', {
-  openFile: () => ipcRenderer.invoke('dialog:openFile')
+  openFile: () => ipcRenderer.invoke('dialog:openFile'),
+  getAppData: () => ipcRenderer.invoke('get-appdata'),
+  createDirectory: (dirPath) => ipcRenderer.invoke('create-directory', dirPath),
+  openDirectory: (dirPath) => ipcRenderer.invoke('open-directory', dirPath),
+  getDirectoryContents: (dirPath) => ipcRenderer.invoke('get-directory-contents', dirPath),
+  getFile: (dirPath) => ipcRenderer.invoke('get-file', dirPath),
+  writeToFile: (filePath, data) => ipcRenderer.invoke('write-to-file', filePath, data)
 });
+
+

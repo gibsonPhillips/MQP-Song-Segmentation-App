@@ -14,7 +14,7 @@ htmlElements.importButton.addEventListener('click', async () => {
     if (filePaths && filePaths.length > 0) {
         // Display the file path
         console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
-        globalState.filePath = filePaths[0];
+        window.filePath = filePaths[0];
         htmlElements.regions.clearRegions();
         htmlElements.wavesurfer.load(filePaths[0]);
         globalState.currentZoom = 10;
@@ -27,8 +27,8 @@ htmlElements.importButton.addEventListener('click', async () => {
 // runs the segmentation algorithm
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
-    const inputName = globalState.filePath;
-    globalState.clusters = determineVariability();
+    const inputName = window.filePath;
+    window.clusters = determineVariability();
     try {
         console.log("Segmenting begin");
 
@@ -38,19 +38,18 @@ async function segment(algorithm) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : globalState.clusters }),
+            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : window.clusters }),
         });
 
         console.log("Segmenting end");
 
         // Parse the JSON response
         const data = await response.json();
-
-        globalState.segmentData = data.map(row => {
+        window.segmentData = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
 
-        updateSegmentElementsList(globalState.segmentData, true)
+        updateSegmentElementsList(window.segmentData, true)
     } catch (error) {
         console.error('Error:', error);
     }
@@ -66,7 +65,7 @@ function determineVariability() {
 
 
 async function autoSegment(clusters, closestClusters, closestAverage, finalCall) {
-    const inputName = globalState.filePath;
+    const inputName = window.filePath;
     try {
         console.log("Segmenting begin");
 
@@ -91,9 +90,9 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall)
         let average = determineAverageSegmentLength(segmentData);
 
         if(finalCall) {
-            globalState.segmentData = segmentData;
-            globalState.clusters = closestClusters;
-            updateSegmentElementsList(globalState.segmentData, true);
+            window.segmentData = segmentData;
+            window.clusters = closestClusters;
+            updateSegmentElementsList(window.segmentData, true);
             return;
         }
 

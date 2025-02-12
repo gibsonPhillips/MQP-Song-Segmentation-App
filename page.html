@@ -38,9 +38,11 @@
             <div class="separator"></div>
 
             <div class="window-pane" id="main-buttons">
-                <button id="chooseSong" class="btn">Import</button>
+                <button class="btn" id="open-workspace">Open Workspace</button>
+                <button id="chooseSong" class="btn">Import Song</button>
                 <input type="file" id="fileInput" accept=".wav" style="display: none;">
-                <button class="btn" id="export">Export</button>
+                <button class="btn" id="load">Load Project</button>
+                <button class="btn" id="save">Save Project</button>
                 <button class="btn" id="segment-details">Segment Details</button>
                 <button class="btn" id="add-boundary">Add Boundary</button>
                 <button class="btn" id="remove-boundary">Remove Boundary</button>
@@ -143,6 +145,24 @@
         </table>
     </dialog>
 
+    <dialog id="save-dialog">
+        <h2>Choose Project to Save to</h2>
+        <button class="btn" id="close-save-dialog">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div class="window-pane">
+            <div class="vbox" id="save-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="error-dialog">
+        <h2>Error!</h2>
+        <button class="btn" id="close-error-dialog">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div id="error-message"></div>
+    </dialog>
+
     <dialog id="remove-boundary-dialog">
         <h2>Choose Remove Option</h2>
         <button class="btn" id="combine-previous">Combine with Previous</button>
@@ -154,6 +174,7 @@
     <script type="module" src="scripts/buttons.js"></script>
     <script type="module" src="scripts/editBoudaries.js"></script>
     <script type="module" src="scripts/algorithms.js"></script>
+    <script type="module" src="scripts/saving-project.js"></script>
 </body>
 
 </html>

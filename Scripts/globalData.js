@@ -3,6 +3,13 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
+window.filePath = '';
+window.segmentData = [];
+window.clusters = 0;
+//function updateGlobalVar(newValue) {
+//  window.myGlobalVar = newValue;
+//}
+
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create();
 
@@ -11,16 +18,11 @@ const zoom = ZoomPlugin.create({
     scale: 0.1,
 });
 
-export const globalState = {
-    // input audio file path
-    filePath: '',
+export let globalState = {
     // stores label color map
     colorMap: new Map(),
     // headers for segment data
     headers: ["number", "start", "end", "label"],
-    // stores all the segment data
-    segmentData: [],
-    clusters: 0,
     // stores the wavesurfer regions for segments
     segmentRegions: [],
     currentZoom: zoom.options.minPxPerSec
@@ -48,6 +50,15 @@ const htmlElements = {
     algorithm2Button: document.getElementById("segment-algorithm2"),
     algorithm3Button: document.getElementById("segment-algorithm3"),
     algorithm4Button: document.getElementById("segment-algorithm4"),
+    saveMenuDialog: document.querySelector('#save-dialog'),
+    saveFiles: document.getElementById('save-files'),
+    closeSaveDialogButton: document.querySelector('#close-save-dialog'),
+    errorDialog: document.getElementById('error-dialog'),
+    closeErrorDialogButton: document.getElementById('close-error-dialog'),
+    errorDialogMessage: document.getElementById('error-message'),
+    openWorkspaceButton: document.getElementById('open-workspace'),
+    loadButton: document.getElementById('load'),
+    saveButton: document.getElementById('save'),
     algorithmAutoButton: document.getElementById("auto-segment"),
     regions: regions,
     zoom: zoom,
@@ -156,7 +167,7 @@ export function updateLabelPositions() {
 // Updates the specified segment elements label value
 function updateSegmentLabel(segmentElement, value) {
     segmentElement.label = value;
-    updateSegmentElementsList(globalState.segmentData, false);
+    updateSegmentElementsList(window.segmentData, false);
 }
 
 // Gets the next color to be used for segment region
