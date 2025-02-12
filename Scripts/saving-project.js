@@ -48,10 +48,10 @@ htmlElements.loadButton.addEventListener('click', async () => {
 
 // when save is clicked
 htmlElements.saveButton.addEventListener('click', async () => {
-    console.log(window.filePath)
+    console.log(window.songFilePath)
 
-    if (window.filePath != '' && window.filePath != null) {
-        let filePathEnd = window.filePath.split("\\").pop();
+    if (window.songFilePath != '' && window.songFilePath != null) {
+        let filePathEnd = window.songFilePath.split("\\").pop();
         filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
         console.log(filePathEnd)
         selectSaveProject();
@@ -144,15 +144,19 @@ function saveTheData(chosenProject) {
         if (window.segmentData != null && window.segmentData.length != 0) {
 
             try {
+
                 // Writing the segment data to the file
                 let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
-
-                let segmentDataText = createFileText();
+                let segmentDataText = createSegmentDataFileText();
                 window.api.writeToFile(saveSegmentDataFilePath, segmentDataText);
 
                 // Writing the metadata to the file
                 let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
-                window.api.writeToFile(saveMetadataFilePath, 'Not Implemented');
+                let metadataText = createMetadataFileText();
+                window.api.writeToFile(saveMetadataFilePath, metadataText);
+
+                let filePathEnd = window.songFilePath.split("\\").pop();
+                window.api.moveSongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
@@ -173,7 +177,7 @@ function saveTheData(chosenProject) {
 
 // Helper Functions
 
-function createFileText() {
+function createSegmentDataFileText() {
     let text = '';
     window.segmentData.forEach(segment => {
         text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + '\n'
@@ -181,6 +185,20 @@ function createFileText() {
     window.segmentData
     return text;
 }
+
+function createMetadataFileText() {
+    return 'Metadata';
+}
+
+//function moveSongFile(currentFilePath, newPath){
+//    fs.rename(currentFilePath, newPath, (err) => {
+//        if (err) {
+//            console.error("Error moving file:", err);
+//        } else {
+//            console.log('File moved successfully from ' + currentFilePath + ' to ' + newPath);
+//        }
+//    });
+//}
 
 function presentErrorDialog(message) {
     htmlElements.errorDialogMessage.textContent = message;

@@ -14,7 +14,7 @@ htmlElements.importButton.addEventListener('click', async () => {
     if (filePaths && filePaths.length > 0) {
         // Display the file path
         console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
-        window.filePath = filePaths[0];
+        window.songFilePath = filePaths[0];
         htmlElements.regions.clearRegions();
         htmlElements.wavesurfer.load(filePaths[0]);
         globalState.currentZoom = 10;
@@ -27,7 +27,7 @@ htmlElements.importButton.addEventListener('click', async () => {
 // runs the segmentation algorithm
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
-    const inputName = window.filePath;
+    const inputName = window.songFilePath;
     window.clusters = determineVariability();
     try {
         console.log("Segmenting begin");
@@ -65,7 +65,7 @@ function determineVariability() {
 
 
 async function autoSegment(clusters, closestClusters, closestAverage, finalCall) {
-    const inputName = window.filePath;
+    const inputName = window.songFilePath;
     try {
         console.log("Segmenting begin");
 

@@ -78,6 +78,16 @@ ipcMain.handle('write-to-file', async (event, filePath, data) => {
   }
 });
 
+ipcMain.handle('move-song-file', async (event, currentFilePath, newPath) => {
+    fs.copyFile(currentFilePath, newPath, (err) => {
+        if (err) {
+            console.error("Error moving file:", err);
+        } else {
+            console.log('File moved successfully from ' + currentFilePath + ' to ' + newPath);
+        }
+    });
+});
+
 
 // Function to start the Python server
 function startPythonServer() {

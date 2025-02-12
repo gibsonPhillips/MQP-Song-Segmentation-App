@@ -3,7 +3,7 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-window.filePath = '';
+window.songFilePath = '';
 window.segmentData = [];
 window.clusters = 0;
 //function updateGlobalVar(newValue) {
