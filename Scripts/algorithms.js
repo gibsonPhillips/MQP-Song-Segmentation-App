@@ -44,7 +44,7 @@ async function segment(algorithm) {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
         console.log(window.segmentData)
-
+        console.log(typeof window.segmentData)
         updateSegmentElementsList(window.segmentData, true)
     } catch (error) {
         console.error('Error:', error);

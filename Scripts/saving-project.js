@@ -135,14 +135,14 @@ async function loadTheData(chosenProject) {
     // implement
 
     // loads the segment data
-    segmentData = parseSegmentDataFile(loadSegmentDataFilePath)
-    if (segmentData.length == 0) {
+    window.segmentData = parseSegmentDataFile(loadSegmentDataFilePath)
+    if (window.segmentData.length === 0) {
+        console.log(window.segmentData)
         console.log('No data loaded');
         presentErrorDialog('No data loaded from ' + chosenProject);
     } else {
-        window.segmentData = segmentData
+        updateSegmentElementsList(window.segmentData, true);
     }
-    updateSegmentElementsList(window.segmentData, true);
 }
 
 
@@ -278,13 +278,12 @@ function saveTheData(chosenProject) {
 // Helper Functions
 
 async function parseSegmentDataFile(segmentDataFilePath) {
-    let segmentData = []
+    let rows = []
     window.api.getFile(segmentDataFilePath).then((result) => {
         console.log(result)
         if (result.content != 'No data') {
             let rowsText = result.content.split('\n')
             rowsText.pop()
-            let rows = []
             rowsText.forEach(textRow => {
                 let textTuple = textRow.split(',')
                 let obj = {
@@ -293,13 +292,16 @@ async function parseSegmentDataFile(segmentDataFilePath) {
                     end: parseFloat(textTuple[2]),
                     label: parseInt(textTuple[3])
                 };
+//                tuple.push(parseInt(textTuple[0]))
+//                tuple.push(parseFloat(textTuple[1]))
+//                tuple.push(parseFloat(textTuple[2]))
+//                tuple.push(parseInt(textTuple[3]))
                 rows.push(obj);
             })
             console.log(rows)
-            segmentData = rows
         }
     })
-    return segmentData;
+    return rows;
 }
 
 function createSegmentDataFileText() {
