@@ -128,7 +128,7 @@ async function loadTheData(chosenProject) {
     console.log('segment data: ' + loadSegmentDataFilePath)
 
     // loads the song
-    loadSong(loadSongFilePath);
+    await loadSong(loadSongFilePath);
     window.songFilePath = loadSongFilePath
 
     // loads the metadata
@@ -137,7 +137,6 @@ async function loadTheData(chosenProject) {
     // loads the segment data
     window.segmentData = await parseSegmentDataFile(loadSegmentDataFilePath);
     if (window.segmentData.length === 0) {
-        console.log(window.segmentData)
         console.log('No data loaded');
         presentErrorDialog('No data loaded from ' + chosenProject);
     } else {
@@ -221,7 +220,6 @@ function saveTheData(chosenProject) {
         let saveDirectoryPath = workspace + "\\" + chosenProject
         console.log('saveDirectoryPath: ' + saveDirectoryPath);
 
-        // console.log(window.segmentData)
         if (window.segmentData != null && window.segmentData.length != 0) {
 
             try {

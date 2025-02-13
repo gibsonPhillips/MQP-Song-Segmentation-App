@@ -6,9 +6,6 @@ import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 window.songFilePath = '';
 window.segmentData = [];
 window.clusters = 0;
-//function updateGlobalVar(newValue) {
-//  window.myGlobalVar = newValue;
-//}
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create();
@@ -25,7 +22,8 @@ export let globalState = {
     headers: ["number", "start", "end", "label"],
     // stores the wavesurfer regions for segments
     segmentRegions: [],
-    currentZoom: zoom.options.minPxPerSec
+    currentZoom: zoom.options.minPxPerSec,
+    timeline: null
 };
 
 const htmlElements = {
@@ -80,10 +78,6 @@ const htmlElements = {
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
 
-    regions: regions,
-    zoom: zoom,
-    timeline: null,
-
     // Create an instance of WaveSurfer
     wavesurfer: WaveSurfer.create({
         container: '#waveform',
@@ -117,7 +111,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
 
     // If waveform is being updated
     if(updateWaveform) {
-        htmlElements.regions.clearRegions()
+        regions.clearRegions()
         globalState.colorMap.clear();
         htmlElements.labelsContainer.textContent = "";
         globalState.segmentRegions = [];
@@ -139,7 +133,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
 
         if(updateWaveform) {
             // Create new region
-            let region = htmlElements.regions.addRegion({
+            let region = regions.addRegion({
                 start: element.start,
                 end: element.end,
                 color: globalState.colorMap.get(element.label),
@@ -202,10 +196,10 @@ function getColor(length) {
 // Updates the timeline based on the current zoom level
 export function updateTimeline() {
     const timeInterval = calculateTimeInterval(globalState.currentZoom);
-    if(htmlElements.timeline != null) {
-        htmlElements.timeline.destroy(); // Remove the old timeline
+    if(globalState.timeline != null) {
+        globalState.timeline.destroy(); // Remove the old timeline
     }
-    htmlElements.timeline = TimelinePlugin.create({
+    globalState.timeline = TimelinePlugin.create({
         height: 20,
         insertPosition: 'beforebegin',
         timeInterval: timeInterval,
@@ -216,7 +210,7 @@ export function updateTimeline() {
           color: '#2D5B88',
         }
     });
-    htmlElements.wavesurfer.registerPlugin(htmlElements.timeline);
+    htmlElements.wavesurfer.registerPlugin(globalState.timeline);
 }
 
 // Determines time interval for given zoom level
@@ -236,11 +230,11 @@ export function presentErrorDialog(message) {
 }
 
 // loads the song in the app
-export function loadSong(filePath) {
+export async function loadSong(filePath) {
     console.log('File path:', filePath);
     window.songFilePath = filePath;
-    htmlElements.regions.clearRegions();
-    htmlElements.wavesurfer.load(filePath);
+    regions.clearRegions();
+    await htmlElements.wavesurfer.load(filePath);
     globalState.currentZoom = 10;
     updateTimeline();
 }

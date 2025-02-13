@@ -12,7 +12,7 @@ htmlElements.algorithmAutoButton.addEventListener("click", () => {autoSegment(4,
 htmlElements.importButton.addEventListener('click', async () => {
     const filePaths = await window.api.openFile();
     if (filePaths && filePaths.length > 0) {
-        loadSong(filePaths[0]);
+        await loadSong(filePaths[0]);
     } else {
         console.log('No file selected');
     }
@@ -43,8 +43,6 @@ async function segment(algorithm) {
         window.segmentData = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
-        console.log(window.segmentData)
-        console.log(typeof window.segmentData)
         updateSegmentElementsList(window.segmentData, true)
     } catch (error) {
         console.error('Error:', error);
