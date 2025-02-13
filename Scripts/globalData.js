@@ -32,13 +32,19 @@ const htmlElements = {
     // Constants for HTML elements
     segmentDetailsDialog: document.querySelector('#segment-details-dialog'),
     removeBoundaryDialog: document.querySelector('#remove-boundary-dialog'),
+
+    // import/export buttons
     importButton: document.getElementById('chooseSong'),
     exportButton: document.querySelector('#export'),
+
+    // Segment buttons
     segmentDetailsButton: document.querySelector('#segment-details'),
+    closeDialogButton: document.querySelector('#close-dialog'),
     addBoundaryButton: document.querySelector('#add-boundary'),
     removeBoundaryButton: document.querySelector('#remove-boundary'),
     changeBoundaryButton: document.querySelector('#change-boundary'),
-    closeDialogButton: document.querySelector('#close-dialog'),
+
+    // wavesurfer buttons
     playButton: document.querySelector('#play'),
     forwardButton: document.querySelector('#forward'),
     backButton: document.querySelector('#backward'),
@@ -46,20 +52,34 @@ const htmlElements = {
     zoomOutButton: document.querySelector('#zoom-out'),
     labelsContainer: document.getElementById("labels-container"),
     waveformContainer: document.getElementById("waveform"),
+
+    // algorithm buttons
     algorithm1Button: document.getElementById("segment-algorithm1"),
     algorithm2Button: document.getElementById("segment-algorithm2"),
     algorithm3Button: document.getElementById("segment-algorithm3"),
     algorithm4Button: document.getElementById("segment-algorithm4"),
+    algorithmAutoButton: document.getElementById("auto-segment"),
+
+    // load menu dialog
+    loadMenuDialog: document.querySelector('#load-dialog'),
+    loadFiles: document.getElementById('load-files'),
+    closeLoadDialogButton: document.querySelector('#close-load-dialog'),
+
+    // save menu dialog
     saveMenuDialog: document.querySelector('#save-dialog'),
     saveFiles: document.getElementById('save-files'),
     closeSaveDialogButton: document.querySelector('#close-save-dialog'),
+
+    // error dialog
     errorDialog: document.getElementById('error-dialog'),
     closeErrorDialogButton: document.getElementById('close-error-dialog'),
     errorDialogMessage: document.getElementById('error-message'),
+
+    // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
-    algorithmAutoButton: document.getElementById("auto-segment"),
+
     regions: regions,
     zoom: zoom,
     timeline: null,

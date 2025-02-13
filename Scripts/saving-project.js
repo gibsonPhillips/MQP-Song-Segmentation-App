@@ -26,9 +26,6 @@ let appdataPromise = window.api.getAppData().then((appdata) => {
 });
 
 
-// Button Clicks
-
-
 // When the workspace button is clicked
 htmlElements.openWorkspaceButton.addEventListener('click', async () => {
     // Gets the appdata
@@ -43,6 +40,48 @@ htmlElements.openWorkspaceButton.addEventListener('click', async () => {
 htmlElements.loadButton.addEventListener('click', async () => {
     console.log('not implemented')
     presentErrorDialog('not implemented')
+
+    // scan the directory
+    let chosenProject = ''
+    let vbox = htmlElements.loadFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(workspace).then((files) => {
+        if (files.length != 0) {
+        // Implement selecting the project
+        //placeholders
+
+            files.forEach(file => {
+
+                // Create a button for each existing project
+                let newButton = document.createElement('button');
+                newButton.class='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    console.log(chosenProject);
+                    htmlElements.loadMenuDialog.close();
+                    loadTheData(chosenProject)
+                })
+                vbox.appendChild(newButton);
+            });
+        }
+
+        //Show the dialog
+        htmlElements.loadMenuDialog.showModal();
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
+
+    // load song
+
+
+    // load the data
+
     // Implement
 });
 
@@ -65,6 +104,11 @@ htmlElements.saveButton.addEventListener('click', async () => {
 
 // Functionality functions
 
+// loads the data
+function loadTheData(chosenProject) {
+    console.log('No data loaded, not implemented');
+    presentErrorDialog('No data loaded from ' + chosenProject + ', not implemented');
+}
 
 
 // Queues the pop-up to save the project
@@ -114,7 +158,7 @@ async function selectSaveProject() {
                 saveTheData(chosenProject)
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
-                console.error(error);
+                console.error('Issue creating directory:\n' + error);
                 presentErrorDialog('Issue creating directory:\n' + error);
 
             });
@@ -129,7 +173,7 @@ async function selectSaveProject() {
         htmlElements.saveMenuDialog.showModal();
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
-        console.error(error);
+        console.error('Issue getting the files within the directory:\n' + error);
         presentErrorDialog('Issue getting the files within the directory:\n' + error);
     });
 }
