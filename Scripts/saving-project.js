@@ -135,7 +135,7 @@ async function loadTheData(chosenProject) {
     // implement
 
     // loads the segment data
-    window.segmentData = parseSegmentDataFile(loadSegmentDataFilePath)
+    window.segmentData = await parseSegmentDataFile(loadSegmentDataFilePath);
     if (window.segmentData.length === 0) {
         console.log(window.segmentData)
         console.log('No data loaded');
@@ -278,29 +278,30 @@ function saveTheData(chosenProject) {
 // Helper Functions
 
 async function parseSegmentDataFile(segmentDataFilePath) {
-    let rows = []
-    window.api.getFile(segmentDataFilePath).then((result) => {
-        console.log(result)
-        if (result.content != 'No data') {
-            let rowsText = result.content.split('\n')
-            rowsText.pop()
-            rowsText.forEach(textRow => {
-                let textTuple = textRow.split(',')
-                let obj = {
-                    number: parseInt(textTuple[0]),
-                    start: parseFloat(textTuple[1]),
-                    end: parseFloat(textTuple[2]),
-                    label: parseInt(textTuple[3])
-                };
+    let rows = [];
+    let result = await window.api.getFile(segmentDataFilePath);
+
+    console.log(result);
+
+    if (result.content !== 'No data') {
+        let rowsText = result.content.trim().split('\n');
+        rowsText.pop()
+        rowsText.forEach(textRow => {
+            let textTuple = textRow.split(',')
+            let obj = {
+                number: parseInt(textTuple[0]),
+                start: parseFloat(textTuple[1]),
+                end: parseFloat(textTuple[2]),
+                label: parseInt(textTuple[3])
+            };
 //                tuple.push(parseInt(textTuple[0]))
 //                tuple.push(parseFloat(textTuple[1]))
 //                tuple.push(parseFloat(textTuple[2]))
 //                tuple.push(parseInt(textTuple[3]))
-                rows.push(obj);
-            })
-            console.log(rows)
-        }
-    })
+            rows.push(obj);
+        })
+        console.log(rows)
+    }
     return rows;
 }
 
