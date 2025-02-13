@@ -80,7 +80,7 @@ const htmlElements = {
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
 
-    algorithmAutoButton: document.getElementById("auto-segment"),
+    // drop down stuff
     fileDropdownContent: document.getElementById("file-dropdown-content"),
     fileDropdown: document.getElementById("file-dropdown"),
     fileDropdownButton: document.getElementById("file-dropdown-button"),
