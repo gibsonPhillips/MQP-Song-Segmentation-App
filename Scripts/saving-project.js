@@ -1,10 +1,11 @@
 import htmlElements from './globalData.js';
 import globalState from './globalData.js';
-import { loadSong, presentErrorDialog } from './globalData.js';
+import { loadSong, presentErrorDialog, updateSegmentElementsList } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
 
+// gets the workspace
 let appdataPromise = window.api.getAppData().then((appdata) => {
     console.log(appdata);
     workspace = appdata + '\\Song Segmentation'
@@ -100,8 +101,6 @@ htmlElements.saveButton.addEventListener('click', async () => {
 
 // loads the data
 async function loadTheData(chosenProject) {
-    console.log('No data loaded, not implemented');
-    presentErrorDialog('No data loaded from ' + chosenProject + ', not implemented');
 
     // the path to the project directory
     let projectPath = workspace + '\\' + chosenProject;
@@ -128,7 +127,19 @@ async function loadTheData(chosenProject) {
     console.log('metadata: ' + loadMetadataFilePath)
     console.log('segment data: ' + loadSegmentDataFilePath)
 
+    // loads the song
     loadSong(loadSongFilePath);
+
+    // loads the metadata
+    // implement
+
+    // loads the segment data
+    segmentData = parseSegmentDataFile(loadSegmentDataFilePath)
+    if (segmentData.length == 0) {
+        console.log('No data loaded');
+        presentErrorDialog('No data loaded from ' + chosenProject);
+    }
+    updateSegmentElementsList(window.segmentData, true)
 }
 
 
@@ -262,6 +273,17 @@ function saveTheData(chosenProject) {
 }
 
 // Helper Functions
+
+function parseSegmentDataFile(segmentDataFilePath) {
+    let segmentData = []
+    window.api.getFile(segmentDataFilePath).then((result) => {
+        console.log(result)
+        if (result.content != 'No data') {
+            // implement
+        }
+    })
+    return segmentData;
+}
 
 function createSegmentDataFileText() {
     let text = '';
