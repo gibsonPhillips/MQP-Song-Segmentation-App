@@ -78,6 +78,8 @@ const htmlElements = {
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
     algorithmAutoButton: document.getElementById("auto-segment"),
+
+    // drop down stuff
     fileDropdownContent: document.getElementById("file-dropdown-content"),
     fileDropdown: document.getElementById("file-dropdown"),
     fileDropdownButton: document.getElementById("file-dropdown-button"),
@@ -226,7 +228,7 @@ export function updateTimeline() {
 // Determines time interval for given zoom level
 function calculateTimeInterval(zoomLevel, duration) {
     let baseInterval;
-    
+
     // Adjust based on zoom level
     if (zoomLevel > 300) baseInterval = 0.1;
     else if (zoomLevel > 200) baseInterval = 0.25;
@@ -241,7 +243,7 @@ function calculateTimeInterval(zoomLevel, duration) {
     if (duration > 300 && zoomLevel <= 10) baseInterval *= 2; // Longer waveform, spread labels out more
     if (duration > 600 && zoomLevel <= 10) baseInterval *= 3;
     if (duration > 1200 && zoomLevel <= 10) baseInterval *= 4;
-    
+
     return baseInterval;
 }
 
