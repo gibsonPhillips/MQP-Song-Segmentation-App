@@ -38,15 +38,35 @@
             <div class="separator"></div>
 
             <div class="window-pane" id="main-buttons">
-                <button class="btn" id="open-workspace">Open Workspace</button>
-                <button id="chooseSong" class="btn">Import Song</button>
-                <input type="file" id="fileInput" accept=".wav" style="display: none;">
-                <button class="btn" id="load">Load Project</button>
-                <button class="btn" id="save">Save Project</button>
+                <div class="dropdown" id="file-dropdown">
+                    <button class="btn" id="file-dropdown-button">File</button>
+                    <div class="dropdown-content" id="file-dropdown-content">
+                        <a href="#" id="open-workspace">Open Workspace</a>
+                        <a href="#" id="load">Load Project</a>
+                        <a href="#" id="save">Save Project</a>
+                        <a href="#" id="chooseSong">Import Song</a>
+                        <input type="file" id="fileInput" accept=".wav" style="display: none;">
+                    </div>
+                </div>
+                <div class="dropdown" id="algorithms-dropdown">
+                    <button class="btn" id="algorithms-dropdown-button">Algorithms</button>
+                    <div class="dropdown-content" id="algorithms-dropdown-content">
+                        <a href="#" id="segment-algorithm1">Algorithm 1</a>
+                        <a href="#" id="segment-algorithm2">Algorithm 2</a>
+                        <a href="#" id="segment-algorithm3">Algorithm 3</a>
+                        <a href="#" id="segment-algorithm4">Algorithm 4</a>
+                        <a href="#" id="auto-segment">Auto Segment</a>
+                    </div>
+                </div>
+                <div class="dropdown" id="boundaries-dropdown">
+                    <button class="btn" id="boundaries-dropdown-button">Boundaries</button>
+                    <div class="dropdown-content" id="boundaries-dropdown-content">
+                        <a href="#" id="add-boundary">Add Boundary</a>
+                        <a href="#" id="remove-boundary">Remove Boundary</a>
+                        <a href="#" id="change-boundary">Change Boundary</a>
+                    </div>
+                </div>
                 <button class="btn" id="segment-details">Segment Details</button>
-                <button class="btn" id="add-boundary">Add Boundary</button>
-                <button class="btn" id="remove-boundary">Remove Boundary</button>
-                <button class="btn" id="change-boundary">Change Boundary</button>
                 <button class="btn" id="play">
                     <img src="resources/icons/play-solid.svg" alt="Play Button">
                 </button>
@@ -88,26 +108,6 @@
                 <div class="separator"></div>
 
                 <div class="modeless-dialog vbox cull">
-                    <button id="segment-algorithm1" class="btn">
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                        <span class="button-text">Algorithm 1</span>
-                    </button>
-                    <button id="segment-algorithm2" class="btn">
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                        <span class="button-text">Algorithm 2</span>
-                    </button>
-                    <button id="segment-algorithm3" class="btn">
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                        <span class="button-text">Algorithm 3</span>
-                    </button>
-                    <button id="segment-algorithm4" class="btn">
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                        <span class="button-text">Algorithm 4</span>
-                    </button>
-                    <button id="auto-segment" class="btn">
-                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                        <span class="button-text">Auto</span>
-                    </button>
                     <input id="variability-slider" type="range" min="0" max="800" value="400" />
                 </div>
             </div>
