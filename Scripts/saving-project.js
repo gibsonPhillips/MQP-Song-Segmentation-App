@@ -103,20 +103,32 @@ async function loadTheData(chosenProject) {
     console.log('No data loaded, not implemented');
     presentErrorDialog('No data loaded from ' + chosenProject + ', not implemented');
 
+    // the path to the project directory
     let projectPath = workspace + '\\' + chosenProject;
 
-    let loadedSongFilePath = '';
+    // important file paths
+    let loadSongFilePath = '';
+    let loadMetadataFilePath = '';
+    let loadSegmentDataFilePath = '';
 
+    // look for the files
     await window.api.getDirectoryContents(projectPath).then((files) => {
         files.forEach(file => {
-            let filePathEnd = file.substring(file.length-4,file.length);
-            if (filePathEnd == '.wav') {
-                loadedSongFilePath = file;
+            if (file.substring(file.length-4,file.length) == '.wav') {
+                loadSongFilePath = projectPath + '\\' + file;
+            } else if (file.substring(file.length-13,file.length) == '-metadata.txt') {
+                loadMetadataFilePath = projectPath + '\\' + file;
+            } else if (file.substring(file.length-16,file.length) == '-segmentdata.txt') {
+                loadSegmentDataFilePath = projectPath + '\\' + file;
             }
         })
     })
 
+    console.log('song: ' + loadSongFilePath)
+    console.log('metadata: ' + loadMetadataFilePath)
+    console.log('segment data: ' + loadSegmentDataFilePath)
 
+    loadSong(loadSongFilePath);
 }
 
 
