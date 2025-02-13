@@ -130,3 +130,37 @@ document.getElementById("expand").addEventListener("click", function() {
     document.getElementsByClassName("cull")[0].style.setProperty("display","flex")
 
 });
+
+// Setup dropdown buttons
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdowns = [
+        { button: htmlElements.fileDropdown, menu: htmlElements.fileDropdownContent },
+        { button: htmlElements.algorithmsDropdown, menu: htmlElements.algorithmsDropdownContent },
+        { button: htmlElements.boundariesDropdown, menu: htmlElements.boundariesDropdownContent }
+    ];
+
+    dropdowns.forEach(({ button, menu }) => {
+        // Move dropdown outside restrictive parent
+        document.body.appendChild(menu);
+
+        function showDropdown() {
+            const rect = button.getBoundingClientRect();
+            menu.style.position = "absolute";
+            menu.style.left = `${rect.left}px`;
+            menu.style.top = `${rect.bottom}px`;
+            menu.style.display = "block";
+        }
+
+        function hideDropdown(event) {
+            // Ensure dropdown only hides when cursor leaves both button & menu
+            if (!button.contains(event.relatedTarget) && !menu.contains(event.relatedTarget)) {
+                menu.style.display = "none";
+            }
+        }
+
+        button.addEventListener("mouseenter", showDropdown);
+        button.addEventListener("mouseleave", hideDropdown);
+        menu.addEventListener("mouseleave", hideDropdown);
+        menu.addEventListener("mouseenter", showDropdown);
+    });
+});
