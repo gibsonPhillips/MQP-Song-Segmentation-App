@@ -80,6 +80,16 @@ const htmlElements = {
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
 
+    algorithmAutoButton: document.getElementById("auto-segment"),
+    fileDropdownContent: document.getElementById("file-dropdown-content"),
+    fileDropdown: document.getElementById("file-dropdown"),
+    fileDropdownButton: document.getElementById("file-dropdown-button"),
+    algorithmsDropdownContent: document.getElementById("algorithms-dropdown-content"),
+    algorithmsDropdown: document.getElementById("algorithms-dropdown"),
+    algorithmsDropdownButton: document.getElementById("algorithms-dropdown-button"),
+    boundariesDropdownContent: document.getElementById("boundaries-dropdown-content"),
+    boundariesDropdown: document.getElementById("boundaries-dropdown"),
+    boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
     regions: regions,
     zoom: zoom,
     timeline: null,
@@ -201,7 +211,7 @@ function getColor(length) {
 
 // Updates the timeline based on the current zoom level
 export function updateTimeline() {
-    const timeInterval = calculateTimeInterval(globalState.currentZoom);
+    const timeInterval = calculateTimeInterval(globalState.currentZoom, htmlElements.wavesurfer.getDuration());
     if(htmlElements.timeline != null) {
         htmlElements.timeline.destroy(); // Remove the old timeline
     }
@@ -220,13 +230,25 @@ export function updateTimeline() {
 }
 
 // Determines time interval for given zoom level
-function calculateTimeInterval(zoomLevel) {
-    if (zoomLevel > 300) return 0.1;
-    if (zoomLevel > 200) return 0.25;
-    if (zoomLevel > 150) return 0.5;
-    if (zoomLevel > 100) return 1;
-    if (zoomLevel > 50) return 2;
-    return 5;
+function calculateTimeInterval(zoomLevel, duration) {
+    let baseInterval;
+
+    // Adjust based on zoom level
+    if (zoomLevel > 300) baseInterval = 0.1;
+    else if (zoomLevel > 200) baseInterval = 0.25;
+    else if (zoomLevel > 150) baseInterval = 0.5;
+    else if (zoomLevel > 100) baseInterval = 1;
+    else if (zoomLevel > 50) baseInterval = 2;
+    else if (zoomLevel > 10) baseInterval = 5;
+    else if (zoomLevel > 5) baseInterval = 10;
+    else baseInterval = 20;
+
+    // Adjust further based on duration to avoid label crowding
+    if (duration > 300 && zoomLevel <= 10) baseInterval *= 2; // Longer waveform, spread labels out more
+    if (duration > 600 && zoomLevel <= 10) baseInterval *= 3;
+    if (duration > 1200 && zoomLevel <= 10) baseInterval *= 4;
+
+    return baseInterval;
 }
 
 // displays the error dialog
