@@ -228,3 +228,19 @@ function calculateTimeInterval(zoomLevel) {
     if (zoomLevel > 50) return 2;
     return 5;
 }
+
+// displays the error dialog
+export function presentErrorDialog(message) {
+    htmlElements.errorDialogMessage.textContent = message;
+    htmlElements.errorDialog.showModal();
+}
+
+// loads the song in the app
+export function loadSong(filePath) {
+    console.log('File path:', filePath);
+    window.songFilePath = filePath;
+    htmlElements.regions.clearRegions();
+    htmlElements.wavesurfer.load(filePath);
+    globalState.currentZoom = 10;
+    updateTimeline();
+}

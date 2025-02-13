@@ -1,4 +1,4 @@
-import { globalState, updateSegmentElementsList, updateTimeline } from './globalData.js';
+import { globalState, updateSegmentElementsList, updateTimeline, loadSong } from './globalData.js';
 import htmlElements from './globalData.js';
 
 // Algorithm buttons
@@ -17,15 +17,6 @@ htmlElements.importButton.addEventListener('click', async () => {
         console.log('No file selected');
     }
 });
-
-function loadSong(filePath) {
-    console.log('File path:', filePath);
-    window.songFilePath = filePath;
-    htmlElements.regions.clearRegions();
-    htmlElements.wavesurfer.load(filePath);
-    globalState.currentZoom = 10;
-    updateTimeline();
-}
 
 // runs the segmentation algorithm
 async function segment(algorithm) {

@@ -1,5 +1,6 @@
 import htmlElements from './globalData.js';
 import globalState from './globalData.js';
+import { loadSong, presentErrorDialog } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -83,9 +84,9 @@ htmlElements.saveButton.addEventListener('click', async () => {
     console.log(window.songFilePath)
 
     if (window.songFilePath != '' && window.songFilePath != null) {
-        let filePathEnd = window.songFilePath.split("\\").pop();
-        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
-        console.log(filePathEnd)
+//        let filePathEnd = window.songFilePath.split("\\").pop();
+//        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
+//        console.log(filePathEnd)
         selectSaveProject();
 
     } else {
@@ -98,15 +99,23 @@ htmlElements.saveButton.addEventListener('click', async () => {
 // Functionality functions
 
 // loads the data
-function loadTheData(chosenProject) {
+async function loadTheData(chosenProject) {
     console.log('No data loaded, not implemented');
     presentErrorDialog('No data loaded from ' + chosenProject + ', not implemented');
 
-    window.api.getDirectoryContents(workspace).then((files) => {
-        files.forEach(file => {
+    let projectPath = workspace + '\\' + chosenProject;
 
+    let loadedSongFilePath = '';
+
+    await window.api.getDirectoryContents(projectPath).then((files) => {
+        files.forEach(file => {
+            let filePathEnd = file.substring(file.length-4,file.length);
+            if (filePathEnd == '.wav') {
+                loadedSongFilePath = file;
+            }
         })
     })
+
 
 }
 
@@ -264,8 +273,3 @@ function createMetadataFileText() {
 //        }
 //    });
 //}
-
-function presentErrorDialog(message) {
-    htmlElements.errorDialogMessage.textContent = message;
-    htmlElements.errorDialog.showModal();
-}
