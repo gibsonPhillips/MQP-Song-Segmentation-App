@@ -12,17 +12,20 @@ htmlElements.algorithmAutoButton.addEventListener("click", () => {autoSegment(4,
 htmlElements.importButton.addEventListener('click', async () => {
     const filePaths = await window.api.openFile();
     if (filePaths && filePaths.length > 0) {
-        // Display the file path
-        console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
-        window.songFilePath = filePaths[0];
-        htmlElements.regions.clearRegions();
-        htmlElements.wavesurfer.load(filePaths[0]);
-        globalState.currentZoom = 10;
-        updateTimeline();
+        loadSong(filePaths[0]);
     } else {
         console.log('No file selected');
     }
 });
+
+function loadSong(filePath) {
+    console.log('File path:', filePath);
+    window.songFilePath = filePath;
+    htmlElements.regions.clearRegions();
+    htmlElements.wavesurfer.load(filePath);
+    globalState.currentZoom = 10;
+    updateTimeline();
+}
 
 // runs the segmentation algorithm
 async function segment(algorithm) {

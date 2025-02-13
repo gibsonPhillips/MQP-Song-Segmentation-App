@@ -76,13 +76,6 @@ htmlElements.loadButton.addEventListener('click', async () => {
         console.error('Issue getting the files within the directory:\n' + error);
         presentErrorDialog('Issue getting the files within the directory:\n' + error);
     });
-
-    // load song
-
-
-    // load the data
-
-    // Implement
 });
 
 // when save is clicked
@@ -108,6 +101,13 @@ htmlElements.saveButton.addEventListener('click', async () => {
 function loadTheData(chosenProject) {
     console.log('No data loaded, not implemented');
     presentErrorDialog('No data loaded from ' + chosenProject + ', not implemented');
+
+    window.api.getDirectoryContents(workspace).then((files) => {
+        files.forEach(file => {
+
+        })
+    })
+
 }
 
 
