@@ -129,6 +129,7 @@ async function loadTheData(chosenProject) {
 
     // loads the song
     loadSong(loadSongFilePath);
+    window.songFilePath = loadSongFilePath
 
     // loads the metadata
     // implement
@@ -138,8 +139,10 @@ async function loadTheData(chosenProject) {
     if (segmentData.length == 0) {
         console.log('No data loaded');
         presentErrorDialog('No data loaded from ' + chosenProject);
+    } else {
+        window.segmentData = segmentData
     }
-    updateSegmentElementsList(window.segmentData, true)
+    updateSegmentElementsList(window.segmentData, true);
 }
 
 
@@ -274,12 +277,26 @@ function saveTheData(chosenProject) {
 
 // Helper Functions
 
-function parseSegmentDataFile(segmentDataFilePath) {
+async function parseSegmentDataFile(segmentDataFilePath) {
     let segmentData = []
     window.api.getFile(segmentDataFilePath).then((result) => {
         console.log(result)
         if (result.content != 'No data') {
-            // implement
+            let rowsText = result.content.split('\n')
+            rowsText.pop()
+            let rows = []
+            rowsText.forEach(textRow => {
+                let textTuple = textRow.split(',')
+                let obj = {
+                    number: parseInt(textTuple[0]),
+                    start: parseFloat(textTuple[1]),
+                    end: parseFloat(textTuple[2]),
+                    label: parseInt(textTuple[3])
+                };
+                rows.push(obj);
+            })
+            console.log(rows)
+            segmentData = rows
         }
     })
     return segmentData;
