@@ -69,6 +69,7 @@ const htmlElements = {
     boundariesDropdownContent: document.getElementById("boundaries-dropdown-content"),
     boundariesDropdown: document.getElementById("boundaries-dropdown"),
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
+    groupEditingButton: document.getElementById("group-editing"),
     regions: regions,
     zoom: zoom,
     timeline: null,
@@ -176,7 +177,7 @@ export function updateLabelPositions() {
 // Updates the specified segment elements label value
 function updateSegmentLabel(segmentElement, value) {
     segmentElement.label = value;
-    updateSegmentElementsList(window.segmentData, false);
+    updateSegmentElementsList(window.segmentData, true);
 }
 
 // Gets the next color to be used for segment region

@@ -2,6 +2,7 @@ import { globalState, updateSegmentElementsList } from './globalData.js';
 import htmlElements from './globalData.js';
 
 let editBoundaryMode = false;
+let groupEditingMode = false;
 
 htmlElements.addBoundaryButton.onclick = () => {
     // Reset edit mode
@@ -77,6 +78,16 @@ htmlElements.changeBoundaryButton.onclick = () => {
             resize: editBoundaryMode
         });
     });
+}
+
+htmlElements.groupEditingButton.onclick = () => {
+    groupEditingMode = !groupEditingMode;
+
+    if (!groupEditingMode) {
+        htmlElements.groupEditingButton.style.backgroundColor = "white";
+    } else {
+        htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
+    }
 }
 
 // Handle region update for editing boundaries
