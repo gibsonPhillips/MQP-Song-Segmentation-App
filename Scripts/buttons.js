@@ -11,6 +11,10 @@ htmlElements.closeDialogButton.onclick = () => {
     htmlElements.removeBoundaryDialog.close();
 }
 
+htmlElements.closeLoadDialogButton.onclick = () => {
+    htmlElements.loadMenuDialog.close();
+}
+
 htmlElements.closeSaveDialogButton.onclick = () => {
     htmlElements.saveMenuDialog.close();
 }

@@ -53,7 +53,14 @@ htmlElements.loadButton.addEventListener('click', async () => {
         //placeholders
 
             files.forEach(file => {
-
+                let hbox = document.createElement('div')
+                hbox.class = 'hbox'
+                let checkBox = document.createElement('input')
+                checkBox.type = 'checkbox'
+                checkBox.id = file
+                let checkBoxLabel = document.createElement('label')
+                checkBoxLabel.for = file
+                checkBoxLabel.innerHTML = 'Check Box:'
                 // Create a button for each existing project
                 let newButton = document.createElement('button');
                 newButton.class='btn';
@@ -62,9 +69,14 @@ htmlElements.loadButton.addEventListener('click', async () => {
                     chosenProject = file
                     console.log(chosenProject);
                     htmlElements.loadMenuDialog.close();
-                    loadTheData(chosenProject)
+                    const isChecked = checkBox.checked;
+                    loadTheData(chosenProject, isChecked)
                 })
-                vbox.appendChild(newButton);
+                hbox.appendChild(newButton)
+                hbox.appendChild(checkBoxLabel)
+                hbox.appendChild(checkBox)
+                console.log(checkBox)
+                vbox.appendChild(hbox);
             });
         }
 
@@ -139,7 +151,7 @@ htmlElements.deleteButton.addEventListener('click', async () => {
 // Functionality functions
 
 // loads the data
-async function loadTheData(chosenProject) {
+async function loadTheData(chosenProject, saveSongFile) {
 
     // the path to the project directory
     let projectPath = workspace + '\\' + chosenProject;
