@@ -88,8 +88,18 @@ ipcMain.handle('move-song-file', async (event, currentFilePath, newPath) => {
     });
 });
 
-ipcMain.handle('delete-dir', async (event, filePath) => {
-    fs.rmdir(filePath, (err) => {
+ipcMain.handle('delete-dir', async (event, dirPath) => {
+    fs.rmdir(dirPath, (err) => {
+        if (err) {
+            console.error("Error deleting directory:", err);
+        } else {
+            console.log('Directory ' + dirPath + ' deleted successfully');
+        }
+    });
+});
+
+ipcMain.handle('delete-file', async (event, filePath) => {
+    fs.unlink(filePath, (err) => {
         if (err) {
             console.error("Error deleting file:", err);
         } else {

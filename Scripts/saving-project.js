@@ -252,7 +252,7 @@ async function selectSaveProject() {
 }
 
 //save the project data
-function saveTheData(chosenProject) {
+async function saveTheData(chosenProject) {
 
     if (chosenProject != '') {
 
@@ -313,17 +313,33 @@ function saveTheData(chosenProject) {
 }
 
 // deletes the project
-function deleteTheProject(chosenProject) {
+async function deleteTheProject(chosenProject) {
     console.log('Deleted: ' + chosenProject)
     presentErrorDialog('Deleted: ' + chosenProject)
 
     let projectPath = workspace + '\\' + chosenProject;
 
-    window.api.deleteDir(projectPath).then((result) => {
+    await window.api.getDirectoryContents(projectPath).then((files) => {
+        if (files.length != 0) {
+            files.forEach(file => {
+                let projectFilePath = chosenProject + '\\' + file
+                window.api.deleteFile(projectFilePath).then((result) => {
+                    console.log(projectFilePath + ' deleted')
+                }).catch((err) => {
+                    console.error('error deleting file: ' + projectFilePath)
+                    presentErrorDialog('error deleting file: ' + projectFilePath)
+                });
+            });
+        }
+    }).catch((err) => {
+        console.error('Issue get directory contents: ' + err);
+        presentErrorDialog('Issue get directory contents: ' + err);
+    })
+    await window.api.deleteDir(projectPath).then((result) => {
         console.log(chosenProject + ' deleted')
     }).catch((err) => {
-        console.error('error deleting file: ' + chosenProject)
-        presentErrorDialog('error deleting file: ' + chosenProject)
+        console.error('error deleting directory: ' + chosenProject)
+        presentErrorDialog('error deleting directory: ' + chosenProject)
     });
 }
 
