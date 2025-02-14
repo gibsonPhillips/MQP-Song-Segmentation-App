@@ -68,6 +68,16 @@ const htmlElements = {
     saveFiles: document.getElementById('save-files'),
     closeSaveDialogButton: document.querySelector('#close-save-dialog'),
 
+    // delete menu dialog
+    deleteMenuDialog: document.querySelector('#delete-dialog'),
+    deleteFiles: document.getElementById('delete-files'),
+    closeDeleteDialogButton: document.querySelector('#close-delete-dialog'),
+
+    // are you sure dialog
+    areYouSureDialog: document.querySelector('#are-you-sure-dialog'),
+    areYouSureHeader: document.getElementById('are-you-sure-header'),
+    closeAreYouSureDialogButton: document.querySelector('#close-are-you-sure-dialog'),
+
     // error dialog
     errorDialog: document.getElementById('error-dialog'),
     closeErrorDialogButton: document.getElementById('close-error-dialog'),
@@ -77,7 +87,7 @@ const htmlElements = {
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
-    algorithmAutoButton: document.getElementById("auto-segment"),
+    deleteButton: document.getElementById('delete'),
 
     // drop down stuff
     fileDropdownContent: document.getElementById("file-dropdown-content"),

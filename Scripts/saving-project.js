@@ -96,6 +96,50 @@ htmlElements.saveButton.addEventListener('click', async () => {
     }
 });
 
+// when delete is clicked
+htmlElements.deleteButton.addEventListener('click', async () => {
+    console.log('hello')
+    console.log('not implemented')
+    presentErrorDialog('not implemented')
+
+    // scan the directory
+    let chosenProject = ''
+    let vbox = htmlElements.loadFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(workspace).then((files) => {
+        if (files.length != 0) {
+        // Implement selecting the project
+        //placeholders
+
+            files.forEach(file => {
+
+                // Create a button for each existing project
+                let newButton = document.createElement('button');
+                newButton.class='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    console.log(chosenProject);
+                    htmlElements.loadMenuDialog.close();
+                    loadTheData(chosenProject)
+                })
+                vbox.appendChild(newButton);
+            });
+        }
+
+        //Show the dialog
+        htmlElements.loadMenuDialog.showModal();
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
+
+});
+
 
 // Functionality functions
 
@@ -271,6 +315,11 @@ function saveTheData(chosenProject) {
     }
 
     // Implement Saving of the song file
+}
+
+// deletes the project
+function deleteTheProject(chosenProject) {
+    console.log('Not Implemented')
 }
 
 // Helper Functions
