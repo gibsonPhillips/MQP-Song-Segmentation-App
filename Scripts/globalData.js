@@ -173,11 +173,10 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             labelInput.value = element.label;
             labelInput.className = "region-label-input";
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
-            labelInput.addEventListener("input", (event) => {
+            labelInput.addEventListener("blur", (event) => {
                 updateSegmentLabel(element, event.target.value);
             });
             htmlElements.labelsContainer.appendChild(labelInput);
-            updateLabelPositions();
 
             // Sync text input value with region data
             labelInput.addEventListener("input", () => {
@@ -186,9 +185,11 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             });
 
             // Update position when region is moved/resized
-            region.on("update-end", updateLabelPositions);
+            region.on("update-end", requestAnimationFrame(updateLabelPositions));
         }
     });
+
+    setTimeout(updateLabelPositions, 10);
 }
 
 // Updates label positions with the most up to date waveform
@@ -199,6 +200,7 @@ export function updateLabelPositions() {
         let waveform = document.getElementById('waveform');
         label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
         label.style.width = `${regionRect.width}px`;
+        console.log(region);
     });
 }
 
