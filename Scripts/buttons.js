@@ -15,6 +15,10 @@ htmlElements.closeSaveDialogButton.onclick = () => {
     htmlElements.saveMenuDialog.close();
 }
 
+htmlElements.closeDeleteDialogButton.onclick = () => {
+    htmlElements.deleteMenuDialog.close();
+}
+
 htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
 }
