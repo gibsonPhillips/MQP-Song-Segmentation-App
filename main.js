@@ -78,6 +78,36 @@ ipcMain.handle('write-to-file', async (event, filePath, data) => {
   }
 });
 
+ipcMain.handle('move-song-file', async (event, currentFilePath, newPath) => {
+    fs.copyFile(currentFilePath, newPath, (err) => {
+        if (err) {
+            console.error("Error moving file:", err);
+        } else {
+            console.log('File moved successfully from ' + currentFilePath + ' to ' + newPath);
+        }
+    });
+});
+
+ipcMain.handle('delete-dir', async (event, dirPath) => {
+    fs.rmdir(dirPath, (err) => {
+        if (err) {
+            console.error("Error deleting directory:", err);
+        } else {
+            console.log('Directory ' + dirPath + ' deleted successfully');
+        }
+    });
+});
+
+ipcMain.handle('delete-file', async (event, filePath) => {
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error("Error deleting file:", err);
+        } else {
+            console.log('File ' + filePath + ' deleted successfully');
+        }
+    });
+});
+
 
 // Function to start the Python server
 function startPythonServer() {

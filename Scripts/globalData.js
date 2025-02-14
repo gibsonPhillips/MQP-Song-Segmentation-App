@@ -3,12 +3,9 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-window.filePath = '';
+window.songFilePath = '';
 window.segmentData = [];
 window.clusters = 0;
-//function updateGlobalVar(newValue) {
-//  window.myGlobalVar = newValue;
-//}
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create();
@@ -25,20 +22,27 @@ export let globalState = {
     headers: ["number", "start", "end", "label"],
     // stores the wavesurfer regions for segments
     segmentRegions: [],
-    currentZoom: zoom.options.minPxPerSec
+    currentZoom: zoom.options.minPxPerSec,
+    timeline: null
 };
 
 const htmlElements = {
     // Constants for HTML elements
     segmentDetailsDialog: document.querySelector('#segment-details-dialog'),
     removeBoundaryDialog: document.querySelector('#remove-boundary-dialog'),
+
+    // import/export buttons
     importButton: document.getElementById('chooseSong'),
     exportButton: document.querySelector('#export'),
+
+    // Segment buttons
     segmentDetailsButton: document.querySelector('#segment-details'),
+    closeDialogButton: document.querySelector('#close-dialog'),
     addBoundaryButton: document.querySelector('#add-boundary'),
     removeBoundaryButton: document.querySelector('#remove-boundary'),
     changeBoundaryButton: document.querySelector('#change-boundary'),
-    closeDialogButton: document.querySelector('#close-dialog'),
+
+    // wavesurfer buttons
     playButton: document.querySelector('#play'),
     forwardButton: document.querySelector('#forward'),
     backButton: document.querySelector('#backward'),
@@ -46,20 +50,46 @@ const htmlElements = {
     zoomOutButton: document.querySelector('#zoom-out'),
     labelsContainer: document.getElementById("labels-container"),
     waveformContainer: document.getElementById("waveform"),
+
+    // algorithm buttons
     algorithm1Button: document.getElementById("segment-algorithm1"),
     algorithm2Button: document.getElementById("segment-algorithm2"),
     algorithm3Button: document.getElementById("segment-algorithm3"),
     algorithm4Button: document.getElementById("segment-algorithm4"),
+    algorithmAutoButton: document.getElementById("auto-segment"),
+
+    // load menu dialog
+    loadMenuDialog: document.querySelector('#load-dialog'),
+    loadFiles: document.getElementById('load-files'),
+    closeLoadDialogButton: document.querySelector('#close-load-dialog'),
+
+    // save menu dialog
     saveMenuDialog: document.querySelector('#save-dialog'),
     saveFiles: document.getElementById('save-files'),
     closeSaveDialogButton: document.querySelector('#close-save-dialog'),
+
+    // delete menu dialog
+    deleteMenuDialog: document.querySelector('#delete-dialog'),
+    deleteFiles: document.getElementById('delete-files'),
+    closeDeleteDialogButton: document.querySelector('#close-delete-dialog'),
+
+    // are you sure dialog
+    areYouSureDialog: document.querySelector('#are-you-sure-dialog'),
+    areYouSureHeader: document.getElementById('are-you-sure-header'),
+    closeAreYouSureDialogButton: document.querySelector('#close-are-you-sure-dialog'),
+
+    // error dialog
     errorDialog: document.getElementById('error-dialog'),
     closeErrorDialogButton: document.getElementById('close-error-dialog'),
     errorDialogMessage: document.getElementById('error-message'),
+
+    // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
     saveButton: document.getElementById('save'),
-    algorithmAutoButton: document.getElementById("auto-segment"),
+    deleteButton: document.getElementById('delete'),
+
+    // drop down stuff
     fileDropdownContent: document.getElementById("file-dropdown-content"),
     fileDropdown: document.getElementById("file-dropdown"),
     fileDropdownButton: document.getElementById("file-dropdown-button"),
@@ -71,8 +101,6 @@ const htmlElements = {
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
     groupEditingButton: document.getElementById("group-editing"),
     regions: regions,
-    zoom: zoom,
-    timeline: null,
 
     // Create an instance of WaveSurfer
     wavesurfer: WaveSurfer.create({
@@ -107,7 +135,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
 
     // If waveform is being updated
     if(updateWaveform) {
-        htmlElements.regions.clearRegions()
+        regions.clearRegions()
         globalState.colorMap.clear();
         htmlElements.labelsContainer.textContent = "";
         globalState.segmentRegions = [];
@@ -129,7 +157,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
 
         if(updateWaveform) {
             // Create new region
-            let region = htmlElements.regions.addRegion({
+            let region = regions.addRegion({
                 start: element.start,
                 end: element.end,
                 color: globalState.colorMap.get(element.label),
@@ -192,10 +220,10 @@ function getColor(length) {
 // Updates the timeline based on the current zoom level
 export function updateTimeline() {
     const timeInterval = calculateTimeInterval(globalState.currentZoom, htmlElements.wavesurfer.getDuration());
-    if(htmlElements.timeline != null) {
-        htmlElements.timeline.destroy(); // Remove the old timeline
+    if(globalState.timeline != null) {
+        globalState.timeline.destroy(); // Remove the old timeline
     }
-    htmlElements.timeline = TimelinePlugin.create({
+    globalState.timeline = TimelinePlugin.create({
         height: 20,
         insertPosition: 'beforebegin',
         timeInterval: timeInterval,
@@ -206,13 +234,13 @@ export function updateTimeline() {
           color: '#2D5B88',
         }
     });
-    htmlElements.wavesurfer.registerPlugin(htmlElements.timeline);
+    htmlElements.wavesurfer.registerPlugin(globalState.timeline);
 }
 
 // Determines time interval for given zoom level
 function calculateTimeInterval(zoomLevel, duration) {
     let baseInterval;
-    
+
     // Adjust based on zoom level
     if (zoomLevel > 300) baseInterval = 0.1;
     else if (zoomLevel > 200) baseInterval = 0.25;
@@ -227,6 +255,22 @@ function calculateTimeInterval(zoomLevel, duration) {
     if (duration > 300 && zoomLevel <= 10) baseInterval *= 2; // Longer waveform, spread labels out more
     if (duration > 600 && zoomLevel <= 10) baseInterval *= 3;
     if (duration > 1200 && zoomLevel <= 10) baseInterval *= 4;
-    
+
     return baseInterval;
+}
+
+// displays the error dialog
+export function presentErrorDialog(message) {
+    htmlElements.errorDialogMessage.textContent = message;
+    htmlElements.errorDialog.showModal();
+}
+
+// loads the song in the app
+export async function loadSong(filePath) {
+    console.log('File path:', filePath);
+    window.songFilePath = filePath;
+    regions.clearRegions();
+    await htmlElements.wavesurfer.load(filePath);
+    globalState.currentZoom = 10;
+    updateTimeline();
 }

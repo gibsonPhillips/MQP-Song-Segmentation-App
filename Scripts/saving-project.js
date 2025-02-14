@@ -1,9 +1,11 @@
 import htmlElements from './globalData.js';
 import globalState from './globalData.js';
+import { loadSong, presentErrorDialog, updateSegmentElementsList } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
 
+// gets the workspace
 let appdataPromise = window.api.getAppData().then((appdata) => {
     console.log(appdata);
     workspace = appdata + '\\Song Segmentation'
@@ -26,9 +28,6 @@ let appdataPromise = window.api.getAppData().then((appdata) => {
 });
 
 
-// Button Clicks
-
-
 // When the workspace button is clicked
 htmlElements.openWorkspaceButton.addEventListener('click', async () => {
     // Gets the appdata
@@ -41,19 +40,52 @@ htmlElements.openWorkspaceButton.addEventListener('click', async () => {
 
 // when load is clicked
 htmlElements.loadButton.addEventListener('click', async () => {
-    console.log('not implemented')
-    presentErrorDialog('not implemented')
-    // Implement
+
+    // scan the directory
+    let chosenProject = ''
+    let vbox = htmlElements.loadFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(workspace).then((files) => {
+        if (files.length != 0) {
+        // Implement selecting the project
+        //placeholders
+
+            files.forEach(file => {
+
+                // Create a button for each existing project
+                let newButton = document.createElement('button');
+                newButton.class='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    console.log(chosenProject);
+                    htmlElements.loadMenuDialog.close();
+                    loadTheData(chosenProject)
+                })
+                vbox.appendChild(newButton);
+            });
+        }
+
+        //Show the dialog
+        htmlElements.loadMenuDialog.showModal();
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
 });
 
 // when save is clicked
 htmlElements.saveButton.addEventListener('click', async () => {
-    console.log(window.filePath)
+    console.log(window.songFilePath)
 
-    if (window.filePath != '' && window.filePath != null) {
-        let filePathEnd = window.filePath.split("\\").pop();
-        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
-        console.log(filePathEnd)
+    if (window.songFilePath != '' && window.songFilePath != null) {
+//        let filePathEnd = window.songFilePath.split("\\").pop();
+//        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
+//        console.log(filePathEnd)
         selectSaveProject();
 
     } else {
@@ -62,9 +94,94 @@ htmlElements.saveButton.addEventListener('click', async () => {
     }
 });
 
+// when delete is clicked
+htmlElements.deleteButton.addEventListener('click', async () => {
+
+    // scan the directory
+    let chosenProject = ''
+    let vbox = htmlElements.deleteFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(workspace).then((files) => {
+        if (files.length != 0) {
+        // Implement selecting the project
+        //placeholders
+
+            files.forEach(file => {
+
+                // Create a button for each existing project
+                let newButton = document.createElement('button');
+                newButton.class='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    console.log(chosenProject);
+                    htmlElements.deleteMenuDialog.close();
+                    deleteTheProject(chosenProject)
+                })
+                vbox.appendChild(newButton);
+            });
+        }
+
+        //Show the dialog
+        htmlElements.deleteMenuDialog.showModal();
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
+
+});
+
 
 // Functionality functions
 
+// loads the data
+async function loadTheData(chosenProject) {
+
+    // the path to the project directory
+    let projectPath = workspace + '\\' + chosenProject;
+
+    // important file paths
+    let loadSongFilePath = '';
+    let loadMetadataFilePath = '';
+    let loadSegmentDataFilePath = '';
+
+    // look for the files
+    await window.api.getDirectoryContents(projectPath).then((files) => {
+        files.forEach(file => {
+            if (file.substring(file.length-4,file.length) == '.wav') {
+                loadSongFilePath = projectPath + '\\' + file;
+            } else if (file.substring(file.length-13,file.length) == '-metadata.txt') {
+                loadMetadataFilePath = projectPath + '\\' + file;
+            } else if (file.substring(file.length-16,file.length) == '-segmentdata.txt') {
+                loadSegmentDataFilePath = projectPath + '\\' + file;
+            }
+        })
+    })
+
+    console.log('song: ' + loadSongFilePath)
+    console.log('metadata: ' + loadMetadataFilePath)
+    console.log('segment data: ' + loadSegmentDataFilePath)
+
+    // loads the song
+    await loadSong(loadSongFilePath);
+    window.songFilePath = loadSongFilePath
+
+    // loads the metadata
+    // implement
+
+    // loads the segment data
+    window.segmentData = await parseSegmentDataFile(loadSegmentDataFilePath);
+    if (window.segmentData.length === 0) {
+        console.log('No data loaded');
+        presentErrorDialog('No data loaded from ' + chosenProject);
+    } else {
+        updateSegmentElementsList(window.segmentData, true);
+    }
+}
 
 
 // Queues the pop-up to save the project
@@ -108,16 +225,16 @@ async function selectSaveProject() {
             chosenProject = newInput.value
             console.log(chosenProject);
             htmlElements.saveMenuDialog.close();
+
             await window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
-               console.log('Directory creation handled successfully.');
-               saveTheData(chosenProject)
+                console.log('Directory creation handled successfully.');
+                saveTheData(chosenProject)
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
-                console.error(error);
+                console.error('Issue creating directory:\n' + error);
                 presentErrorDialog('Issue creating directory:\n' + error);
 
             });
-            saveTheData(chosenProject)
         })
 
         hbox.appendChild(newInput);
@@ -129,30 +246,35 @@ async function selectSaveProject() {
         htmlElements.saveMenuDialog.showModal();
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
-        console.error(error);
+        console.error('Issue getting the files within the directory:\n' + error);
         presentErrorDialog('Issue getting the files within the directory:\n' + error);
     });
 }
 
 //save the project data
-function saveTheData(chosenProject) {
+async function saveTheData(chosenProject) {
+
     if (chosenProject != '') {
+
         let saveDirectoryPath = workspace + "\\" + chosenProject
         console.log('saveDirectoryPath: ' + saveDirectoryPath);
 
-        console.log(window.segmentData)
         if (window.segmentData != null && window.segmentData.length != 0) {
 
             try {
+
                 // Writing the segment data to the file
                 let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
-
-                let segmentDataText = createFileText();
+                let segmentDataText = createSegmentDataFileText();
                 window.api.writeToFile(saveSegmentDataFilePath, segmentDataText);
 
                 // Writing the metadata to the file
                 let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
-                window.api.writeToFile(saveMetadataFilePath, 'Not Implemented');
+                let metadataText = createMetadataFileText();
+                window.api.writeToFile(saveMetadataFilePath, metadataText);
+
+                let filePathEnd = window.songFilePath.split("\\").pop();
+                window.api.moveSongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
@@ -160,8 +282,27 @@ function saveTheData(chosenProject) {
             }
 
         } else {
-            console.log('No data was saved')
-            presentErrorDialog('No data was saved')
+
+            // Saves no data but saves the song
+            try {
+
+                // Writing the segment data to the file
+                let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
+                window.api.writeToFile(saveSegmentDataFilePath, 'No data');
+
+                // Writing the metadata to the file
+                let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
+                window.api.writeToFile(saveMetadataFilePath, 'No data');
+
+                let filePathEnd = window.songFilePath.split("\\").pop();
+                window.api.moveSongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+
+            } catch (error) {
+                console.error('Error in writing to file:\n', error);
+                presentErrorDialog('Error in writing to file:\n' + error)
+            }
+            console.log('Song was saved, no data was saved')
+            presentErrorDialog('Song was saved, no data was saved')
         }
     } else {
         console.log('No data was saved (2)')
@@ -171,9 +312,68 @@ function saveTheData(chosenProject) {
     // Implement Saving of the song file
 }
 
+// deletes the project
+async function deleteTheProject(chosenProject) {
+    console.log('Deleted: ' + chosenProject)
+    presentErrorDialog('Deleted: ' + chosenProject)
+
+    let projectPath = workspace + '\\' + chosenProject;
+
+    await window.api.getDirectoryContents(projectPath).then((files) => {
+        if (files.length != 0) {
+            files.forEach(file => {
+                let projectFilePath = projectPath + '\\' + file
+                window.api.deleteFile(projectFilePath).then((result) => {
+                    console.log(projectFilePath + ' deleted')
+                }).catch((err) => {
+                    console.error('error deleting file: ' + projectFilePath)
+                    presentErrorDialog('error deleting file: ' + projectFilePath)
+                });
+            });
+        }
+    }).catch((err) => {
+        console.error('Issue get directory contents: ' + err);
+        presentErrorDialog('Issue get directory contents: ' + err);
+    })
+    await window.api.deleteDir(projectPath).then((result) => {
+        console.log(chosenProject + ' deleted')
+    }).catch((err) => {
+        console.error('error deleting directory: ' + chosenProject)
+        presentErrorDialog('error deleting directory: ' + chosenProject)
+    });
+}
+
 // Helper Functions
 
-function createFileText() {
+async function parseSegmentDataFile(segmentDataFilePath) {
+    let rows = [];
+    let result = await window.api.getFile(segmentDataFilePath);
+
+    console.log(result);
+
+    if (result.content !== 'No data') {
+        let rowsText = result.content.trim().split('\n');
+        rowsText.pop()
+        rowsText.forEach(textRow => {
+            let textTuple = textRow.split(',')
+            let obj = {
+                number: parseInt(textTuple[0]),
+                start: parseFloat(textTuple[1]),
+                end: parseFloat(textTuple[2]),
+                label: parseInt(textTuple[3])
+            };
+//                tuple.push(parseInt(textTuple[0]))
+//                tuple.push(parseFloat(textTuple[1]))
+//                tuple.push(parseFloat(textTuple[2]))
+//                tuple.push(parseInt(textTuple[3]))
+            rows.push(obj);
+        })
+        console.log(rows)
+    }
+    return rows;
+}
+
+function createSegmentDataFileText() {
     let text = '';
     window.segmentData.forEach(segment => {
         text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + '\n'
@@ -182,7 +382,16 @@ function createFileText() {
     return text;
 }
 
-function presentErrorDialog(message) {
-    htmlElements.errorDialogMessage.textContent = message;
-    htmlElements.errorDialog.showModal();
+function createMetadataFileText() {
+    return 'Metadata';
 }
+
+//function moveSongFile(currentFilePath, newPath){
+//    fs.rename(currentFilePath, newPath, (err) => {
+//        if (err) {
+//            console.error("Error moving file:", err);
+//        } else {
+//            console.log('File moved successfully from ' + currentFilePath + ' to ' + newPath);
+//        }
+//    });
+//}

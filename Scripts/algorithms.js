@@ -1,4 +1,4 @@
-import { globalState, updateSegmentElementsList, updateTimeline } from './globalData.js';
+import { globalState, updateSegmentElementsList, updateTimeline, loadSong } from './globalData.js';
 import htmlElements from './globalData.js';
 
 // Algorithm buttons
@@ -12,13 +12,7 @@ htmlElements.algorithmAutoButton.addEventListener("click", () => {autoSegment(4,
 htmlElements.importButton.addEventListener('click', async () => {
     const filePaths = await window.api.openFile();
     if (filePaths && filePaths.length > 0) {
-        // Display the file path
-        console.log('File path:', filePaths[0]); // This is available in Electron or environments with full file access
-        window.filePath = filePaths[0];
-        htmlElements.regions.clearRegions();
-        htmlElements.wavesurfer.load(filePaths[0]);
-        globalState.currentZoom = 10;
-        updateTimeline();
+        await loadSong(filePaths[0]);
     } else {
         console.log('No file selected');
     }
@@ -27,7 +21,7 @@ htmlElements.importButton.addEventListener('click', async () => {
 // runs the segmentation algorithm
 async function segment(algorithm) {
     // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
-    const inputName = window.filePath;
+    const inputName = window.songFilePath;
     window.clusters = determineVariability();
     try {
         console.log("Segmenting begin");
@@ -45,10 +39,10 @@ async function segment(algorithm) {
 
         // Parse the JSON response
         const data = await response.json();
+        console.log(data)
         window.segmentData = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
-
         updateSegmentElementsList(window.segmentData, true)
     } catch (error) {
         console.error('Error:', error);
@@ -65,7 +59,7 @@ function determineVariability() {
 
 
 async function autoSegment(clusters, closestClusters, closestAverage, finalCall) {
-    const inputName = window.filePath;
+    const inputName = window.songFilePath;
     try {
         console.log("Segmenting begin");
 

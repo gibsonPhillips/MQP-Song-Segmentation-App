@@ -44,6 +44,7 @@
                         <a href="#" id="open-workspace">Open Workspace</a>
                         <a href="#" id="load">Load Project</a>
                         <a href="#" id="save">Save Project</a>
+                        <a href="#" id="delete">Delete Project</a>
                         <a href="#" id="chooseSong">Import Song</a>
                         <input type="file" id="fileInput" accept=".wav" style="display: none;">
                     </div>
@@ -146,13 +147,43 @@
         </table>
     </dialog>
 
+    <dialog id="load-dialog">
+        <h2 id>Choose Project to Load</h2>
+        <button class="btn" id="close-load-dialog">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div class="window-pane">
+            <div class="vbox" id="load-files"></div>
+        </div>
+    </dialog>
+
     <dialog id="save-dialog">
-        <h2>Choose Project to Save to</h2>
+        <h2 id>Choose Project to Save to</h2>
         <button class="btn" id="close-save-dialog">
             <img src="resources/icons/xmark.svg" alt="Close Button">
         </button>
         <div class="window-pane">
             <div class="vbox" id="save-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="delete-dialog">
+        <h2 id>Choose Project(s) to Delete</h2>
+        <button class="btn" id="close-delete-dialog">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div class="window-pane">
+            <div class="vbox" id="delete-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="are-you-sure-dialog">
+        <h2 id="are-you-sure-header"></h2>
+        <button class="btn" id="close-are-you-sure-dialog">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div class="window-pane">
+            <div class="hbox" id="yes-or-no"></div>
         </div>
     </dialog>
 
