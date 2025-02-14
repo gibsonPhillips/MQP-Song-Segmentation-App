@@ -88,6 +88,16 @@ ipcMain.handle('move-song-file', async (event, currentFilePath, newPath) => {
     });
 });
 
+ipcMain.handle('delete-dir', async (event, filePath) => {
+    fs.rmdir(filePath, (err) => {
+        if (err) {
+            console.error("Error deleting file:", err);
+        } else {
+            console.log('File ' + filePath + ' deleted successfully');
+        }
+    });
+});
+
 
 // Function to start the Python server
 function startPythonServer() {

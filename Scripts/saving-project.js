@@ -40,8 +40,6 @@ htmlElements.openWorkspaceButton.addEventListener('click', async () => {
 
 // when load is clicked
 htmlElements.loadButton.addEventListener('click', async () => {
-    console.log('not implemented')
-    presentErrorDialog('not implemented')
 
     // scan the directory
     let chosenProject = ''
@@ -98,13 +96,10 @@ htmlElements.saveButton.addEventListener('click', async () => {
 
 // when delete is clicked
 htmlElements.deleteButton.addEventListener('click', async () => {
-    console.log('hello')
-    console.log('not implemented')
-    presentErrorDialog('not implemented')
 
     // scan the directory
     let chosenProject = ''
-    let vbox = htmlElements.loadFiles;
+    let vbox = htmlElements.deleteFiles;
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
@@ -122,15 +117,15 @@ htmlElements.deleteButton.addEventListener('click', async () => {
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
                     console.log(chosenProject);
-                    htmlElements.loadMenuDialog.close();
-                    loadTheData(chosenProject)
+                    htmlElements.deleteMenuDialog.close();
+                    deleteTheProject(chosenProject)
                 })
                 vbox.appendChild(newButton);
             });
         }
 
         //Show the dialog
-        htmlElements.loadMenuDialog.showModal();
+        htmlElements.deleteMenuDialog.showModal();
 
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
@@ -319,7 +314,17 @@ function saveTheData(chosenProject) {
 
 // deletes the project
 function deleteTheProject(chosenProject) {
-    console.log('Not Implemented')
+    console.log('Deleted: ' + chosenProject)
+    presentErrorDialog('Deleted: ' + chosenProject)
+
+    let projectPath = workspace + '\\' + chosenProject;
+
+    window.api.deleteDir(projectPath).then((result) => {
+        console.log(chosenProject + ' deleted')
+    }).catch((err) => {
+        console.error('error deleting file: ' + chosenProject)
+        presentErrorDialog('error deleting file: ' + chosenProject)
+    });
 }
 
 // Helper Functions
