@@ -322,7 +322,7 @@ async function deleteTheProject(chosenProject) {
     await window.api.getDirectoryContents(projectPath).then((files) => {
         if (files.length != 0) {
             files.forEach(file => {
-                let projectFilePath = chosenProject + '\\' + file
+                let projectFilePath = projectPath + '\\' + file
                 window.api.deleteFile(projectFilePath).then((result) => {
                     console.log(projectFilePath + ' deleted')
                 }).catch((err) => {

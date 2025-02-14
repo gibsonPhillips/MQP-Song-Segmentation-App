@@ -100,6 +100,8 @@ const htmlElements = {
     boundariesDropdown: document.getElementById("boundaries-dropdown"),
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
 
+    regions: regions,
+
     // Create an instance of WaveSurfer
     wavesurfer: WaveSurfer.create({
         container: '#waveform',
