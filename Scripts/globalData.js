@@ -6,6 +6,7 @@ import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 window.songFilePath = '';
 window.segmentData = [];
 window.clusters = 0;
+let groupEditingMode = false;
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create();
@@ -174,7 +175,11 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             labelInput.className = "region-label-input";
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
             labelInput.addEventListener("blur", (event) => {
-                updateSegmentLabel(element, event.target.value);
+                if(groupEditingMode) {
+                    updateGroupSegmentLabel(element, event.target.value);
+                } else {
+                    updateOneSegmentLabel(element, event.target.value);
+                }                
             });
             htmlElements.labelsContainer.appendChild(labelInput);
 
@@ -200,13 +205,23 @@ export function updateLabelPositions() {
         let waveform = document.getElementById('waveform');
         label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
         label.style.width = `${regionRect.width}px`;
-        console.log(region);
     });
 }
 
 // Updates the specified segment elements label value
-function updateSegmentLabel(segmentElement, value) {
+function updateOneSegmentLabel(segmentElement, value) {
     segmentElement.label = value;
+    updateSegmentElementsList(window.segmentData, true);
+}
+
+// Updates the specified segment elements label value for all those labels
+function updateGroupSegmentLabel(segmentElement, value) {
+    let label = segmentElement.label;
+    window.segmentData.forEach(element => {
+        if(element.label === label) {
+            element.label = value;
+        }
+    });
     updateSegmentElementsList(window.segmentData, true);
 }
 
@@ -275,4 +290,15 @@ export async function loadSong(filePath) {
     await htmlElements.wavesurfer.load(filePath);
     globalState.currentZoom = 10;
     updateTimeline();
+}
+
+
+htmlElements.groupEditingButton.onclick = () => {
+    groupEditingMode = !groupEditingMode;
+
+    if (!groupEditingMode) {
+        htmlElements.groupEditingButton.style.backgroundColor = "white";
+    } else {
+        htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
+    }
 }
