@@ -6,7 +6,6 @@ import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 window.songFilePath = '';
 window.segmentData = [];
 window.clusters = 0;
-let groupEditingMode = false;
 
 // Initialize the Regions plugin
 const regions = RegionsPlugin.create();
@@ -24,7 +23,8 @@ export let globalState = {
     // stores the wavesurfer regions for segments
     segmentRegions: [],
     currentZoom: zoom.options.minPxPerSec,
-    timeline: null
+    timeline: null,
+    groupEditingMode: false
 };
 
 const htmlElements = {
@@ -175,7 +175,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             labelInput.className = "region-label-input";
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
             labelInput.addEventListener("blur", (event) => {
-                if(groupEditingMode) {
+                if(globalState.groupEditingMode) {
                     updateGroupSegmentLabel(element, event.target.value);
                 } else {
                     updateOneSegmentLabel(element, event.target.value);
@@ -190,7 +190,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             });
 
             // Update position when region is moved/resized
-            region.on("update-end", requestAnimationFrame(updateLabelPositions));
+            region.on("update-end", updateLabelPositions);
         }
     });
 
@@ -294,9 +294,9 @@ export async function loadSong(filePath) {
 
 
 htmlElements.groupEditingButton.onclick = () => {
-    groupEditingMode = !groupEditingMode;
+    globalState.groupEditingMode = !globalState.groupEditingMode;
 
-    if (!groupEditingMode) {
+    if (!globalState.groupEditingMode) {
         htmlElements.groupEditingButton.style.backgroundColor = "white";
     } else {
         htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
