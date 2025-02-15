@@ -60,7 +60,6 @@ htmlElements.loadButton.addEventListener('click', async () => {
                 checkBox.id = file
                 let checkBoxLabel = document.createElement('label')
                 checkBoxLabel.for = file
-                checkBoxLabel.innerHTML = 'Check Box:'
                 // Create a button for each existing project
                 let newButton = document.createElement('button');
                 newButton.class='btn';
@@ -73,8 +72,8 @@ htmlElements.loadButton.addEventListener('click', async () => {
                     loadTheData(chosenProject, isChecked)
                 })
                 hbox.appendChild(newButton)
-                hbox.appendChild(checkBoxLabel)
                 hbox.appendChild(checkBox)
+                hbox.appendChild(checkBoxLabel)
                 console.log(checkBox)
                 vbox.appendChild(hbox);
             });
