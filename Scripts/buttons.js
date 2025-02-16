@@ -24,9 +24,9 @@ htmlElements.closeErrorDialogButton.onclick = () => {
 }
 
 htmlElements.playButton.onclick = () => {
-    if(htmlElements.wavesurfer.getDuration() > 0) {
-        htmlElements.wavesurfer.playPause()
-        if(htmlElements.wavesurfer.isPlaying()) {
+    if(globalState.wavesurferWaveforms[0].getDuration() > 0) {
+        globalState.wavesurferWaveforms[0].playPause()
+        if(globalState.wavesurferWaveforms[0].isPlaying()) {
             // pause icon
             htmlElements.playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
         } else {
@@ -37,35 +37,52 @@ htmlElements.playButton.onclick = () => {
 }
 
 htmlElements.forwardButton.onclick = () => {
-    htmlElements.wavesurfer.skip(15)
+    globalState.wavesurferWaveforms[0].skip(15)
 }
 
 htmlElements.backButton.onclick = () => {
-    htmlElements.wavesurfer.skip(-15)
+    globalState.wavesurferWaveforms[0].skip(-15)
 }
 
-htmlElements.zoomInButton.onclick = () => {
-    globalState.currentZoom += 10;
-    htmlElements.wavesurfer.zoom(globalState.currentZoom);
-    updateTimeline();
-}
+// htmlElements.zoomInButton.onclick = () => {
+//     globalState.currentZoom += 10;
+//     globalState.wavesurferWaveforms[0].zoom(globalState.currentZoom);
+//     updateTimeline(0);
+// }
 
-htmlElements.zoomOutButton.onclick = () => {
-    globalState.currentZoom -= 10;
-    htmlElements.wavesurfer.zoom(globalState.currentZoom);
-    updateTimeline();
+// htmlElements.zoomOutButton.onclick = () => {
+//     globalState.currentZoom -= 10;
+//     globalState.wavesurferWaveforms[0].zoom(globalState.currentZoom);
+//     updateTimeline(0);
+// }
+
+htmlElements.groupEditingButton.onclick = () => {
+    globalState.groupEditingMode = !globalState.groupEditingMode;
+
+    if (!globalState.groupEditingMode) {
+        htmlElements.groupEditingButton.style.backgroundColor = "white";
+    } else {
+        htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
+    }
 }
 
 // Update labels on scroll
-htmlElements.wavesurfer.on("scroll", () => {
-    updateLabelPositions();
+globalState.wavesurferWaveforms[0].on("scroll", () => {
+    updateLabelPositions(0);
 });
 
-// Update labels on zoom
-htmlElements.wavesurfer.on("zoom", (newPxPerSec) => {
-    globalState.currentZoom = newPxPerSec;
-    updateLabelPositions();
-    updateTimeline();
+globalState.wavesurferWaveforms.forEach((wavesurfer, index) => {
+    // Update labels on scroll
+    wavesurfer.on("scroll", () => {
+        updateLabelPositions(index);
+    });
+
+    // Update labels and timeline on zoom
+    wavesurfer.on("zoom", (newPxPerSec) => {
+        globalState.currentZoom = newPxPerSec;
+        updateLabelPositions(index);
+        updateTimeline(index);
+    });
 });
 
 /*

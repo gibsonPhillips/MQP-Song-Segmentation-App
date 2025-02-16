@@ -43,36 +43,38 @@
 .window#timeline {
     display: flex;
     margin: 0px;
-
+    position: relative;
     flex-grow: 4;
+    flex-direction: column;
 }
 
 #expanders {
     display: inline-block;
 }
 
-#timeline {
-    position: relative;
+.labels-container {
+    height: 50px;
 }
 
-#waveform {
-    position: relative;
-    top: 20px;
-}
-
-#labels-container {
+.region-label-input0 {
     position: absolute;
-    top: 0px;
+    pointer-events: auto;
     height: 20px;
-    width: 100%;
-    display: flex;
-    pointer-events: none; /* Prevent interference with clicks */
+    font-size: 24px;
+    text-align: center;
 }
-.region-label-input {
+
+.region-label-input1 {
     position: absolute;
-    pointer-events: auto; /* Allow text editing */
-    /* background: rgba(255, 255, 255, 0.8); */
-    /* border: 1px solid #ccc; */
+    pointer-events: auto;
+    height: 20px;
+    font-size: 24px;
+    text-align: center;
+}
+
+.region-label-input2 {
+    position: absolute;
+    pointer-events: auto;
     height: 20px;
     font-size: 24px;
     text-align: center;
