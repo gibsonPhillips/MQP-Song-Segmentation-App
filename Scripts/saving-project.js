@@ -53,13 +53,6 @@ htmlElements.loadButton.addEventListener('click', async () => {
         //placeholders
 
             files.forEach(file => {
-                let hbox = document.createElement('div')
-                hbox.class = 'hbox'
-                let checkBox = document.createElement('input')
-                checkBox.type = 'checkbox'
-                checkBox.id = file
-                let checkBoxLabel = document.createElement('label')
-                checkBoxLabel.for = file
                 // Create a button for each existing project
                 let newButton = document.createElement('button');
                 newButton.class='btn';
@@ -68,14 +61,9 @@ htmlElements.loadButton.addEventListener('click', async () => {
                     chosenProject = file
                     console.log(chosenProject);
                     htmlElements.loadMenuDialog.close();
-                    const isChecked = checkBox.checked;
-                    loadTheData(chosenProject, isChecked)
+                    loadTheData(chosenProject)
                 })
-                hbox.appendChild(newButton)
-                hbox.appendChild(checkBox)
-                hbox.appendChild(checkBoxLabel)
-                console.log(checkBox)
-                vbox.appendChild(hbox);
+                vbox.appendChild(newButton)
             });
         }
 
@@ -150,7 +138,7 @@ htmlElements.deleteButton.addEventListener('click', async () => {
 // Functionality functions
 
 // loads the data
-async function loadTheData(chosenProject, saveSongFile) {
+async function loadTheData(chosenProject) {
 
     // the path to the project directory
     let projectPath = workspace + '\\' + chosenProject;
@@ -177,12 +165,17 @@ async function loadTheData(chosenProject, saveSongFile) {
     console.log('metadata: ' + loadMetadataFilePath)
     console.log('segment data: ' + loadSegmentDataFilePath)
 
+    // loads the metadata
+
+    let metadata = await parseMetadataFile(loadMetadataFilePath)
+    if (loadSongFilePath == '') {
+        loadSongFilePath = metadata[0]; // song file path
+    }
+
     // loads the song
+
     await loadSong(loadSongFilePath);
     window.songFilePath = loadSongFilePath
-
-    // loads the metadata
-    // implement
 
     // loads the segment data
     window.segmentData = await parseSegmentDataFile(loadSegmentDataFilePath);
@@ -195,7 +188,7 @@ async function loadTheData(chosenProject, saveSongFile) {
 }
 
 
-// Queues the pop-up to save the project
+// Queues the pop-up dialog to save the project
 async function selectSaveProject() {
     // Get the save files
     let chosenProject = ''
@@ -216,9 +209,8 @@ async function selectSaveProject() {
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
-                    console.log(chosenProject);
                     htmlElements.saveMenuDialog.close();
-                    saveTheData(chosenProject)
+                    saveTheData(chosenProject, htmlElements.saveAudioCheckbox.checked)
                 })
                 vbox.appendChild(newButton);
             });
@@ -234,12 +226,11 @@ async function selectSaveProject() {
         newButton.addEventListener('click', async () => {
             // Place holder for new project textbox
             chosenProject = newInput.value
-            console.log(chosenProject);
             htmlElements.saveMenuDialog.close();
 
             await window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
                 console.log('Directory creation handled successfully.');
-                saveTheData(chosenProject)
+                saveTheData(chosenProject, htmlElements.saveAudioCheckbox.checked)
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
                 console.error('Issue creating directory:\n' + error);
@@ -263,7 +254,7 @@ async function selectSaveProject() {
 }
 
 //save the project data
-async function saveTheData(chosenProject) {
+async function saveTheData(chosenProject, saveAudioFile) {
 
     if (chosenProject != '') {
 
@@ -284,8 +275,11 @@ async function saveTheData(chosenProject) {
                 let metadataText = createMetadataFileText();
                 window.api.writeToFile(saveMetadataFilePath, metadataText);
 
-                let filePathEnd = window.songFilePath.split("\\").pop();
-                window.api.moveSongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+                // Copy song the song (if set to true)
+                if (saveAudioFile) {
+                    let filePathEnd = window.songFilePath.split("\\").pop();
+                    window.api.copySongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+                }
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
@@ -305,8 +299,11 @@ async function saveTheData(chosenProject) {
                 let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
                 window.api.writeToFile(saveMetadataFilePath, 'No data');
 
-                let filePathEnd = window.songFilePath.split("\\").pop();
-                window.api.moveSongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+                // Copy song the song (if set to true)
+                if (saveAudioFile) {
+                    let filePathEnd = window.songFilePath.split("\\").pop();
+                    window.api.copySongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+                }
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
@@ -356,6 +353,7 @@ async function deleteTheProject(chosenProject) {
 
 // Helper Functions
 
+// parses the segment data
 async function parseSegmentDataFile(segmentDataFilePath) {
     let rows = [];
     let result = await window.api.getFile(segmentDataFilePath);
@@ -384,6 +382,18 @@ async function parseSegmentDataFile(segmentDataFilePath) {
     return rows;
 }
 
+// parses the metadata
+async function parseMetadataFile(metadataFilePath) {
+    let rows = []
+    let result = await window.api.getFile(metadataFilePath);
+
+    if (result.content !== 'No data') {
+        rows = result.content.trim().split('\n');
+    }
+
+    return rows;
+}
+
 function createSegmentDataFileText() {
     let text = '';
     window.segmentData.forEach(segment => {
@@ -394,7 +404,7 @@ function createSegmentDataFileText() {
 }
 
 function createMetadataFileText() {
-    return 'Metadata';
+    return window.songFilePath;
 }
 
 //function moveSongFile(currentFilePath, newPath){
