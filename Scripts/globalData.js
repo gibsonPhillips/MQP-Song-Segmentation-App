@@ -257,6 +257,7 @@ function getColor(length) {
 // Updates the timeline based on the current zoom level
 export function updateTimeline(waveformNum) {
     const timeInterval = calculateTimeInterval(globalState.currentZoom, globalState.wavesurferWaveforms[waveformNum].getDuration());
+    console.log(timeInterval)
     if(globalState.timelines[waveformNum] != null) {
         globalState.timelines[waveformNum].destroy(); // Remove the old timeline
     }
@@ -264,8 +265,6 @@ export function updateTimeline(waveformNum) {
         height: 20,
         insertPosition: 'beforebegin',
         timeInterval: timeInterval,
-        primaryLabelInterval: timeInterval * 5,
-        secondaryLabelInterval: timeInterval,
         style: {
           fontSize: '20px',
           color: '#2D5B88',
