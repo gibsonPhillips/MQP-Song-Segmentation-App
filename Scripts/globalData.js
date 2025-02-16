@@ -23,7 +23,8 @@ export let globalState = {
     // stores the wavesurfer regions for segments
     segmentRegions: [],
     currentZoom: zoom.options.minPxPerSec,
-    timeline: null
+    timeline: null,
+    groupEditingMode: false
 };
 
 const htmlElements = {
@@ -99,7 +100,7 @@ const htmlElements = {
     boundariesDropdownContent: document.getElementById("boundaries-dropdown-content"),
     boundariesDropdown: document.getElementById("boundaries-dropdown"),
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
-
+    groupEditingButton: document.getElementById("group-editing"),
     regions: regions,
 
     // Create an instance of WaveSurfer
@@ -173,11 +174,14 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             labelInput.value = element.label;
             labelInput.className = "region-label-input";
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
-            labelInput.addEventListener("input", (event) => {
-                updateSegmentLabel(element, event.target.value);
+            labelInput.addEventListener("blur", (event) => {
+                if(globalState.groupEditingMode) {
+                    updateGroupSegmentLabel(element, event.target.value);
+                } else {
+                    updateOneSegmentLabel(element, event.target.value);
+                }                
             });
             htmlElements.labelsContainer.appendChild(labelInput);
-            updateLabelPositions();
 
             // Sync text input value with region data
             labelInput.addEventListener("input", () => {
@@ -189,6 +193,8 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             region.on("update-end", updateLabelPositions);
         }
     });
+
+    setTimeout(updateLabelPositions, 10);
 }
 
 // Updates label positions with the most up to date waveform
@@ -203,9 +209,20 @@ export function updateLabelPositions() {
 }
 
 // Updates the specified segment elements label value
-function updateSegmentLabel(segmentElement, value) {
+function updateOneSegmentLabel(segmentElement, value) {
     segmentElement.label = value;
-    updateSegmentElementsList(window.segmentData, false);
+    updateSegmentElementsList(window.segmentData, true);
+}
+
+// Updates the specified segment elements label value for all those labels
+function updateGroupSegmentLabel(segmentElement, value) {
+    let label = segmentElement.label;
+    window.segmentData.forEach(element => {
+        if(element.label === label) {
+            element.label = value;
+        }
+    });
+    updateSegmentElementsList(window.segmentData, true);
 }
 
 // Gets the next color to be used for segment region
@@ -273,4 +290,15 @@ export async function loadSong(filePath) {
     await htmlElements.wavesurfer.load(filePath);
     globalState.currentZoom = 10;
     updateTimeline();
+}
+
+
+htmlElements.groupEditingButton.onclick = () => {
+    globalState.groupEditingMode = !globalState.groupEditingMode;
+
+    if (!globalState.groupEditingMode) {
+        htmlElements.groupEditingButton.style.backgroundColor = "white";
+    } else {
+        htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
+    }
 }
