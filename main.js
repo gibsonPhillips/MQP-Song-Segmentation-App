@@ -78,7 +78,7 @@ ipcMain.handle('write-to-file', async (event, filePath, data) => {
   }
 });
 
-ipcMain.handle('move-song-file', async (event, currentFilePath, newPath) => {
+ipcMain.handle('copy-song-file', async (event, currentFilePath, newPath) => {
     fs.copyFile(currentFilePath, newPath, (err) => {
         if (err) {
             console.error("Error moving file:", err);
