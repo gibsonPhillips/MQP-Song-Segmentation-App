@@ -19,10 +19,10 @@ htmlElements.importButton.addEventListener('click', async () => {
 });
 
 // runs the segmentation algorithm
+// TODO handle multiple waveforms
 async function segment(algorithm) {
-    // const inputName = "C:\\Users\\sethb\\OneDrive - Worcester Polytechnic Institute (wpi.edu)\\gr-MQP-MLSongMap\\General\\Songs and Annotations\\Songs\\0043Carly Rae Jepsen  Call Me Maybe.wav"; // Example input data
-    const inputName = window.songFilePath;
-    window.clusters = determineVariability();
+    const inputName = window.songFilePaths[0];
+    window.clusters[0] = determineVariability();
     try {
         console.log("Segmenting begin");
 
@@ -32,7 +32,7 @@ async function segment(algorithm) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : window.clusters }),
+            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : window.clusters[0] }),
         });
 
         console.log("Segmenting end");
@@ -40,10 +40,10 @@ async function segment(algorithm) {
         // Parse the JSON response
         const data = await response.json();
         console.log(data)
-        window.segmentData = data.map(row => {
+        window.segmentData[0] = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
-        updateSegmentElementsList(window.segmentData, true)
+        updateSegmentElementsList(window.segmentData[0], true, 0)
     } catch (error) {
         console.error('Error:', error);
     }
@@ -57,9 +57,9 @@ function determineVariability() {
     return num
 }
 
-
+// TODO handle multiple waveforms
 async function autoSegment(clusters, closestClusters, closestAverage, finalCall) {
-    const inputName = window.songFilePath;
+    const inputName = window.songFilePaths[0];
     try {
         console.log("Segmenting begin");
 
@@ -84,9 +84,9 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall)
         let average = determineAverageSegmentLength(segmentData);
 
         if(finalCall) {
-            window.segmentData = segmentData;
-            window.clusters = closestClusters;
-            updateSegmentElementsList(window.segmentData, true);
+            window.segmentData[0] = segmentData;
+            window.clusters[0] = closestClusters;
+            updateSegmentElementsList(window.segmentData[0], true, 0);
             return;
         }
 

@@ -1,6 +1,6 @@
 import htmlElements from './globalData.js';
 import globalState from './globalData.js';
-import { loadSong, presentErrorDialog, updateSegmentElementsList } from './globalData.js';
+import { loadSong, presentErrorDialog, updateSegmentElementsList, getNextWaveform } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -79,9 +79,9 @@ htmlElements.loadButton.addEventListener('click', async () => {
 
 // when save is clicked
 htmlElements.saveButton.addEventListener('click', async () => {
-    console.log(window.songFilePath)
+    console.log(window.songFilePaths[0])
 
-    if (window.songFilePath != '' && window.songFilePath != null) {
+    if (window.songFilePaths[0] != '' && window.songFilePaths[0] != null) {
 //        let filePathEnd = window.songFilePath.split("\\").pop();
 //        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
 //        console.log(filePathEnd)
@@ -140,6 +140,8 @@ htmlElements.deleteButton.addEventListener('click', async () => {
 // loads the data
 async function loadTheData(chosenProject) {
 
+    let waveformNum = getNextWaveform();
+
     // the path to the project directory
     let projectPath = workspace + '\\' + chosenProject;
 
@@ -175,16 +177,32 @@ async function loadTheData(chosenProject) {
     // loads the song
 
     await loadSong(loadSongFilePath);
-    window.songFilePath = loadSongFilePath
+    window.songFilePaths[waveformNum] = loadSongFilePath
+
+    // loads the metadata
+    // implement
 
     // loads the segment data
-    window.segmentData = await parseSegmentDataFile(loadSegmentDataFilePath);
-    if (window.segmentData.length === 0) {
+    window.segmentData[waveformNum] = await parseSegmentDataFile(loadSegmentDataFilePath);
+    if (window.segmentData[waveformNum].length === 0) {
         console.log('No data loaded');
         presentErrorDialog('No data loaded from ' + chosenProject);
     } else {
-        updateSegmentElementsList(window.segmentData, true);
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+        window.clusters[waveformNum] = determineNumClusters(waveformNum);
     }
+}
+
+function determineNumClusters(waveformNum) {
+    let count = 0;
+    let set = new Set();
+    window.segmentData[waveformNum].forEach(element => {
+        if(!set.has(element.label)) {
+            set.add(element.label);
+            count++;
+        }
+    });
+    return count;
 }
 
 
@@ -261,7 +279,7 @@ async function saveTheData(chosenProject, saveAudioFile) {
         let saveDirectoryPath = workspace + "\\" + chosenProject
         console.log('saveDirectoryPath: ' + saveDirectoryPath);
 
-        if (window.segmentData != null && window.segmentData.length != 0) {
+        if (window.segmentData[0] != null && window.segmentData[0].length != 0) {
 
             try {
 
@@ -277,8 +295,8 @@ async function saveTheData(chosenProject, saveAudioFile) {
 
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
-                    let filePathEnd = window.songFilePath.split("\\").pop();
-                    window.api.copySongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+                    let filePathEnd = window.songFilePaths[0].split("\\").pop();
+                    window.api.copySongFile(window.songFilePaths[0], saveDirectoryPath + '\\' + filePathEnd);
                 }
 
             } catch (error) {
@@ -301,8 +319,8 @@ async function saveTheData(chosenProject, saveAudioFile) {
 
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
-                    let filePathEnd = window.songFilePath.split("\\").pop();
-                    window.api.copySongFile(window.songFilePath, saveDirectoryPath + '\\' + filePathEnd);
+                    let filePathEnd = window.songFilePaths[0].split("\\").pop();
+                    window.api.copySongFile(window.songFilePaths[0], saveDirectoryPath + '\\' + filePathEnd);
                 }
 
             } catch (error) {
@@ -396,10 +414,10 @@ async function parseMetadataFile(metadataFilePath) {
 
 function createSegmentDataFileText() {
     let text = '';
-    window.segmentData.forEach(segment => {
+    window.segmentData[0].forEach(segment => {
         text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + '\n'
     });
-    window.segmentData
+    window.segmentData[0]
     return text;
 }
 

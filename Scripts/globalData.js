@@ -3,17 +3,17 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-window.songFilePath = '';
-window.segmentData = [];
-window.clusters = 0;
+window.songFilePaths = ['','',''];
+window.segmentData = [[],[],[]];
+window.clusters = [0, 0, 0];
 
 // Initialize the Regions plugin
-const regions = RegionsPlugin.create();
-
-const zoom = ZoomPlugin.create({
-    // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
-    scale: 0.1,
-});
+// const regions = RegionsPlugin.create();
+const regionsPlugins = [
+    RegionsPlugin.create(),
+    RegionsPlugin.create(),
+    RegionsPlugin.create()
+]
 
 export let globalState = {
     // stores label color map
@@ -21,10 +21,37 @@ export let globalState = {
     // headers for segment data
     headers: ["number", "start", "end", "label"],
     // stores the wavesurfer regions for segments
-    segmentRegions: [],
-    currentZoom: zoom.options.minPxPerSec,
-    timeline: null,
-    groupEditingMode: false
+    segmentRegions: [
+        [],
+        [],
+        []
+    ],
+    currentZoom: 10,
+    timelines: [null, null, null],
+    groupEditingMode: false,
+    wavesurferWaveforms: [
+        WaveSurfer.create({
+            container: '#waveform0',
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
+            minPxPerSec: 100,
+            plugins: [regionsPlugins[0], ZoomPlugin.create({scale:0.1})],
+        }),
+        WaveSurfer.create({
+            container: '#waveform1',
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
+            minPxPerSec: 100,
+            plugins: [regionsPlugins[1], ZoomPlugin.create({scale:0.1})],
+        }),
+        WaveSurfer.create({
+            container: '#waveform2',
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
+            minPxPerSec: 100,
+            plugins: [regionsPlugins[2], ZoomPlugin.create({scale:0.1})],
+        })
+    ]
 };
 
 const htmlElements = {
@@ -47,10 +74,8 @@ const htmlElements = {
     playButton: document.querySelector('#play'),
     forwardButton: document.querySelector('#forward'),
     backButton: document.querySelector('#backward'),
-    zoomInButton: document.querySelector('#zoom-in'),
-    zoomOutButton: document.querySelector('#zoom-out'),
-    labelsContainer: document.getElementById("labels-container"),
-    waveformContainer: document.getElementById("waveform"),
+    // zoomInButton: document.querySelector('#zoom-in'),
+    // zoomOutButton: document.querySelector('#zoom-out'),
 
     // algorithm buttons
     algorithm1Button: document.getElementById("segment-algorithm1"),
@@ -102,16 +127,7 @@ const htmlElements = {
     boundariesDropdown: document.getElementById("boundaries-dropdown"),
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
     groupEditingButton: document.getElementById("group-editing"),
-    regions: regions,
-
-    // Create an instance of WaveSurfer
-    wavesurfer: WaveSurfer.create({
-        container: '#waveform',
-        waveColor: 'rgb(200, 0, 200)',
-        progressColor: 'rgb(100, 0, 100)',
-        minPxPerSec: 100,
-        plugins: [regions, zoom],
-    })
+    regions: regionsPlugins,
 };
 export default htmlElements;
 
@@ -131,16 +147,17 @@ const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
 // Updates the segment elements and display in table
-export function updateSegmentElementsList(elements, updateWaveform) {
+export function updateSegmentElementsList(elements, updateWaveform, waveformNum) {
     const tbody = document.getElementById('segment-elements');
+    const str = 'labels-container' + String(waveformNum);
     tbody.innerHTML = ''
 
     // If waveform is being updated
     if(updateWaveform) {
-        regions.clearRegions()
+        regionsPlugins[waveformNum].clearRegions()
         globalState.colorMap.clear();
-        htmlElements.labelsContainer.textContent = "";
-        globalState.segmentRegions = [];
+        document.getElementById(str).textContent = "";
+        // globalState.segmentRegions[waveformNum] = [];
     }
 
     elements.forEach(element => {
@@ -159,7 +176,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
 
         if(updateWaveform) {
             // Create new region
-            let region = regions.addRegion({
+            let region = regionsPlugins[waveformNum].addRegion({
                 start: element.start,
                 end: element.end,
                 color: globalState.colorMap.get(element.label),
@@ -167,13 +184,11 @@ export function updateSegmentElementsList(elements, updateWaveform) {
                 resize: false,
             });
 
-            globalState.segmentRegions.push(region);
-
             // Create segment label for region
             let labelInput = document.createElement("input");
             labelInput.type = "text";
             labelInput.value = element.label;
-            labelInput.className = "region-label-input";
+            labelInput.className = "region-label-input" + String(waveformNum);
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
             labelInput.addEventListener("blur", (event) => {
                 if(globalState.groupEditingMode) {
@@ -182,7 +197,7 @@ export function updateSegmentElementsList(elements, updateWaveform) {
                     updateOneSegmentLabel(element, event.target.value);
                 }                
             });
-            htmlElements.labelsContainer.appendChild(labelInput);
+            document.getElementById(str).appendChild(labelInput);
 
             // Sync text input value with region data
             labelInput.addEventListener("input", () => {
@@ -191,39 +206,43 @@ export function updateSegmentElementsList(elements, updateWaveform) {
             });
 
             // Update position when region is moved/resized
-            region.on("update-end", updateLabelPositions);
+            region.on("update-end", () => updateLabelPositions(waveformNum));
         }
     });
-
-    setTimeout(updateLabelPositions, 10);
+    setTimeout(() => updateLabelPositions(waveformNum), 10);
 }
 
 // Updates label positions with the most up to date waveform
-export function updateLabelPositions() {
-    document.querySelectorAll(".region-label-input").forEach((label, index) => {
-        let region = globalState.segmentRegions[index];
+export function updateLabelPositions(waveformNum) {
+    let str = 'waveform' + String(waveformNum);
+    const str1 = ".region-label-input" + String(waveformNum);
+    document.querySelectorAll(str1).forEach((label, index) => {
+        // let region = globalState.segmentRegions[waveformNum][index];
+        let region = regionsPlugins[waveformNum].regions.at(index);
         let regionRect = region.element.getBoundingClientRect();
-        let waveform = document.getElementById('waveform');
+        let waveform = document.getElementById(str);
         label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
         label.style.width = `${regionRect.width}px`;
     });
 }
 
 // Updates the specified segment elements label value
+// TODO update with mulitple waveforms
 function updateOneSegmentLabel(segmentElement, value) {
     segmentElement.label = value;
-    updateSegmentElementsList(window.segmentData, true);
+    updateSegmentElementsList(window.segmentData[0], true, 0);
 }
 
 // Updates the specified segment elements label value for all those labels
+// TODO update with mulitple waveforms
 function updateGroupSegmentLabel(segmentElement, value) {
     let label = segmentElement.label;
-    window.segmentData.forEach(element => {
+    window.segmentData[0].forEach(element => {
         if(element.label === label) {
             element.label = value;
         }
     });
-    updateSegmentElementsList(window.segmentData, true);
+    updateSegmentElementsList(window.segmentData[0], true, 0);
 }
 
 // Gets the next color to be used for segment region
@@ -236,23 +255,22 @@ function getColor(length) {
 }
 
 // Updates the timeline based on the current zoom level
-export function updateTimeline() {
-    const timeInterval = calculateTimeInterval(globalState.currentZoom, htmlElements.wavesurfer.getDuration());
-    if(globalState.timeline != null) {
-        globalState.timeline.destroy(); // Remove the old timeline
+export function updateTimeline(waveformNum) {
+    const timeInterval = calculateTimeInterval(globalState.currentZoom, globalState.wavesurferWaveforms[waveformNum].getDuration());
+    console.log(timeInterval)
+    if(globalState.timelines[waveformNum] != null) {
+        globalState.timelines[waveformNum].destroy(); // Remove the old timeline
     }
-    globalState.timeline = TimelinePlugin.create({
+    globalState.timelines[waveformNum] = TimelinePlugin.create({
         height: 20,
         insertPosition: 'beforebegin',
         timeInterval: timeInterval,
-        primaryLabelInterval: timeInterval * 5,
-        secondaryLabelInterval: timeInterval,
         style: {
           fontSize: '20px',
           color: '#2D5B88',
         }
     });
-    htmlElements.wavesurfer.registerPlugin(globalState.timeline);
+    globalState.wavesurferWaveforms[waveformNum].registerPlugin(globalState.timelines[waveformNum]);
 }
 
 // Determines time interval for given zoom level
@@ -286,20 +304,23 @@ export function presentErrorDialog(message) {
 // loads the song in the app
 export async function loadSong(filePath) {
     console.log('File path:', filePath);
-    window.songFilePath = filePath;
-    regions.clearRegions();
-    await htmlElements.wavesurfer.load(filePath);
+    let num = getNextWaveform();
+    if(num == -1) return;
+    window.songFilePaths[num] = filePath;
+    regionsPlugins[num].clearRegions();
+    await globalState.wavesurferWaveforms[num].load(filePath);
     globalState.currentZoom = 10;
-    updateTimeline();
+    updateTimeline(num);
 }
 
-
-htmlElements.groupEditingButton.onclick = () => {
-    globalState.groupEditingMode = !globalState.groupEditingMode;
-
-    if (!globalState.groupEditingMode) {
-        htmlElements.groupEditingButton.style.backgroundColor = "white";
-    } else {
-        htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
+// Gets the next available waveform
+export function getNextWaveform() {
+    let num = 0;
+    let filePath = window.songFilePaths[num];
+    while(filePath !== '') {
+        num++;
+        filePath = window.songFilePaths[num];
+        if(num > 2) return -1;
     }
+    return num;
 }
