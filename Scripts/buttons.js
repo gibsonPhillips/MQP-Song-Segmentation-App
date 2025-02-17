@@ -27,7 +27,7 @@ htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
 }
 
-htmlElements.playButton.onclick = () => {
+htmlElements.playButton0.onclick = () => {
     if(globalState.wavesurferWaveforms[0].getDuration() > 0) {
         globalState.wavesurferWaveforms[0].playPause()
         if(globalState.wavesurferWaveforms[0].isPlaying()) {
@@ -40,12 +40,96 @@ htmlElements.playButton.onclick = () => {
     }
 }
 
-htmlElements.forwardButton.onclick = () => {
+htmlElements.forwardButton0.onclick = () => {
     globalState.wavesurferWaveforms[0].skip(15)
 }
 
-htmlElements.backButton.onclick = () => {
+htmlElements.backButton0.onclick = () => {
     globalState.wavesurferWaveforms[0].skip(-15)
+}
+
+htmlElements.playButton1.onclick = () => {
+    if(globalState.wavesurferWaveforms[1].getDuration() > 0) {
+        globalState.wavesurferWaveforms[1].playPause()
+        if(globalState.wavesurferWaveforms[1].isPlaying()) {
+            // pause icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+        } else {
+            // play icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+        }
+    }
+}
+
+htmlElements.forwardButton1.onclick = () => {
+    globalState.wavesurferWaveforms[1].skip(15)
+}
+
+htmlElements.backButton1.onclick = () => {
+    globalState.wavesurferWaveforms[1].skip(-15)
+}
+
+htmlElements.playButton2.onclick = () => {
+    if(globalState.wavesurferWaveforms[2].getDuration() > 0) {
+        globalState.wavesurferWaveforms[2].playPause()
+        if(globalState.wavesurferWaveforms[2].isPlaying()) {
+            // pause icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+        } else {
+            // play icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+        }
+    }
+}
+
+htmlElements.forwardButton2.onclick = () => {
+    globalState.wavesurferWaveforms[2].skip(15)
+}
+
+htmlElements.backButton2.onclick = () => {
+    globalState.wavesurferWaveforms[2].skip(-15)
+}
+
+htmlElements.playButton3.onclick = () => {
+    if(globalState.wavesurferWaveforms[3].getDuration() > 0) {
+        globalState.wavesurferWaveforms[3].playPause()
+        if(globalState.wavesurferWaveforms[3].isPlaying()) {
+            // pause icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+        } else {
+            // play icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+        }
+    }
+}
+
+htmlElements.forwardButton3.onclick = () => {
+    globalState.wavesurferWaveforms[3].skip(15)
+}
+
+htmlElements.backButton3.onclick = () => {
+    globalState.wavesurferWaveforms[3].skip(-15)
+}
+
+htmlElements.playButton4.onclick = () => {
+    if(globalState.wavesurferWaveforms[4].getDuration() > 0) {
+        globalState.wavesurferWaveforms[4].playPause()
+        if(globalState.wavesurferWaveforms[4].isPlaying()) {
+            // pause icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+        } else {
+            // play icon
+            htmlElements.playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+        }
+    }
+}
+
+htmlElements.forwardButton4.onclick = () => {
+    globalState.wavesurferWaveforms[4].skip(15)
+}
+
+htmlElements.backButton4.onclick = () => {
+    globalState.wavesurferWaveforms[4].skip(-15)
 }
 
 // htmlElements.zoomInButton.onclick = () => {

@@ -3,13 +3,15 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-window.songFilePaths = ['','',''];
-window.segmentData = [[],[],[]];
-window.clusters = [0, 0, 0];
+window.songFilePaths = ['','','','',''];
+window.segmentData = [[],[],[],[],[]];
+window.clusters = [0, 0, 0, 0, 0];
 
 // Initialize the Regions plugin
 // const regions = RegionsPlugin.create();
 const regionsPlugins = [
+    RegionsPlugin.create(),
+    RegionsPlugin.create(),
     RegionsPlugin.create(),
     RegionsPlugin.create(),
     RegionsPlugin.create()
@@ -24,10 +26,12 @@ export let globalState = {
     segmentRegions: [
         [],
         [],
+        [],
+        [],
         []
     ],
     currentZoom: 10,
-    timelines: [null, null, null],
+    timelines: [null, null, null, null, null],
     groupEditingMode: false,
     wavesurferWaveforms: [
         WaveSurfer.create({
@@ -50,6 +54,20 @@ export let globalState = {
             progressColor: 'rgb(100, 0, 100)',
             minPxPerSec: 100,
             plugins: [regionsPlugins[2], ZoomPlugin.create({scale:0.1})],
+        }),
+        WaveSurfer.create({
+            container: '#waveform3',
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
+            minPxPerSec: 100,
+            plugins: [regionsPlugins[3], ZoomPlugin.create({scale:0.1})],
+        }),
+        WaveSurfer.create({
+            container: '#waveform4',
+            waveColor: 'rgb(200, 0, 200)',
+            progressColor: 'rgb(100, 0, 100)',
+            minPxPerSec: 100,
+            plugins: [regionsPlugins[4], ZoomPlugin.create({scale:0.1})],
         })
     ]
 };
@@ -71,9 +89,26 @@ const htmlElements = {
     changeBoundaryButton: document.querySelector('#change-boundary'),
 
     // wavesurfer buttons
-    playButton: document.querySelector('#play'),
-    forwardButton: document.querySelector('#forward'),
-    backButton: document.querySelector('#backward'),
+    // 0
+    playButton0: document.querySelector('#play0'),
+    forwardButton0: document.querySelector('#forward0'),
+    backButton0: document.querySelector('#backward0'),
+    // 1
+    playButton1: document.querySelector('#play1'),
+    forwardButton1: document.querySelector('#forward1'),
+    backButton1: document.querySelector('#backward1'),
+    // 2
+    playButton2: document.querySelector('#play2'),
+    forwardButton2: document.querySelector('#forward2'),
+    backButton2: document.querySelector('#backward2'),
+    // 3
+    playButton3: document.querySelector('#play3'),
+    forwardButton3: document.querySelector('#forward3'),
+    backButton3: document.querySelector('#backward3'),
+    // 4
+    playButton4: document.querySelector('#play4'),
+    forwardButton4: document.querySelector('#forward4'),
+    backButton4: document.querySelector('#backward4'),
     // zoomInButton: document.querySelector('#zoom-in'),
     // zoomOutButton: document.querySelector('#zoom-out'),
 
@@ -320,7 +355,7 @@ export function getNextWaveform() {
     while(filePath !== '') {
         num++;
         filePath = window.songFilePaths[num];
-        if(num > 2) return -1;
+        if(num > 4) return -1;
     }
     return num;
 }

@@ -27,7 +27,7 @@
 
 <body>
     <div class="vbox" id="biggest">
-        <div class="window" id="button-bar" style="width: (100vw - 24px);">
+        <div class="window" id="button-bar" style="width: (100vw - 24px); min-height: 100px"><!-- Added a min height -->
             <div class="title-bar">
                 <button aria-label="Close" class="collapsible coll" id="but"></button>
                 <h1 class="title">button-bar</h1>
@@ -69,15 +69,6 @@
                 </div>
                 <button class="btn" id="segment-details">Segment Details</button>
                 <button class="btn" id="group-editing">Group Editing</button>
-                <button class="btn" id="play">
-                    <img src="resources/icons/play-solid.svg" alt="Play Button">
-                </button>
-                <button class="btn" id="backward">
-                    <img src="resources/icons/backward15-seconds.svg" alt="Backward Button">
-                </button>
-                <button class="btn" id="forward">
-                    <img src="resources/icons/forward15-seconds.svg" alt="Forward Button">
-                </button>
                 <!-- <button class="btn" id="zoom-out">
                     <img src="resources/icons/zoom-out.svg" alt="Zoom Out Button">
                 </button>
@@ -115,13 +106,113 @@
             </div>
 
             <div class="window" id="timeline">
-                <div class="labels-container" id="labels-container0"></div>
-                <div class="waveform" id="waveform0"></div>
-                <div class="labels-container" id="labels-container1"></div>
-                <div class="waveform" id="waveform1"></div>
-                <div class="labels-container" id="labels-container2"></div>
-                <div class="waveform" id="waveform2"></div>
-                
+                <div class="hbox">
+                    <div class="vbox">
+                        <div class="hbox">
+                            <button class="btn" id="play0">
+                                <img src="resources/icons/play-solid.svg" alt="Play Button">
+                            </button>
+                            <button class="btn" id="backward0">
+                                <img src="resources/icons/backward15-seconds.svg" alt="Backward Button">
+                            </button>
+                            <button class="btn" id="forward0">
+                                <img src="resources/icons/forward15-seconds.svg" alt="Forward Button">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="vbox">
+                        <div class="labels-container" id="labels-container0"></div>
+                        <div class="waveform" id="waveform0"></div>
+                    </div>
+                </div>
+                <div class="separator"></div>
+
+                <div class="hbox">
+                    <div class="vbox">
+                        <div class="hbox">
+                            <button class="btn" id="play1">
+                                <img src="resources/icons/play-solid.svg" alt="Play Button">
+                            </button>
+                            <button class="btn" id="backward1">
+                                <img src="resources/icons/backward15-seconds.svg" alt="Backward Button">
+                            </button>
+                            <button class="btn" id="forward1">
+                                <img src="resources/icons/forward15-seconds.svg" alt="Forward Button">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="vbox">
+                        <div class="labels-container" id="labels-container1"></div>
+                        <div class="waveform" id="waveform1"></div>
+                    </div>
+                </div>
+                <div class="separator"></div>
+
+                <div class="hbox">
+                    <div class="vbox">
+                        <div class="hbox">
+                            <button class="btn" id="play2">
+                                <img src="resources/icons/play-solid.svg" alt="Play Button">
+                            </button>
+                            <button class="btn" id="backward2">
+                                <img src="resources/icons/backward15-seconds.svg" alt="Backward Button">
+                            </button>
+                            <button class="btn" id="forward2">
+                                <img src="resources/icons/forward15-seconds.svg" alt="Forward Button">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="vbox">
+                        <div class="labels-container" id="labels-container2"></div>
+                        <div class="waveform" id="waveform2"></div>
+                    </div>
+                </div>
+                <div class="separator"></div>
+
+                <div class="hbox">
+                    <div class="vbox">
+                        <div class="hbox">
+                            <button class="btn" id="play3">
+                                <img src="resources/icons/play-solid.svg" alt="Play Button">
+                            </button>
+                            <button class="btn" id="backward3">
+                                <img src="resources/icons/backward15-seconds.svg" alt="Backward Button">
+                            </button>
+                            <button class="btn" id="forward3">
+                                <img src="resources/icons/forward15-seconds.svg" alt="Forward Button">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="vbox">
+                        <div class="labels-container" id="labels-container3"></div>
+                        <div class="waveform" id="waveform3"></div>
+                    </div>
+                </div>
+                <div class="separator"></div>
+
+                <div class="hbox">
+                    <div class="vbox">
+                        <div class="hbox">
+                            <button class="btn" id="play4">
+                                <img src="resources/icons/play-solid.svg" alt="Play Button">
+                            </button>
+                            <button class="btn" id="backward4">
+                                <img src="resources/icons/backward15-seconds.svg" alt="Backward Button">
+                            </button>
+                            <button class="btn" id="forward4">
+                                <img src="resources/icons/forward15-seconds.svg" alt="Forward Button">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="vbox">
+                        <div class="labels-container" id="labels-container4"></div>
+                        <div class="waveform" id="waveform4"></div>
+                    </div>
+                </div>
+
+
+
+
                 <div class="modeless-dialog"></div>
             </div>
         </div>
