@@ -19,7 +19,7 @@ contextBridge.exposeInMainWorld('api', {
   getDirectoryContents: (dirPath) => ipcRenderer.invoke('get-directory-contents', dirPath),
   getFile: (dirPath) => ipcRenderer.invoke('get-file', dirPath),
   writeToFile: (filePath, data) => ipcRenderer.invoke('write-to-file', filePath, data),
-  moveSongFile: (currentFilePath, newPath) => ipcRenderer.invoke('move-song-file', currentFilePath, newPath),
+  copySongFile: (currentFilePath, newPath) => ipcRenderer.invoke('copy-song-file', currentFilePath, newPath),
   deleteDir: (dirPath) => ipcRenderer.invoke('delete-dir', dirPath),
   deleteFile: (filePath) => ipcRenderer.invoke('delete-file', filePath)
 });

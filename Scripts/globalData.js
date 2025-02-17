@@ -92,6 +92,7 @@ const htmlElements = {
     // save menu dialog
     saveMenuDialog: document.querySelector('#save-dialog'),
     saveFiles: document.getElementById('save-files'),
+    saveAudioCheckbox: document.getElementById('save-audio-checkbox'),
     closeSaveDialogButton: document.querySelector('#close-save-dialog'),
 
     // delete menu dialog
