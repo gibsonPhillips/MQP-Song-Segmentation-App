@@ -41,7 +41,7 @@
 }
 
 .window#timeline {
-    display: flex;
+    /* display: flex; */
     margin: 0px;
     position: relative;
     flex-grow: 4;
@@ -53,34 +53,19 @@
 }
 
 .labels-container {
-    height: 50px;
+    height: 22px;
 }
 
-.region-label-input0 {
+.region-label-input0, .region-label-input1, .region-label-input2 {
     position: absolute;
     pointer-events: auto;
     height: 20px;
     font-size: 24px;
     text-align: center;
+    padding: 0px;
+    border-radius: 1px;
+    border-color: black;
 }
-
-.region-label-input1 {
-    position: absolute;
-    pointer-events: auto;
-    height: 20px;
-    font-size: 24px;
-    text-align: center;
-}
-
-.region-label-input2 {
-    position: absolute;
-    pointer-events: auto;
-    height: 20px;
-    font-size: 24px;
-    text-align: center;
-}
-
-
 
 /* Style the dropdown container */
 .dropdown {

@@ -209,7 +209,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             region.on("update-end", () => updateLabelPositions(waveformNum));
         }
     });
-
     setTimeout(() => updateLabelPositions(waveformNum), 10);
 }
 
