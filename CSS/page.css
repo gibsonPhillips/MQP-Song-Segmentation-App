@@ -46,6 +46,8 @@
     position: relative;
     flex-grow: 4;
     flex-direction: column;
+    overflow-y: auto;
+    max-height: 565px;
 }
 
 #expanders {
@@ -54,6 +56,21 @@
 
 .labels-container {
     height: 22px;
+}
+
+.segment-annotation-container {
+    height: 50px;
+}
+
+.segment-annotation-input0, .segment-annotation-input1, .segment-annotation-input2 {
+    position: absolute;
+    pointer-events: auto;
+    height: 50px;
+    font-size: 12px;
+    text-align: left;
+    padding: 0px;
+    border-radius: 1px;
+    border-color: black;
 }
 
 .region-label-input0, .region-label-input1, .region-label-input2 {
