@@ -43,6 +43,12 @@ async function segment(algorithm) {
         window.segmentData[0] = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
+
+        // Add in segment annotation
+        window.segmentData[0].forEach(obj => {
+            obj.annotation = "";
+        });
+
         updateSegmentElementsList(window.segmentData[0], true, 0)
     } catch (error) {
         console.error('Error:', error);
@@ -79,6 +85,11 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall)
 
         let segmentData = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
+        });
+
+        // Add in segment annotation
+        segmentData.forEach(obj => {
+            obj.annotation = "";
         });
 
         let average = determineAverageSegmentLength(segmentData);
