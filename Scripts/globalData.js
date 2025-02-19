@@ -149,14 +149,15 @@ const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0
 // Updates the segment elements and display in table
 export function updateSegmentElementsList(elements, updateWaveform, waveformNum) {
     const tbody = document.getElementById('segment-elements');
-    const str = 'labels-container' + String(waveformNum);
+    const labelsContainerStr = 'labels-container' + String(waveformNum);
+    const annotationContainerStr = 'segment-annotation-container' + String(waveformNum);
     tbody.innerHTML = ''
 
     // If waveform is being updated
     if(updateWaveform) {
         regionsPlugins[waveformNum].clearRegions()
         globalState.colorMap.clear();
-        document.getElementById(str).textContent = "";
+        document.getElementById(labelsContainerStr).textContent = "";
         // globalState.segmentRegions[waveformNum] = [];
     }
 
@@ -197,7 +198,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                     updateOneSegmentLabel(element, event.target.value);
                 }                
             });
-            document.getElementById(str).appendChild(labelInput);
+            document.getElementById(labelsContainerStr).appendChild(labelInput);
 
             // Sync text input value with region data
             labelInput.addEventListener("input", () => {
@@ -205,22 +206,45 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 region.data.label = labelInput.value;
             });
 
+            // Create segment annotation box for region
+            let annotationInput = document.createElement("textarea");
+            annotationInput.value = element.annotation;
+            annotationInput.className = "segment-annotation-input" + String(waveformNum);
+            annotationInput.addEventListener("blur", (event) => {
+                element.annotation = event.target.value;
+            });
+            document.getElementById(annotationContainerStr).appendChild(annotationInput);
+
             // Update position when region is moved/resized
             region.on("update-end", () => updateLabelPositions(waveformNum));
+            region.on("update-end", () => updateSegmentAnnotationPositions(waveformNum));
         }
     });
     setTimeout(() => updateLabelPositions(waveformNum), 10);
+    setTimeout(() => updateSegmentAnnotationPositions(waveformNum), 10);
 }
 
 // Updates label positions with the most up to date waveform
 export function updateLabelPositions(waveformNum) {
-    let str = 'waveform' + String(waveformNum);
-    const str1 = ".region-label-input" + String(waveformNum);
-    document.querySelectorAll(str1).forEach((label, index) => {
-        // let region = globalState.segmentRegions[waveformNum][index];
+    const waveformStr = 'waveform' + String(waveformNum);
+    const inputStr = ".region-label-input" + String(waveformNum);
+    document.querySelectorAll(inputStr).forEach((label, index) => {
         let region = regionsPlugins[waveformNum].regions.at(index);
         let regionRect = region.element.getBoundingClientRect();
-        let waveform = document.getElementById(str);
+        let waveform = document.getElementById(waveformStr);
+        label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
+        label.style.width = `${regionRect.width}px`;
+    });
+}
+
+// Updates segment annotation positions with the most up to date waveform
+export function updateSegmentAnnotationPositions(waveformNum) {
+    const waveformStr = 'waveform' + String(waveformNum);
+    const inputStr = ".segment-annotation-input" + String(waveformNum);
+    document.querySelectorAll(inputStr).forEach((label, index) => {
+        let region = regionsPlugins[waveformNum].regions.at(index);
+        let regionRect = region.element.getBoundingClientRect();
+        let waveform = document.getElementById(waveformStr);
         label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
         label.style.width = `${regionRect.width}px`;
     });
@@ -257,7 +281,6 @@ function getColor(length) {
 // Updates the timeline based on the current zoom level
 export function updateTimeline(waveformNum) {
     const timeInterval = calculateTimeInterval(globalState.currentZoom, globalState.wavesurferWaveforms[waveformNum].getDuration());
-    console.log(timeInterval)
     if(globalState.timelines[waveformNum] != null) {
         globalState.timelines[waveformNum].destroy(); // Remove the old timeline
     }
