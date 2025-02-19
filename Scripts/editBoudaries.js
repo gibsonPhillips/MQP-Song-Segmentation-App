@@ -1,7 +1,8 @@
-import { globalState, updateSegmentElementsList } from './globalData.js';
+import { globalState, updateSegmentElementsList, setExternalFunction } from './globalData.js';
 import htmlElements from './globalData.js';
 
 let editBoundaryMode = false;
+let currentMarker;
 
 // TODO hanlde mulitple waveforms
 htmlElements.addBoundaryButton.onclick = () => {
@@ -22,7 +23,7 @@ htmlElements.addBoundaryButton.onclick = () => {
     }
 
     // Add to boundaryData
-    let element = {"number": i+1, "start": time, "end": window.segmentData[0][i].start, "label": window.clusters[0]};
+    let element = {"number": i+1, "start": time, "end": window.segmentData[0][i].start, "label": window.clusters[0], "annotation": ""};
     window.clusters[0]++;
     window.segmentData[0].splice(i, 0, element);
 
@@ -77,15 +78,65 @@ htmlElements.changeBoundaryButton.onclick = () => {
 
     // TODO update with multiple waveforms
     htmlElements.regions[0].regions.forEach(element => {
-        element.setOptions({
-            resize: editBoundaryMode
-        });
+        console.log(element);
+        if(globalState.regionType.get(element) === 'segment') {
+            element.setOptions({
+                resize: editBoundaryMode
+            });
+        }
     });
 }
+
+// Add marker to waveform
+htmlElements.addMarkerButton.onclick = () => {
+    // Get click time (relative to waveform duration)
+    const time = globalState.wavesurferWaveforms[0].getCurrentTime();
+
+    // Add marker at time
+    const marker = htmlElements.regions[0].addRegion({
+        start: time,
+        content: "",
+        color: "rgba(255, 0, 0, 0.5)",
+        drag: false,
+        resize: false,
+    });
+    globalState.regionType.set(marker, 'marker');
+
+    marker.on('click', () => {
+        openMarkerNote(marker, globalState.markerNotes[0]);
+    });
+
+    currentMarker = marker;
+
+    htmlElements.markerTitle.value = "";
+    htmlElements.markerNote.value = "";
+
+    htmlElements.markerDialog.showModal();
+}
+
+// Saving marker note
+htmlElements.saveMarker.onclick = () => {
+    globalState.markerNotes[0].set(currentMarker.start, {title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
+    htmlElements.markerDialog.close();
+}
+
+// Set the function in global.js
+setExternalFunction(openMarkerNote);
+
+function openMarkerNote(marker, markerNotesMap) {
+    currentMarker = marker;
+    const currentMarkerMap = markerNotesMap.get(marker.start)
+
+    htmlElements.markerTitle.value = currentMarkerMap.title;
+    htmlElements.markerNote.value = currentMarkerMap.note;
+    htmlElements.markerDialog.showModal();
+}
+
 
 // Handle region update for editing boundaries
 // TODO update with multiple waveforms
 htmlElements.regions[0].on('region-updated', (region) => {
+    if(globalState.regionType.get(region) === 'marker') return;
     if (!editBoundaryMode) return;
 
     let index = htmlElements.regions[0].regions.findIndex(r => r.id === region.id);
@@ -93,10 +144,15 @@ htmlElements.regions[0].on('region-updated', (region) => {
 
     let movedStart = window.segmentData[0][index].start !== region.start;
 
-    let prevRegion = htmlElements.regions[0].regions.at(index - 1);
-    let nextRegion = htmlElements.regions[0].regions.at(index + 1);
+    let prevRegion = getPrevRegion(0, index);
+    console.log(prevRegion)
+    let nextRegion = getNextRegion(0, index);
+    console.log(nextRegion)
 
-    // Enforce limits so you can't go before previous or after nextr segment
+    // let prevRegion = htmlElements.regions[0].regions.at(index - 1);
+    // let nextRegion = htmlElements.regions[0].regions.at(index + 1);
+
+    // Enforce limits so you can't go before previous or after next segment
     let minStart = prevRegion ? prevRegion.start : 0; // Can't move before previous start
     let maxEnd = nextRegion ? nextRegion.end : globalState.wavesurferWaveforms[0].getDuration(); // Can't extend beyond next region
 
@@ -127,3 +183,28 @@ htmlElements.regions[0].on('region-updated', (region) => {
 
     updateSegmentElementsList(window.segmentData[0], false, 0);
 });
+
+// Get previous region that is not a marker
+function getPrevRegion(waveformNum, index) {
+    index--;
+    let region = htmlElements.regions[waveformNum].regions.at(index);
+    while(globalState.regionType.get(region) === 'marker') {
+        index--;
+        if(index < 0) return null;
+        region = htmlElements.regions[waveformNum].regions.at(index);
+    }
+    if(index < 0) return null;
+    return region;
+}
+
+// Get next region that is not a marker
+function getNextRegion(waveformNum, index) {
+    let region = htmlElements.regions[waveformNum].regions.at(index + 1);
+    while(globalState.regionType.get(region) === 'marker') {
+        index++;
+        if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
+        region = htmlElements.regions[waveformNum].regions.at(index + 1);
+    }
+    if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
+    return region;
+}

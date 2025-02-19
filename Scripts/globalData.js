@@ -51,7 +51,9 @@ export let globalState = {
             minPxPerSec: 100,
             plugins: [regionsPlugins[2], ZoomPlugin.create({scale:0.1})],
         })
-    ]
+    ],
+    markerNotes: [new Map(), new Map(), new Map()],
+    regionType: new Map()
 };
 
 const htmlElements = {
@@ -69,6 +71,7 @@ const htmlElements = {
     addBoundaryButton: document.querySelector('#add-boundary'),
     removeBoundaryButton: document.querySelector('#remove-boundary'),
     changeBoundaryButton: document.querySelector('#change-boundary'),
+    addMarkerButton: document.querySelector("#add-marker"),
 
     // wavesurfer buttons
     playButton: document.querySelector('#play'),
@@ -110,6 +113,13 @@ const htmlElements = {
     closeErrorDialogButton: document.getElementById('close-error-dialog'),
     errorDialogMessage: document.getElementById('error-message'),
 
+    // marker dialog
+    markerDialog: document.getElementById('marker-dialog'),
+    closeMarkerDialog: document.getElementById('marker-dialog-close'),
+    saveMarker: document.getElementById('save-marker'),
+    markerTitle: document.getElementById('marker-dialog-title'),
+    markerNote: document.getElementById('marker-dialog-note'),
+
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
@@ -127,6 +137,8 @@ const htmlElements = {
     boundariesDropdown: document.getElementById("boundaries-dropdown"),
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
     groupEditingButton: document.getElementById("group-editing"),
+    segmentAnnotationButton: document.getElementById("segment-annotations"),
+    globalTimelineButton: document.getElementById("global-timeline"),
     regions: regionsPlugins,
 };
 export default htmlElements;
@@ -146,6 +158,12 @@ let defaultColors = [
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
+// Sets external function for openMarkerNote in editBoundaries.js
+let externalFunction = null;
+export function setExternalFunction(fn) {
+    externalFunction = fn;
+}
+
 // Updates the segment elements and display in table
 export function updateSegmentElementsList(elements, updateWaveform, waveformNum) {
     const tbody = document.getElementById('segment-elements');
@@ -158,7 +176,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
         regionsPlugins[waveformNum].clearRegions()
         globalState.colorMap.clear();
         document.getElementById(labelsContainerStr).textContent = "";
-        // globalState.segmentRegions[waveformNum] = [];
+        document.getElementById(annotationContainerStr).textContent = "";
     }
 
     elements.forEach(element => {
@@ -184,6 +202,8 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 drag: false,
                 resize: false,
             });
+
+            globalState.regionType.set(region, 'segment');
 
             // Create segment label for region
             let labelInput = document.createElement("input");
@@ -220,6 +240,30 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             region.on("update-end", () => updateSegmentAnnotationPositions(waveformNum));
         }
     });
+
+    // Re add markers
+    if(updateWaveform) {
+        globalState.regionType.clear();
+        globalState.markerNotes[waveformNum].keys().forEach(element => {
+            // Add marker at time
+            const marker = htmlElements.regions[waveformNum].addRegion({
+                start: element,
+                content: "",
+                color: "rgba(255, 0, 0, 0.5)",
+                drag: false,
+                resize: false,
+            });
+            globalState.regionType.set(marker, 'marker');
+
+            marker.on('click', () => {
+                if (externalFunction) {
+                    externalFunction(marker, globalState.markerNotes[0]);
+                } else {
+                    console.warn("External function not set!");
+                }
+            });
+        });
+    }
     setTimeout(() => updateLabelPositions(waveformNum), 10);
     setTimeout(() => updateSegmentAnnotationPositions(waveformNum), 10);
 }

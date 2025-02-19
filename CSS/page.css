@@ -59,7 +59,8 @@
 }
 
 .segment-annotation-container {
-    height: 50px;
+    height: 0px;
+    visibility: hidden;
 }
 
 .segment-annotation-input0, .segment-annotation-input1, .segment-annotation-input2 {
@@ -71,6 +72,7 @@
     padding: 0px;
     border-radius: 1px;
     border-color: black;
+    resize: none;
 }
 
 .region-label-input0, .region-label-input1, .region-label-input2 {
@@ -117,4 +119,15 @@
 /* Show the dropdown content when hovering */
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+#marker-dialog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#marker-dialog-note {
+    height: 100px;
+    resize: none;
 }
