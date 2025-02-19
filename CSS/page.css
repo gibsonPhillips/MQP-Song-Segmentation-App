@@ -59,7 +59,8 @@
 }
 
 .segment-annotation-container {
-    height: 50px;
+    height: 0px;
+    visibility: hidden;
 }
 
 .segment-annotation-input0, .segment-annotation-input1, .segment-annotation-input2 {

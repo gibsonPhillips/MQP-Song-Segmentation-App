@@ -1,6 +1,8 @@
 import { updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
+let segmentAnnotationsPresent = false;
+
 // Button click actions
 htmlElements.segmentDetailsButton.onclick = () => {
     htmlElements.segmentDetailsDialog.showModal();
@@ -70,6 +72,21 @@ htmlElements.groupEditingButton.onclick = () => {
         htmlElements.groupEditingButton.style.backgroundColor = "white";
     } else {
         htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
+    }
+}
+
+htmlElements.segmentAnnotationButton.onclick = () => {
+    segmentAnnotationsPresent = !segmentAnnotationsPresent;
+    if(segmentAnnotationsPresent) {
+        htmlElements.segmentAnnotationButton.style.backgroundColor = "rgb(255,197,61)";
+        document.querySelectorAll(".segment-annotation-container").forEach((container) => {
+            container.setAttribute('style', 'height: 50px; visibility: visible;');
+        });
+    } else {
+        htmlElements.segmentAnnotationButton.style.backgroundColor = "white";
+        document.querySelectorAll(".segment-annotation-container").forEach((container) => {
+            container.setAttribute('style', 'height: 0px; visibility: hidden;');
+        });
     }
 }
 
