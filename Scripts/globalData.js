@@ -138,6 +138,7 @@ const htmlElements = {
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
     groupEditingButton: document.getElementById("group-editing"),
     segmentAnnotationButton: document.getElementById("segment-annotations"),
+    globalTimelineButton: document.getElementById("global-timeline"),
     regions: regionsPlugins,
 };
 export default htmlElements;

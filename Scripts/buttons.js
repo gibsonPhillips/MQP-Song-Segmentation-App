@@ -2,6 +2,8 @@ import { updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline,
 import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
+let globalTimelineMode = false;
+let currentlyEditing = false;
 
 // Button click actions
 htmlElements.segmentDetailsButton.onclick = () => {
@@ -90,19 +92,74 @@ htmlElements.segmentAnnotationButton.onclick = () => {
     }
 }
 
+htmlElements.globalTimelineButton.onclick = () => {
+    globalTimelineMode = !globalTimelineMode;
+    if(globalTimelineMode) {
+        htmlElements.globalTimelineButton.style.backgroundColor = "rgb(255,197,61)";
+        // Update zooms and scrolls to first waveform
+        if(globalState.wavesurferWaveforms[0].getDuration() > 0) {
+            let currentScroll = globalState.wavesurferWaveforms[0].getScroll();        
+            for (let i = 1; i < globalState.wavesurferWaveforms.length; i++) {               
+                const waveform = globalState.wavesurferWaveforms[i];
+                if(waveform.getDuration() > 0) {
+                    waveform.setScroll(currentScroll);
+                    waveform.zoom(globalState.currentZoom);
+                    updateLabelPositions(i);
+                    updateSegmentAnnotationPositions(i);
+                    updateTimeline(i);
+                }
+            }
+        }
+    } else {
+        htmlElements.globalTimelineButton.style.backgroundColor = "white";
+    }
+}
+
 globalState.wavesurferWaveforms.forEach((wavesurfer, index) => {
     // Update labels on scroll
     wavesurfer.on("scroll", () => {
-        updateLabelPositions(index);
-        updateSegmentAnnotationPositions(index);
+        if(currentlyEditing) return;
+        const currentScroll = wavesurfer.getScroll();
+
+        if(globalTimelineMode) {
+            currentlyEditing = true;
+            for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+                const waveform = globalState.wavesurferWaveforms[i];
+                if(waveform.getDuration() > 0) {
+                    waveform.setScroll(currentScroll);
+                    updateLabelPositions(i);
+                    updateSegmentAnnotationPositions(i);
+                }
+            }
+            currentlyEditing = false;
+        } else {
+            updateLabelPositions(index);
+            updateSegmentAnnotationPositions(index);
+        }
     });
 
     // Update labels and timeline on zoom
     wavesurfer.on("zoom", (newPxPerSec) => {
+        if(currentlyEditing) return;
         globalState.currentZoom = newPxPerSec;
-        updateLabelPositions(index);
-        updateSegmentAnnotationPositions(index);
-        updateTimeline(index);
+
+        if(globalTimelineMode) {
+            currentlyEditing = true;
+            for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+                const waveform = globalState.wavesurferWaveforms[i];
+                if(waveform.getDuration() > 0) {
+                    waveform.zoom(newPxPerSec);
+                    updateLabelPositions(i);
+                    updateSegmentAnnotationPositions(i);
+                    updateTimeline(i);
+                }
+            }
+            currentlyEditing = false;
+        } else {
+            updateLabelPositions(index);
+            updateSegmentAnnotationPositions(index);
+            updateTimeline(index);
+        }
     });
 });
 
