@@ -23,6 +23,10 @@ htmlElements.closeDeleteDialogButton.onclick = () => {
     htmlElements.deleteMenuDialog.close();
 }
 
+htmlElements.closeAreYouSureDialogButton.onclick = () => {
+    htmlElements.areYouSureDialog.close();
+}
+
 htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
 }

@@ -95,43 +95,7 @@ htmlElements.saveButton.addEventListener('click', async () => {
 
 // when delete is clicked
 htmlElements.deleteButton.addEventListener('click', async () => {
-
-    // scan the directory
-    let chosenProject = ''
-    let vbox = htmlElements.deleteFiles;
-    while (vbox.firstChild) {
-        vbox.removeChild(vbox.firstChild);
-    }
-    window.api.getDirectoryContents(workspace).then((files) => {
-        if (files.length != 0) {
-        // Implement selecting the project
-        //placeholders
-
-            files.forEach(file => {
-
-                // Create a button for each existing project
-                let newButton = document.createElement('button');
-                newButton.class='btn';
-                newButton.textContent = file
-                newButton.addEventListener('click', async () => {
-                    chosenProject = file
-                    console.log(chosenProject);
-                    htmlElements.deleteMenuDialog.close();
-                    deleteTheProject(chosenProject)
-                })
-                vbox.appendChild(newButton);
-            });
-        }
-
-        //Show the dialog
-        htmlElements.deleteMenuDialog.showModal();
-
-    }).catch((error) => {
-        // Throw error if there is an issue getting the files within the directory
-        console.error('Issue getting the files within the directory:\n' + error);
-        presentErrorDialog('Issue getting the files within the directory:\n' + error);
-    });
-
+    selectDeleteProject();
 });
 
 
@@ -338,6 +302,73 @@ async function saveTheData(chosenProject, saveAudioFile) {
     // Implement Saving of the song file
 }
 
+async function selectDeleteProject() {
+
+    // scan the directory
+    let chosenProject = ''
+    let vbox = htmlElements.deleteFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(workspace).then((files) => {
+        if (files.length != 0) {
+        // Implement selecting the project
+        //placeholders
+
+            files.forEach(file => {
+
+                // Create a button for each existing project
+                let newButton = document.createElement('button');
+                newButton.class='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    console.log(chosenProject);
+                    htmlElements.deleteMenuDialog.close();
+                    openAreYouSureDialog(chosenProject)
+                })
+                vbox.appendChild(newButton);
+            });
+        }
+
+        //Show the dialog
+        htmlElements.deleteMenuDialog.showModal();
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
+
+}
+
+// asks the user if they are sure they want to delete
+async function openAreYouSureDialog(chosenProject) {
+    let header = htmlElements.areYouSureHeader;
+    header.innerHTML = 'Are you sure you want to delete \"' + chosenProject + '\"?'
+
+    // Create a button for yes
+    let yesButton = document.createElement('button');
+    yesButton.class='btn';
+    yesButton.textContent = 'yes'
+    yesButton.addEventListener('click', async () => {
+        htmlElements.areYouSureDialog.close();
+        deleteTheProject(chosenProject)
+    })
+
+    // Create a button for no
+    let noButton = document.createElement('button');
+    noButton.class='btn';
+    noButton.textContent = 'no'
+    noButton.addEventListener('click', async () => {
+        htmlElements.areYouSureDialog.close();
+    })
+    let hbox = htmlElements.yesOrNo;
+    hbox.appendChild(yesButton);
+    hbox.appendChild(noButton);
+    htmlElements.areYouSureDialog.showModal();
+}
+
 // deletes the project
 async function deleteTheProject(chosenProject) {
     console.log('Deleted: ' + chosenProject)
@@ -345,22 +376,28 @@ async function deleteTheProject(chosenProject) {
 
     let projectPath = workspace + '\\' + chosenProject;
 
-    await window.api.getDirectoryContents(projectPath).then((files) => {
-        if (files.length != 0) {
-            files.forEach(file => {
-                let projectFilePath = projectPath + '\\' + file
-                window.api.deleteFile(projectFilePath).then((result) => {
-                    console.log(projectFilePath + ' deleted')
-                }).catch((err) => {
-                    console.error('error deleting file: ' + projectFilePath)
-                    presentErrorDialog('error deleting file: ' + projectFilePath)
-                });
-            });
-        }
+    // Gets the files
+    let files = []
+    await window.api.getDirectoryContents(projectPath).then((result) => {
+        files = result
     }).catch((err) => {
         console.error('Issue get directory contents: ' + err);
         presentErrorDialog('Issue get directory contents: ' + err);
     })
+
+    // deletes each file
+    if (files.length != 0) {
+        await files.forEach(file => {
+            let projectFilePath = projectPath + '\\' + file
+            window.api.deleteFile(projectFilePath).then((result) => {
+                console.log(projectFilePath + ' deleted')
+            }).catch((err) => {
+                console.error('error deleting file: ' + projectFilePath)
+                presentErrorDialog('error deleting file: ' + projectFilePath)
+            });
+        });
+    }
+
     await window.api.deleteDir(projectPath).then((result) => {
         console.log(chosenProject + ' deleted')
     }).catch((err) => {
