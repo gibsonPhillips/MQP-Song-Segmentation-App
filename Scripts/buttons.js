@@ -7,8 +7,11 @@ htmlElements.segmentDetailsButton.onclick = () => {
 }
 
 htmlElements.closeDialogButton.onclick = () => {
-    htmlElements.segmentDetailsDialog.close();
     htmlElements.removeBoundaryDialog.close();
+}
+
+htmlElements.closeMarkerDialog.onclick = () => {
+    htmlElements.markerDialog.close();
 }
 
 htmlElements.closeLoadDialogButton.onclick = () => {

@@ -71,6 +71,7 @@
     padding: 0px;
     border-radius: 1px;
     border-color: black;
+    resize: none;
 }
 
 .region-label-input0, .region-label-input1, .region-label-input2 {
@@ -117,4 +118,15 @@
 /* Show the dropdown content when hovering */
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+#marker-dialog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#marker-dialog-note {
+    height: 100px;
+    resize: none;
 }

@@ -65,6 +65,7 @@
                         <a href="#" id="add-boundary">Add Boundary</a>
                         <a href="#" id="remove-boundary">Remove Boundary</a>
                         <a href="#" id="change-boundary">Change Boundary</a>
+                        <a href="#" id="add-marker">Add Marker Note</a>
                     </div>
                 </div>
                 <button class="btn" id="segment-details">Segment Details</button>
@@ -207,6 +208,19 @@
         <h2>Choose Remove Option</h2>
         <button class="btn" id="combine-previous">Combine with Previous</button>
         <button class="btn" id="combine-next">Combine with Next</button>
+    </dialog>
+
+    <dialog id="marker-dialog">
+        <h2>Marker</h2>
+        <button class="btn" id="marker-dialog-close">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div id="marker-dialog-container">
+            <input type="text" value="Placeholder" id="marker-dialog-title">
+            <textarea id="marker-dialog-note">Placeholder</textarea>
+            <button class="btn" id="save-marker">Save</button>
+        </div>
+
     </dialog>
 
     <!-- <script src="scripts/algopy.js"></script> -->
