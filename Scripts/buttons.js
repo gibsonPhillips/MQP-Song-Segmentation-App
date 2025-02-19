@@ -1,4 +1,4 @@
-import { updateLabelPositions, updateTimeline, globalState } from './globalData.js';
+import { updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
 // Button click actions
@@ -70,21 +70,18 @@ htmlElements.groupEditingButton.onclick = () => {
     }
 }
 
-// Update labels on scroll
-globalState.wavesurferWaveforms[0].on("scroll", () => {
-    updateLabelPositions(0);
-});
-
 globalState.wavesurferWaveforms.forEach((wavesurfer, index) => {
     // Update labels on scroll
     wavesurfer.on("scroll", () => {
         updateLabelPositions(index);
+        updateSegmentAnnotationPositions(index);
     });
 
     // Update labels and timeline on zoom
     wavesurfer.on("zoom", (newPxPerSec) => {
         globalState.currentZoom = newPxPerSec;
         updateLabelPositions(index);
+        updateSegmentAnnotationPositions(index);
         updateTimeline(index);
     });
 });
