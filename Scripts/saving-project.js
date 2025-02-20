@@ -440,12 +440,9 @@ async function parseSegmentDataFile(segmentDataFilePath) {
                 number: parseInt(textTuple[0]),
                 start: parseFloat(textTuple[1]),
                 end: parseFloat(textTuple[2]),
-                label: parseInt(textTuple[3])
+                label: parseInt(textTuple[3]),
+                annotation: textTuple[4]
             };
-//                tuple.push(parseInt(textTuple[0]))
-//                tuple.push(parseFloat(textTuple[1]))
-//                tuple.push(parseFloat(textTuple[2]))
-//                tuple.push(parseInt(textTuple[3]))
             rows.push(obj);
         })
         console.log(rows)
@@ -468,7 +465,7 @@ async function parseMetadataFile(metadataFilePath) {
 function createSegmentDataFileText() {
     let text = '';
     window.segmentData[0].forEach(segment => {
-        text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + '\n'
+        text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + ',' + segment.annotation + '\n'
     });
     window.segmentData[0]
     return text;

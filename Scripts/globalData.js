@@ -51,7 +51,9 @@ export let globalState = {
             minPxPerSec: 100,
             plugins: [regionsPlugins[2], ZoomPlugin.create({scale:0.1})],
         })
-    ]
+    ],
+    markerNotes: [new Map(), new Map(), new Map()],
+    regionType: new Map()
 };
 
 const htmlElements = {
@@ -69,6 +71,7 @@ const htmlElements = {
     addBoundaryButton: document.querySelector('#add-boundary'),
     removeBoundaryButton: document.querySelector('#remove-boundary'),
     changeBoundaryButton: document.querySelector('#change-boundary'),
+    addMarkerButton: document.querySelector("#add-marker"),
 
     // wavesurfer buttons
     playButton: document.querySelector('#play'),
@@ -111,6 +114,13 @@ const htmlElements = {
     closeErrorDialogButton: document.getElementById('close-error-dialog'),
     errorDialogMessage: document.getElementById('error-message'),
 
+    // marker dialog
+    markerDialog: document.getElementById('marker-dialog'),
+    closeMarkerDialog: document.getElementById('marker-dialog-close'),
+    saveMarker: document.getElementById('save-marker'),
+    markerTitle: document.getElementById('marker-dialog-title'),
+    markerNote: document.getElementById('marker-dialog-note'),
+
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
@@ -128,6 +138,8 @@ const htmlElements = {
     boundariesDropdown: document.getElementById("boundaries-dropdown"),
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
     groupEditingButton: document.getElementById("group-editing"),
+    segmentAnnotationButton: document.getElementById("segment-annotations"),
+    globalTimelineButton: document.getElementById("global-timeline"),
     regions: regionsPlugins,
 };
 export default htmlElements;
@@ -147,18 +159,25 @@ let defaultColors = [
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
+// Sets external function for openMarkerNote in editBoundaries.js
+let externalFunction = null;
+export function setExternalFunction(fn) {
+    externalFunction = fn;
+}
+
 // Updates the segment elements and display in table
 export function updateSegmentElementsList(elements, updateWaveform, waveformNum) {
     const tbody = document.getElementById('segment-elements');
-    const str = 'labels-container' + String(waveformNum);
+    const labelsContainerStr = 'labels-container' + String(waveformNum);
+    const annotationContainerStr = 'segment-annotation-container' + String(waveformNum);
     tbody.innerHTML = ''
 
     // If waveform is being updated
     if(updateWaveform) {
         regionsPlugins[waveformNum].clearRegions()
         globalState.colorMap.clear();
-        document.getElementById(str).textContent = "";
-        // globalState.segmentRegions[waveformNum] = [];
+        document.getElementById(labelsContainerStr).textContent = "";
+        document.getElementById(annotationContainerStr).textContent = "";
     }
 
     elements.forEach(element => {
@@ -185,6 +204,8 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 resize: false,
             });
 
+            globalState.regionType.set(region, 'segment');
+
             // Create segment label for region
             let labelInput = document.createElement("input");
             labelInput.type = "text";
@@ -198,7 +219,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                     updateOneSegmentLabel(element, event.target.value);
                 }                
             });
-            document.getElementById(str).appendChild(labelInput);
+            document.getElementById(labelsContainerStr).appendChild(labelInput);
 
             // Sync text input value with region data
             labelInput.addEventListener("input", () => {
@@ -206,22 +227,69 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 region.data.label = labelInput.value;
             });
 
+            // Create segment annotation box for region
+            let annotationInput = document.createElement("textarea");
+            annotationInput.value = element.annotation;
+            annotationInput.className = "segment-annotation-input" + String(waveformNum);
+            annotationInput.addEventListener("blur", (event) => {
+                element.annotation = event.target.value;
+            });
+            document.getElementById(annotationContainerStr).appendChild(annotationInput);
+
             // Update position when region is moved/resized
             region.on("update-end", () => updateLabelPositions(waveformNum));
+            region.on("update-end", () => updateSegmentAnnotationPositions(waveformNum));
         }
     });
+
+    // Re add markers
+    if(updateWaveform) {
+        globalState.regionType.clear();
+        globalState.markerNotes[waveformNum].keys().forEach(element => {
+            // Add marker at time
+            const marker = htmlElements.regions[waveformNum].addRegion({
+                start: element,
+                content: "",
+                color: "rgba(255, 0, 0, 0.5)",
+                drag: false,
+                resize: false,
+            });
+            globalState.regionType.set(marker, 'marker');
+
+            marker.on('click', () => {
+                if (externalFunction) {
+                    externalFunction(marker, globalState.markerNotes[0]);
+                } else {
+                    console.warn("External function not set!");
+                }
+            });
+        });
+    }
     setTimeout(() => updateLabelPositions(waveformNum), 10);
+    setTimeout(() => updateSegmentAnnotationPositions(waveformNum), 10);
 }
 
 // Updates label positions with the most up to date waveform
 export function updateLabelPositions(waveformNum) {
-    let str = 'waveform' + String(waveformNum);
-    const str1 = ".region-label-input" + String(waveformNum);
-    document.querySelectorAll(str1).forEach((label, index) => {
-        // let region = globalState.segmentRegions[waveformNum][index];
+    const waveformStr = 'waveform' + String(waveformNum);
+    const inputStr = ".region-label-input" + String(waveformNum);
+    document.querySelectorAll(inputStr).forEach((label, index) => {
         let region = regionsPlugins[waveformNum].regions.at(index);
         let regionRect = region.element.getBoundingClientRect();
-        let waveform = document.getElementById(str);
+        let waveform = document.getElementById(waveformStr);
+        label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
+        label.style.width = `${regionRect.width}px`;
+    });
+}
+
+// Updates segment annotation positions with the most up to date waveform
+export function updateSegmentAnnotationPositions(waveformNum) {
+    const waveformStr = 'waveform' + String(waveformNum);
+    const inputStr = ".segment-annotation-input" + String(waveformNum);
+    document.querySelectorAll(inputStr).forEach((label, index) => {
+        let region = regionsPlugins[waveformNum].regions.at(index);
+        let regionRect = region.element.getBoundingClientRect();
+        let waveform = document.getElementById(waveformStr);
         label.style.left = `${regionRect.left - waveform.getBoundingClientRect().left + waveform.offsetLeft}px`;
         label.style.width = `${regionRect.width}px`;
     });
@@ -258,7 +326,6 @@ function getColor(length) {
 // Updates the timeline based on the current zoom level
 export function updateTimeline(waveformNum) {
     const timeInterval = calculateTimeInterval(globalState.currentZoom, globalState.wavesurferWaveforms[waveformNum].getDuration());
-    console.log(timeInterval)
     if(globalState.timelines[waveformNum] != null) {
         globalState.timelines[waveformNum].destroy(); // Remove the old timeline
     }

@@ -2,11 +2,16 @@
 <html lang="en">
 
 <head>
-    <title>System.css Starter</title>
+    <title>Song Slicer</title>
     <meta charset="UTF-8" />
+
     <link rel="stylesheet" href="CSS/dist/system.css" />
     <link rel="stylesheet" href="CSS/page.css" />
     <link rel="stylesheet" href="CSS/collapse.css" />
+    <link rel="stylesheet" href="CSS/loading.css" />
+
+
+
 </head>
 <style>
     #waveform {
@@ -65,10 +70,17 @@
                         <a href="#" id="add-boundary">Add Boundary</a>
                         <a href="#" id="remove-boundary">Remove Boundary</a>
                         <a href="#" id="change-boundary">Change Boundary</a>
+                        <a href="#" id="add-marker">Add Marker Note</a>
                     </div>
                 </div>
                 <button class="btn" id="segment-details">Segment Details</button>
+                <button class="btn" id="loading-button">
+                    <i style="display: none" class="fa fa-circle-o-notch fa-spin"></i>
+                    <span id="loading-btn-txt">Loading button</span>
+                </button>
                 <button class="btn" id="group-editing">Group Editing</button>
+                <button class="btn" id="segment-annotations">Segment Annotations</button>
+                <button class="btn" id="global-timeline">Global Timeline</button>
                 <button class="btn" id="play">
                     <img src="resources/icons/play-solid.svg" alt="Play Button">
                 </button>
@@ -117,12 +129,17 @@
             <div class="window" id="timeline">
                 <div class="labels-container" id="labels-container0"></div>
                 <div class="waveform" id="waveform0"></div>
+                <div class="segment-annotation-container" id="segment-annotation-container0"></div>
+
                 <div class="labels-container" id="labels-container1"></div>
                 <div class="waveform" id="waveform1"></div>
+                <div class="segment-annotation-container" id="segment-annotation-container1"></div>
+
                 <div class="labels-container" id="labels-container2"></div>
                 <div class="waveform" id="waveform2"></div>
+                <div class="segment-annotation-container" id="segment-annotation-container1"></div>
                 
-                <div class="modeless-dialog"></div>
+                <!-- <div class="modeless-dialog"></div> -->
             </div>
         </div>
     </div>
@@ -202,12 +219,27 @@
         <button class="btn" id="combine-next">Combine with Next</button>
     </dialog>
 
+    <dialog id="marker-dialog">
+        <h2>Marker</h2>
+        <button class="btn" id="marker-dialog-close">
+            <img src="resources/icons/xmark.svg" alt="Close Button">
+        </button>
+        <div id="marker-dialog-container">
+            <input type="text" value="Placeholder" id="marker-dialog-title">
+            <textarea id="marker-dialog-note">Placeholder</textarea>
+            <button class="btn" id="save-marker">Save</button>
+        </div>
+
+    </dialog>
+
     <!-- <script src="scripts/algopy.js"></script> -->
     <script type="module" src="scripts/globalData.js"></script>
     <script type="module" src="scripts/buttons.js"></script>
     <script type="module" src="scripts/editBoudaries.js"></script>
     <script type="module" src="scripts/algorithms.js"></script>
     <script type="module" src="scripts/saving-project.js"></script>
+    <script type="module" src="scripts/loading_demo.js"></script>
+
 </body>
 
 </html>
