@@ -81,6 +81,9 @@
                 <button class="btn" id="group-editing">Group Editing</button>
                 <button class="btn" id="segment-annotations">Segment Annotations</button>
                 <button class="btn" id="global-timeline">Global Timeline</button>
+                <div class="modeless-dialog vbox">
+                    <input id="variability-slider" type="range" min="0" max="800" value="400" />
+                </div>
                 <button class="btn" id="play">
                     <img src="resources/icons/play-solid.svg" alt="Play Button">
                 </button>
@@ -99,8 +102,8 @@
             </div>
         </div>
 
-        <div class="hbox" id="mod-time">
-            <div class="window" id="modifiers">
+        <div id="track-time">
+            <div class="window" id="tracks">
                 <div id="expanders">
                     <div class="title-bar" id="expand" style="display:none">
                         <button aria-label="Close" class="collapsible coll" id="expand-button" style="display:none">
@@ -114,16 +117,14 @@
                         <!-- this keeps the button from collapsing width :*) -->
                         <div style="width:20px"></div>
                     </button>
-                    <h1 class="title">Modifiers</h1>
+                    <h1 class="title">Tracks</h1>
                     <button aria-label="Resize" disabled class="hidden"></button>
                 </div>
 
                 <!-- Little line separator -->
                 <div class="separator"></div>
 
-                <div class="modeless-dialog vbox cull">
-                    <input id="variability-slider" type="range" min="0" max="800" value="400" />
-                </div>
+
             </div>
 
             <div class="window" id="timeline">
