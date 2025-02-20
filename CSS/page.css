@@ -16,7 +16,7 @@
 }
 
 /* the bottom two windows */
-#mod-time.hbox {
+#track-time {
     /* width: calc(100vw - 16px); */
     width: 100%;
     gap: 5px;
@@ -31,7 +31,7 @@
 
 }
 
-.window#modifiers {
+.window#tracks {
     display: flex;
     margin: 0px;
     width: 100vw;
@@ -63,7 +63,9 @@
     visibility: hidden;
 }
 
-.segment-annotation-input0, .segment-annotation-input1, .segment-annotation-input2 {
+.segment-annotation-input0,
+.segment-annotation-input1,
+.segment-annotation-input2 {
     position: absolute;
     pointer-events: auto;
     height: 50px;
@@ -75,7 +77,9 @@
     resize: none;
 }
 
-.region-label-input0, .region-label-input1, .region-label-input2 {
+.region-label-input0,
+.region-label-input1,
+.region-label-input2 {
     position: absolute;
     pointer-events: auto;
     height: 20px;
