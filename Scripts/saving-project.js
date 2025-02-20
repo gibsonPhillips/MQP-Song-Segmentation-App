@@ -98,6 +98,22 @@ htmlElements.deleteButton.addEventListener('click', async () => {
     selectDeleteProject();
 });
 
+htmlElements.exportButton.addEventListener('click', async () => {
+    let exportStats = calculateExportStats(0)
+    let fileText = createExportFileText(exportStats, 0)
+    console.log(fileText)
+    const filePath = await window.api.saveFile();
+    if (filePath) {
+        window.api.writeToFile(filePath, fileText).then((result) => {
+            console.log('saved successfully')
+        }).catch((err) => {
+            console.err(err)
+        });
+    } else {
+        console.log('unable to save')
+    }
+});
+
 
 // Functionality functions
 
@@ -249,7 +265,7 @@ async function saveTheData(chosenProject, saveAudioFile) {
 
                 // Writing the segment data to the file
                 let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
-                let segmentDataText = createSegmentDataFileText();
+                let segmentDataText = createSegmentDataFileText(0);
                 window.api.writeToFile(saveSegmentDataFilePath, segmentDataText);
 
                 // Writing the metadata to the file
@@ -462,17 +478,52 @@ async function parseMetadataFile(metadataFilePath) {
     return rows;
 }
 
-function createSegmentDataFileText() {
+function createSegmentDataFileText(waveformNum) {
     let text = '';
-    window.segmentData[0].forEach(segment => {
+    window.segmentData[waveformNum].forEach(segment => {
         text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + ',' + segment.annotation + '\n'
     });
-    window.segmentData[0]
+    window.segmentData[waveformNum]
     return text;
 }
 
 function createMetadataFileText() {
     return window.songFilePath;
+}
+
+function calculateExportStats(waveformNum) {
+
+    // Song Name
+    let songName = window.songFilePaths[waveformNum].split('\\').pop()
+    songName = songName.substring(0, songName.length-4)
+
+    // Song Length + start and end
+    let segmentData = window.segmentData[waveformNum]
+    let songStart = segmentData[0].start
+    let songEnd = segmentData[segmentData.length-1].end
+    let songLength = songEnd - songStart
+
+    // Number of boundaries
+    let segmentCount = segmentData.length
+
+    // Average Segment Length
+    let avgSegmentLength = songLength/segmentCount
+
+
+    //Labels ?
+
+    return [songName, songLength, songStart, songEnd, segmentCount, avgSegmentLength]
+}
+
+function createExportFileText(exportStats, waveformNum) {
+    let text = 'Song Name,' + exportStats[0] + '\n';
+    text = text + 'Song Length,' + exportStats[1] + '\n';
+    text = text + 'Song Start,' + exportStats[2] + '\n';
+    text = text + 'Song End,' + exportStats[3] + '\n';
+    text = text + 'Segment Count,' + exportStats[4] + '\n';
+    text = text + 'Average Segment Length,' + exportStats[5] + '\n';
+    text = text + '\nSegment Number,Start,End,Label Number\n'+ createSegmentDataFileText(waveformNum);
+    return text;
 }
 
 //function moveSongFile(currentFilePath, newPath){

@@ -236,7 +236,16 @@ app.whenReady().then(() => {
           properties: ['openFile'] // Add 'multiSelections' if needed
         });
         return result.filePaths; // Return file paths to renderer
-      });
+    });
+
+    ipcMain.handle('dialog:save', async () => {
+        const result = await dialog.showSaveDialog({
+            title: 'Save File',
+            defaultPath: 'segmentstats.csv',
+            filters: [{ name: 'Comma Separated Values', extension: ['csv'] }],
+        });
+        return result.filePath;
+    });
 })
 
 app.on('will-quit', () => {
