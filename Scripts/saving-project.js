@@ -95,43 +95,23 @@ htmlElements.saveButton.addEventListener('click', async () => {
 
 // when delete is clicked
 htmlElements.deleteButton.addEventListener('click', async () => {
+    selectDeleteProject();
+});
 
-    // scan the directory
-    let chosenProject = ''
-    let vbox = htmlElements.deleteFiles;
-    while (vbox.firstChild) {
-        vbox.removeChild(vbox.firstChild);
+htmlElements.exportButton.addEventListener('click', async () => {
+    let exportStats = calculateExportStats(0)
+    let fileText = createExportFileText(exportStats, 0)
+    console.log(fileText)
+    const filePath = await window.api.saveFile();
+    if (filePath) {
+        window.api.writeToFile(filePath, fileText).then((result) => {
+            console.log('saved successfully')
+        }).catch((err) => {
+            console.err(err)
+        });
+    } else {
+        console.log('unable to save')
     }
-    window.api.getDirectoryContents(workspace).then((files) => {
-        if (files.length != 0) {
-        // Implement selecting the project
-        //placeholders
-
-            files.forEach(file => {
-
-                // Create a button for each existing project
-                let newButton = document.createElement('button');
-                newButton.class='btn';
-                newButton.textContent = file
-                newButton.addEventListener('click', async () => {
-                    chosenProject = file
-                    console.log(chosenProject);
-                    htmlElements.deleteMenuDialog.close();
-                    deleteTheProject(chosenProject)
-                })
-                vbox.appendChild(newButton);
-            });
-        }
-
-        //Show the dialog
-        htmlElements.deleteMenuDialog.showModal();
-
-    }).catch((error) => {
-        // Throw error if there is an issue getting the files within the directory
-        console.error('Issue getting the files within the directory:\n' + error);
-        presentErrorDialog('Issue getting the files within the directory:\n' + error);
-    });
-
 });
 
 
@@ -285,7 +265,7 @@ async function saveTheData(chosenProject, saveAudioFile) {
 
                 // Writing the segment data to the file
                 let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
-                let segmentDataText = createSegmentDataFileText();
+                let segmentDataText = createSegmentDataFileText(0);
                 window.api.writeToFile(saveSegmentDataFilePath, segmentDataText);
 
                 // Writing the metadata to the file
@@ -338,35 +318,124 @@ async function saveTheData(chosenProject, saveAudioFile) {
     // Implement Saving of the song file
 }
 
+async function selectDeleteProject() {
+
+    // scan the directory
+    let chosenProject = ''
+    let vbox = htmlElements.deleteFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(workspace).then((files) => {
+        if (files.length != 0) {
+        // Implement selecting the project
+        //placeholders
+
+            files.forEach(file => {
+
+                // Create a button for each existing project
+                let newButton = document.createElement('button');
+                newButton.class='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    console.log(chosenProject);
+                    htmlElements.deleteMenuDialog.close();
+                    openAreYouSureDialog(chosenProject)
+                })
+                vbox.appendChild(newButton);
+            });
+        }
+
+        //Show the dialog
+        htmlElements.deleteMenuDialog.showModal();
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
+
+}
+
+// asks the user if they are sure they want to delete
+async function openAreYouSureDialog(chosenProject) {
+    let header = htmlElements.areYouSureHeader;
+    header.innerHTML = 'Are you sure you want to delete \"' + chosenProject + '\"?'
+    let hbox = htmlElements.yesOrNo;
+    // remove all existing buttons
+    while (hbox.firstChild) {
+        hbox.removeChild(hbox.firstChild);
+    }
+
+    // Create a button for yes
+    let yesButton = document.createElement('button');
+    yesButton.class='btn';
+    yesButton.textContent = 'yes'
+    yesButton.addEventListener('click', async () => {
+        htmlElements.areYouSureDialog.close();
+        deleteTheProject(chosenProject)
+    })
+
+    // Create a button for no
+    let noButton = document.createElement('button');
+    noButton.class='btn';
+    noButton.textContent = 'no'
+    noButton.addEventListener('click', async () => {
+        htmlElements.areYouSureDialog.close();
+    })
+
+    // append the buttons
+    hbox.appendChild(yesButton);
+    hbox.appendChild(noButton);
+    htmlElements.areYouSureDialog.showModal();
+}
+
 // deletes the project
 async function deleteTheProject(chosenProject) {
     console.log('Deleted: ' + chosenProject)
-    presentErrorDialog('Deleted: ' + chosenProject)
 
     let projectPath = workspace + '\\' + chosenProject;
 
-    await window.api.getDirectoryContents(projectPath).then((files) => {
-        if (files.length != 0) {
-            files.forEach(file => {
-                let projectFilePath = projectPath + '\\' + file
-                window.api.deleteFile(projectFilePath).then((result) => {
-                    console.log(projectFilePath + ' deleted')
-                }).catch((err) => {
-                    console.error('error deleting file: ' + projectFilePath)
-                    presentErrorDialog('error deleting file: ' + projectFilePath)
-                });
-            });
-        }
-    }).catch((err) => {
-        console.error('Issue get directory contents: ' + err);
-        presentErrorDialog('Issue get directory contents: ' + err);
-    })
-    await window.api.deleteDir(projectPath).then((result) => {
-        console.log(chosenProject + ' deleted')
-    }).catch((err) => {
-        console.error('error deleting directory: ' + chosenProject)
-        presentErrorDialog('error deleting directory: ' + chosenProject)
+    await window.api.wipeDir(projectPath).then((result) => {
+        console.log('projectWiped')
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue wiping directory:\n' + error);
+        presentErrorDialog('Issue wiping directory:\n' + error);
     });
+
+//    let deleteFilePromises = []
+//
+//    // Gets the files
+//    await window.api.getDirectoryContents(projectPath).then((files) => {
+//        // deletes each file
+//        for (let i = 0; i < files.length; i++) {
+//            let projectFilePath = projectPath + '\\' + files[i]
+//            let deletePromise = window.api.deleteFile(projectFilePath);
+//            deleteFilePromises.push(deletePromise)
+//        }
+//    }).catch((err) => {
+//        console.error('Issue get directory contents: ' + err);
+//        presentErrorDialog('Issue get directory contents: ' + err);
+//    })
+//
+//
+//    Promise.allSettled(deleteFilePromises).then((result) => {
+//        console.log('Deleted files')
+//
+//        // deletes the directory
+//        window.api.deleteDir(projectPath).then((result) => {
+//            console.log(chosenProject + ' deleted')
+//        }).catch((err) => {
+//            console.error('error deleting directory: ' + chosenProject)
+//            presentErrorDialog('error deleting directory: ' + chosenProject)
+//        });
+//    }).catch((err) => {
+//        console.error('error deleting files')
+//        presentErrorDialog('error deleting file')
+//    });
+
 }
 
 // Helper Functions
@@ -409,17 +478,52 @@ async function parseMetadataFile(metadataFilePath) {
     return rows;
 }
 
-function createSegmentDataFileText() {
+function createSegmentDataFileText(waveformNum) {
     let text = '';
-    window.segmentData[0].forEach(segment => {
+    window.segmentData[waveformNum].forEach(segment => {
         text = text + segment.number + ',' + segment.start + ',' + segment.end + ',' + segment.label + ',' + segment.annotation + '\n'
     });
-    window.segmentData[0]
+    window.segmentData[waveformNum]
     return text;
 }
 
 function createMetadataFileText() {
     return window.songFilePath;
+}
+
+function calculateExportStats(waveformNum) {
+
+    // Song Name
+    let songName = window.songFilePaths[waveformNum].split('\\').pop()
+    songName = songName.substring(0, songName.length-4)
+
+    // Song Length + start and end
+    let segmentData = window.segmentData[waveformNum]
+    let songStart = segmentData[0].start
+    let songEnd = segmentData[segmentData.length-1].end
+    let songLength = songEnd - songStart
+
+    // Number of boundaries
+    let segmentCount = segmentData.length
+
+    // Average Segment Length
+    let avgSegmentLength = songLength/segmentCount
+
+
+    //Labels ?
+
+    return [songName, songLength, songStart, songEnd, segmentCount, avgSegmentLength]
+}
+
+function createExportFileText(exportStats, waveformNum) {
+    let text = 'Song Name,' + exportStats[0] + '\n';
+    text = text + 'Song Length,' + exportStats[1] + '\n';
+    text = text + 'Song Start,' + exportStats[2] + '\n';
+    text = text + 'Song End,' + exportStats[3] + '\n';
+    text = text + 'Segment Count,' + exportStats[4] + '\n';
+    text = text + 'Average Segment Length,' + exportStats[5] + '\n';
+    text = text + '\nSegment Number,Start,End,Label Number\n'+ createSegmentDataFileText(waveformNum);
+    return text;
 }
 
 //function moveSongFile(currentFilePath, newPath){

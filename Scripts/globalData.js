@@ -106,6 +106,7 @@ const htmlElements = {
     // are you sure dialog
     areYouSureDialog: document.querySelector('#are-you-sure-dialog'),
     areYouSureHeader: document.getElementById('are-you-sure-header'),
+    yesOrNo: document.querySelector('#yes-or-no'),
     closeAreYouSureDialogButton: document.querySelector('#close-are-you-sure-dialog'),
 
     // error dialog

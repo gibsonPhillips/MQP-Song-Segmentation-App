@@ -108,6 +108,42 @@ ipcMain.handle('delete-file', async (event, filePath) => {
     });
 });
 
+ipcMain.handle('wipe-dir', async (event, dirPath) => {
+
+    try {
+        let promises = []
+        await fs.promises.readdir(dirPath).then((result) => {
+            let files = result
+            for (let i = 0; i < files.length; i++) {
+                let promise = fs.unlink(dirPath + '\\' + files[i], (err) => {
+                    if (err) {
+                        console.error("Error deleting file:", err);
+                    } else {
+                        console.log('File ' + files[i] + ' deleted successfully');
+                    }
+                });
+                promises.push(promise)
+            }
+            Promise.allSettled(promises).then((results) => {
+                // remove the directory
+                fs.rmdir(dirPath, (err) => {
+                    if (err) {
+                        console.error("Error deleting directory:", err);
+                    } else {
+                        console.log('Directory ' + dirPath + ' deleted successfully');
+                    }
+                });
+            })
+        }).catch((err) => {
+            console.error(err)
+        })
+
+    } catch (error) {
+        throw new Error('Unable to read directory: ' + error.message);
+    }
+
+});
+
 
 // Function to start the Python server
 function startPythonServer() {
@@ -200,7 +236,16 @@ app.whenReady().then(() => {
           properties: ['openFile'] // Add 'multiSelections' if needed
         });
         return result.filePaths; // Return file paths to renderer
-      });
+    });
+
+    ipcMain.handle('dialog:save', async () => {
+        const result = await dialog.showSaveDialog({
+            title: 'Save File',
+            defaultPath: 'segmentstats.csv',
+            filters: [{ name: 'Comma Separated Values', extension: ['csv'] }],
+        });
+        return result.filePath;
+    });
 })
 
 app.on('will-quit', () => {
