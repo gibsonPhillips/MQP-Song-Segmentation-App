@@ -128,6 +128,7 @@ async function loadTheData(chosenProject) {
     let loadSongFilePath = '';
     let loadMetadataFilePath = '';
     let loadSegmentDataFilePath = '';
+    let loadMarkerNotesFilePath = '';
 
     // look for the files
     await window.api.getDirectoryContents(projectPath).then((files) => {
@@ -138,6 +139,8 @@ async function loadTheData(chosenProject) {
                 loadMetadataFilePath = projectPath + '\\' + file;
             } else if (file.substring(file.length-16,file.length) == '-segmentdata.txt') {
                 loadSegmentDataFilePath = projectPath + '\\' + file;
+            } else if (file.substring(file.length-15,file.length) == '-markerdata.txt') {
+                loadMarkerNotesFilePath = projectPath + '\\' + file;
             }
         })
     })
@@ -145,6 +148,7 @@ async function loadTheData(chosenProject) {
     console.log('song: ' + loadSongFilePath)
     console.log('metadata: ' + loadMetadataFilePath)
     console.log('segment data: ' + loadSegmentDataFilePath)
+    console.log('marker data: ' + loadMarkerNotesFilePath)
 
     // loads the metadata
 
@@ -169,6 +173,15 @@ async function loadTheData(chosenProject) {
     } else {
         updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
         window.clusters[waveformNum] = determineNumClusters(waveformNum);
+    }
+
+    // loads the marker notes data
+    globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadMarkerNotesFilePath);
+    if (globalState.markerNotes[waveformNum].size === 0) {
+        console.log('No marker data loaded');
+    } else {
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+        // window.clusters[waveformNum] = determineNumClusters(waveformNum);
     }
 }
 
@@ -472,6 +485,26 @@ async function parseSegmentDataFile(segmentDataFilePath) {
         console.log(rows)
     }
     return rows;
+}
+
+// parses marker notes data
+async function parseMarkerDataFile(markerDataFilePath) {
+    let markerNotes = new Map();
+    let result = await window.api.getFile(markerDataFilePath);
+
+    console.log(result);
+
+    if (result.content !== 'No data') {
+
+        let rowsText = result.content.trim().split('\n');
+        rowsText.forEach(textRow => {
+            console.log("HELLO")
+            let textTuple = textRow.split(',')
+            markerNotes.set(parseFloat(textTuple[0]), {start: parseFloat(textTuple[0]), title: textTuple[1], note: textTuple[2]});
+        })
+        console.log(markerNotes)
+    }
+    return markerNotes;
 }
 
 // parses the metadata
