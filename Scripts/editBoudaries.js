@@ -120,6 +120,13 @@ htmlElements.saveMarker.onclick = () => {
     htmlElements.markerDialog.close();
 }
 
+// Deleting marker note
+htmlElements.deleteMarker.onclick = () => {
+    globalState.markerNotes[0].delete(currentMarker.start);
+    updateSegmentElementsList(window.segmentData[0], true, 0);
+    htmlElements.markerDialog.close();
+}
+
 // Set the function in global.js
 setExternalFunction(openMarkerNote);
 
