@@ -90,6 +90,7 @@ const htmlElements = {
     // marker dialog
     markerDialog: document.getElementById('marker-dialog'),
     closeMarkerDialog: document.getElementById('marker-dialog-close'),
+    deleteMarker: document.getElementById('delete-marker'),
     saveMarker: document.getElementById('save-marker'),
     markerTitle: document.getElementById('marker-dialog-title'),
     markerNote: document.getElementById('marker-dialog-note'),

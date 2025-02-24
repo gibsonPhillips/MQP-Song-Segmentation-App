@@ -1,6 +1,5 @@
 import htmlElements from './globalData.js';
-import globalState from './globalData.js';
-import { loadSong, presentErrorDialog, updateSegmentElementsList } from './globalData.js';
+import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -126,6 +125,7 @@ async function loadTheData(chosenProject) {
     let loadSongFilePath = '';
     let loadMetadataFilePath = '';
     let loadSegmentDataFilePath = '';
+    let loadMarkerNotesFilePath = '';
 
     // look for the files
     await window.api.getDirectoryContents(projectPath).then((files) => {
@@ -136,6 +136,8 @@ async function loadTheData(chosenProject) {
                 loadMetadataFilePath = projectPath + '\\' + file;
             } else if (file.substring(file.length-16,file.length) == '-segmentdata.txt') {
                 loadSegmentDataFilePath = projectPath + '\\' + file;
+            } else if (file.substring(file.length-15,file.length) == '-markerdata.txt') {
+                loadMarkerNotesFilePath = projectPath + '\\' + file;
             }
         })
     })
@@ -143,6 +145,7 @@ async function loadTheData(chosenProject) {
     console.log('song: ' + loadSongFilePath)
     console.log('metadata: ' + loadMetadataFilePath)
     console.log('segment data: ' + loadSegmentDataFilePath)
+    console.log('marker data: ' + loadMarkerNotesFilePath)
 
     // loads the metadata
 
@@ -167,6 +170,15 @@ async function loadTheData(chosenProject) {
     } else {
         updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
         window.clusters[waveformNum] = determineNumClusters(waveformNum);
+    }
+
+    // loads the marker notes data
+    globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadMarkerNotesFilePath);
+    if (globalState.markerNotes[waveformNum].size === 0) {
+        console.log('No marker data loaded');
+    } else {
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+        // window.clusters[waveformNum] = determineNumClusters(waveformNum);
     }
 }
 
@@ -270,6 +282,11 @@ async function saveTheData(chosenProject, saveAudioFile) {
                 let metadataText = createMetadataFileText();
                 window.api.writeToFile(saveMetadataFilePath, metadataText);
 
+                // Writing the marker notes
+                let saveMarkerNotesFilePath = saveDirectoryPath + '\\' + chosenProject + '-markerdata.txt';
+                let markerNotesData = createMarkerNotesFileText(0);
+                window.api.writeToFile(saveMarkerNotesFilePath, markerNotesData);
+
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
                     let filePathEnd = window.songFilePaths[0].split("\\").pop();
@@ -293,6 +310,10 @@ async function saveTheData(chosenProject, saveAudioFile) {
                 // Writing the metadata to the file
                 let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
                 window.api.writeToFile(saveMetadataFilePath, 'No data');
+
+                // Writing the marker notes
+                let saveMarkerNotesFilePath = saveDirectoryPath + '\\' + chosenProject + '-markerdata.txt';
+                window.api.writeToFile(saveMarkerNotesFilePath, 'No data');
 
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
@@ -463,6 +484,26 @@ async function parseSegmentDataFile(segmentDataFilePath) {
     return rows;
 }
 
+// parses marker notes data
+async function parseMarkerDataFile(markerDataFilePath) {
+    let markerNotes = new Map();
+    let result = await window.api.getFile(markerDataFilePath);
+
+    console.log(result);
+
+    if (result.content !== 'No data') {
+
+        let rowsText = result.content.trim().split('\n');
+        rowsText.forEach(textRow => {
+            console.log("HELLO")
+            let textTuple = textRow.split(',')
+            markerNotes.set(parseFloat(textTuple[0]), {start: parseFloat(textTuple[0]), title: textTuple[1], note: textTuple[2]});
+        })
+        console.log(markerNotes)
+    }
+    return markerNotes;
+}
+
 // parses the metadata
 async function parseMetadataFile(metadataFilePath) {
     let rows = []
@@ -486,6 +527,14 @@ function createSegmentDataFileText(waveformNum) {
 
 function createMetadataFileText() {
     return window.songFilePath;
+}
+
+function createMarkerNotesFileText(waveformNum) {
+    let text = '';
+    globalState.markerNotes[waveformNum].forEach(marker => {
+        text = text + marker.start + ',' + marker.title + ',' + marker.note +'\n';
+    });
+    return text;
 }
 
 function calculateExportStats(waveformNum) {

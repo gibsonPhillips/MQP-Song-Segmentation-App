@@ -116,7 +116,14 @@ htmlElements.addMarkerButton.onclick = () => {
 
 // Saving marker note
 htmlElements.saveMarker.onclick = () => {
-    globalState.markerNotes[0].set(currentMarker.start, {title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
+    globalState.markerNotes[0].set(currentMarker.start, {start: currentMarker.start, title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
+    htmlElements.markerDialog.close();
+}
+
+// Deleting marker note
+htmlElements.deleteMarker.onclick = () => {
+    globalState.markerNotes[0].delete(currentMarker.start);
+    updateSegmentElementsList(window.segmentData[0], true, 0);
     htmlElements.markerDialog.close();
 }
 
