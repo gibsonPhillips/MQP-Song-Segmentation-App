@@ -3,17 +3,12 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-window.songFilePaths = ['','',''];
-window.segmentData = [[],[],[]];
-window.clusters = [0, 0, 0];
+window.songFilePaths = [];
+window.segmentData = [];
+window.clusters = [];
 
-// Initialize the Regions plugin
-// const regions = RegionsPlugin.create();
-const regionsPlugins = [
-    RegionsPlugin.create(),
-    RegionsPlugin.create(),
-    RegionsPlugin.create()
-]
+let regionsPlugins = [];
+let currentlyEditing = false;
 
 export let globalState = {
     // stores label color map
@@ -21,42 +16,20 @@ export let globalState = {
     // headers for segment data
     headers: ["number", "start", "end", "label"],
     // stores the wavesurfer regions for segments
-    segmentRegions: [
-        [],
-        [],
-        []
-    ],
+    segmentRegions: [],
     currentZoom: 10,
-    timelines: [null, null, null],
+    timelines: [],
     groupEditingMode: false,
-    wavesurferWaveforms: [
-        WaveSurfer.create({
-            container: '#waveform0',
-            waveColor: 'rgb(200, 0, 200)',
-            progressColor: 'rgb(100, 0, 100)',
-            minPxPerSec: 100,
-            plugins: [regionsPlugins[0], ZoomPlugin.create({scale:0.1})],
-        }),
-        WaveSurfer.create({
-            container: '#waveform1',
-            waveColor: 'rgb(200, 0, 200)',
-            progressColor: 'rgb(100, 0, 100)',
-            minPxPerSec: 100,
-            plugins: [regionsPlugins[1], ZoomPlugin.create({scale:0.1})],
-        }),
-        WaveSurfer.create({
-            container: '#waveform2',
-            waveColor: 'rgb(200, 0, 200)',
-            progressColor: 'rgb(100, 0, 100)',
-            minPxPerSec: 100,
-            plugins: [regionsPlugins[2], ZoomPlugin.create({scale:0.1})],
-        })
-    ],
-    markerNotes: [new Map(), new Map(), new Map()],
-    regionType: new Map()
+    wavesurferWaveforms: [],
+    markerNotes: [],
+    regionType: new Map(),
+    globalTimelineMode: false
 };
 
 const htmlElements = {
+    // Larger elements
+    timeline: document.getElementById("timeline"),
+
     // Constants for HTML elements
     segmentDetailsDialog: document.querySelector('#segment-details-dialog'),
     removeBoundaryDialog: document.querySelector('#remove-boundary-dialog'),
@@ -373,23 +346,98 @@ export function presentErrorDialog(message) {
 // loads the song in the app
 export async function loadSong(filePath) {
     console.log('File path:', filePath);
-    let num = getNextWaveform();
+    let num = setupNextWaveform();
     if(num == -1) return;
     window.songFilePaths[num] = filePath;
     regionsPlugins[num].clearRegions();
     await globalState.wavesurferWaveforms[num].load(filePath);
     globalState.currentZoom = 10;
     updateTimeline(num);
+    return num;
 }
 
 // Gets the next available waveform
-export function getNextWaveform() {
-    let num = 0;
-    let filePath = window.songFilePaths[num];
-    while(filePath !== '') {
-        num++;
-        filePath = window.songFilePaths[num];
-        if(num > 2) return -1;
-    }
+export function setupNextWaveform() {
+    // Create div elements for label, waveform, segment annotations
+    let num = window.songFilePaths.length;
+    let labelsContainer = document.createElement("div");
+    labelsContainer.className = "labels-container";
+    labelsContainer.id = "labels-container" + String(num);
+    // labelsContainer.style = "height: 22px;"
+    let waveform = document.createElement("div");
+    waveform.className = "waveform";
+    waveform.id = "waveform" + String(num);
+    let segmentAnnotationContainer = document.createElement("div");
+    segmentAnnotationContainer.className = "segment-annotation-container";
+    segmentAnnotationContainer.id = "segment-annotation-container" + String(num);
+    // segmentAnnotationContainer.style = "height: 0px; visibility: hidden;"
+
+    htmlElements.timeline.appendChild(labelsContainer);
+    htmlElements.timeline.appendChild(waveform);
+    htmlElements.timeline.appendChild(segmentAnnotationContainer);
+
+    // Add necessary elements to global variables
+    window.songFilePaths.push('');
+    window.segmentData.push([]);
+    window.clusters.push(0);
+    regionsPlugins.push(RegionsPlugin.create());
+    globalState.segmentRegions.push([]);
+    globalState.timelines.push(null);
+    globalState.wavesurferWaveforms.push(WaveSurfer.create({
+        container: "#waveform" + String(num),
+        waveColor: 'rgb(200, 0, 200)',
+        progressColor: 'rgb(100, 0, 100)',
+        minPxPerSec: 100,
+        plugins: [regionsPlugins[num], ZoomPlugin.create({scale:0.1})],
+    }));
+    globalState.markerNotes.push(new Map());
+
+    // Set up scroll and zoom for wavesurfer
+    globalState.wavesurferWaveforms[num].on("scroll", () => {
+        if(currentlyEditing) return;
+        const currentScroll = globalState.wavesurferWaveforms[num].getScroll();
+
+        if(globalState.globalTimelineMode) {
+            currentlyEditing = true;
+            for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+                const waveform = globalState.wavesurferWaveforms[i];
+                if(waveform.getDuration() > 0) {
+                    waveform.setScroll(currentScroll);
+                    updateLabelPositions(i);
+                    updateSegmentAnnotationPositions(i);
+                }
+            }
+            currentlyEditing = false;
+        } else {
+            updateLabelPositions(num);
+            updateSegmentAnnotationPositions(num);
+        }
+    });
+
+    // Update labels and timeline on zoom
+    globalState.wavesurferWaveforms[num].on("zoom", (newPxPerSec) => {
+        if(currentlyEditing) return;
+        globalState.currentZoom = newPxPerSec;
+
+        if(globalState.globalTimelineMode) {
+            currentlyEditing = true;
+            for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+                const waveform = globalState.wavesurferWaveforms[i];
+                if(waveform.getDuration() > 0) {
+                    waveform.zoom(newPxPerSec);
+                    updateLabelPositions(i);
+                    updateSegmentAnnotationPositions(i);
+                    updateTimeline(i);
+                }
+            }
+            currentlyEditing = false;
+        } else {
+            updateLabelPositions(num);
+            updateSegmentAnnotationPositions(num);
+            updateTimeline(num);
+        }
+    });
+
+
     return num;
 }

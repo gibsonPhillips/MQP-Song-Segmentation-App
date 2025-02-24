@@ -1,5 +1,5 @@
 import htmlElements from './globalData.js';
-import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList, getNextWaveform } from './globalData.js';
+import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -118,9 +118,6 @@ htmlElements.exportButton.addEventListener('click', async () => {
 
 // loads the data
 async function loadTheData(chosenProject) {
-
-    let waveformNum = getNextWaveform();
-
     // the path to the project directory
     let projectPath = workspace + '\\' + chosenProject;
 
@@ -159,7 +156,7 @@ async function loadTheData(chosenProject) {
 
     // loads the song
 
-    await loadSong(loadSongFilePath);
+    let waveformNum = await loadSong(loadSongFilePath);
     window.songFilePaths[waveformNum] = loadSongFilePath
 
     // loads the metadata
