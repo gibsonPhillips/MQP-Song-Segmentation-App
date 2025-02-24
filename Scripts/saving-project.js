@@ -1,6 +1,5 @@
 import htmlElements from './globalData.js';
-import globalState from './globalData.js';
-import { loadSong, presentErrorDialog, updateSegmentElementsList, getNextWaveform } from './globalData.js';
+import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList, getNextWaveform } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -273,6 +272,11 @@ async function saveTheData(chosenProject, saveAudioFile) {
                 let metadataText = createMetadataFileText();
                 window.api.writeToFile(saveMetadataFilePath, metadataText);
 
+                // Writing the marker notes
+                let saveMarkerNotesFilePath = saveDirectoryPath + '\\' + chosenProject + '-markerdata.txt';
+                let markerNotesData = createMarkerNotesFileText(0);
+                window.api.writeToFile(saveMarkerNotesFilePath, markerNotesData);
+
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
                     let filePathEnd = window.songFilePaths[0].split("\\").pop();
@@ -296,6 +300,10 @@ async function saveTheData(chosenProject, saveAudioFile) {
                 // Writing the metadata to the file
                 let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
                 window.api.writeToFile(saveMetadataFilePath, 'No data');
+
+                // Writing the marker notes
+                let saveMarkerNotesFilePath = saveDirectoryPath + '\\' + chosenProject + '-markerdata.txt';
+                window.api.writeToFile(saveMarkerNotesFilePath, 'No data');
 
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
@@ -489,6 +497,14 @@ function createSegmentDataFileText(waveformNum) {
 
 function createMetadataFileText() {
     return window.songFilePath;
+}
+
+function createMarkerNotesFileText(waveformNum) {
+    let text = '';
+    globalState.markerNotes[waveformNum].forEach(marker => {
+        text = text + marker.start + ',' + marker.title + ',' + marker.note +'\n';
+    });
+    return text;
 }
 
 function calculateExportStats(waveformNum) {
