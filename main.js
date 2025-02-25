@@ -16,7 +16,9 @@ ipcMain.handle('get-app-storage-env', () => {
     if (platform == 'win32') {
         directory = process.env.APPDATA;
     } else if (platform == 'darwin') {
-        directory = process.env.APP_SUPPORT_DIR
+        directory = process.env.APP_SUPPORT_DIR;
+    } else {
+        console.log('OS not compatible with application saving functionality')
     }
     return directory;
 });
