@@ -8,9 +8,17 @@ let pythonProcess
 let filePath = '';
 
 // Gets appdata environment variable
-ipcMain.handle('get-appdata', () => {
+ipcMain.handle('get-app-storage-env', () => {
+    let platform = process.platform
     // Access APPDATA environment variable
-    return process.env.APPDATA;
+    console.log("OS: " + platform)
+    let directory
+    if (platform == 'win32') {
+        directory = process.env.APPDATA;
+    } else if (platform == 'darwin') {
+        directory = process.env.APP_SUPPORT_DIR
+    }
+    return directory;
 });
 
 // Gets the directory contents

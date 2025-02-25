@@ -5,9 +5,9 @@ import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList } 
 let workspace = ''
 
 // gets the workspace
-let appdataPromise = window.api.getAppData().then((appdata) => {
-    console.log(appdata);
-    workspace = appdata + '\\Song Segmentation'
+let appdataPromise = window.api.getAppStorageEnv().then((appStorageDir) => {
+    console.log(appStorageDir);
+    workspace = appStorageDir + '\\Song Segmentation'
     console.log(workspace)
 
     // Create a directory if it doesnt already exist

@@ -13,7 +13,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 contextBridge.exposeInMainWorld('api', {
   openFile: () => ipcRenderer.invoke('dialog:openFile'),
-  getAppData: () => ipcRenderer.invoke('get-appdata'),
+  getAppStorageEnv: () => ipcRenderer.invoke('get-app-storage-env'),
   createDirectory: (dirPath) => ipcRenderer.invoke('create-directory', dirPath),
   openDirectory: (dirPath) => ipcRenderer.invoke('open-directory', dirPath),
   saveFile: () => ipcRenderer.invoke('dialog:save'),
