@@ -495,7 +495,6 @@ async function parseMarkerDataFile(markerDataFilePath) {
 
         let rowsText = result.content.trim().split('\n');
         rowsText.forEach(textRow => {
-            console.log("HELLO")
             let textTuple = textRow.split(',')
             markerNotes.set(parseFloat(textTuple[0]), {start: parseFloat(textTuple[0]), title: textTuple[1], note: textTuple[2]});
         })
