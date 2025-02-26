@@ -99,6 +99,9 @@ htmlElements.addMarkerButton.onclick = () => {
         drag: false,
         resize: false,
     });
+    marker.element.style.minWidth = "4px";
+    marker.element.style.backgroundColor = "rgba(255, 0, 0)";
+
     globalState.regionType.set(marker, 'marker');
 
     marker.on('click', () => {
