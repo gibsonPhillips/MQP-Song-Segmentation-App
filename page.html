@@ -216,7 +216,7 @@
             <h1 class="title">Error!</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
-        <div id="error-message"></div>
+        <div class="files-div" id="error-message"></div>
     </dialog>
 
     <dialog id="remove-boundary-dialog">
@@ -226,10 +226,11 @@
     </dialog>
 
     <dialog id="marker-dialog">
-        <h2>Marker</h2>
-        <button class="btn" id="marker-dialog-close">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="marker-dialog-close"></button>
+            <h1 class="title">Marker</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
         <div id="marker-dialog-container">
             <input type="text" value="Placeholder" id="marker-dialog-title">
             <textarea id="marker-dialog-note">Placeholder</textarea>
