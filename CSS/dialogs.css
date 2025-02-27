@@ -8,4 +8,6 @@
     overflow-y: hidden;
     display: flex;
     gap: 4px;
+    justify-content: center;
+    padding: 5px;
 }

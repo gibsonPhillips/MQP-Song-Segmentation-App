@@ -379,7 +379,7 @@ async function selectDeleteProject() {
 // asks the user if they are sure they want to delete
 async function openAreYouSureDialog(chosenProject) {
     let header = htmlElements.areYouSureHeader;
-    header.innerHTML = 'Are you sure you want to delete \"' + chosenProject + '\"?'
+    //header.innerHTML = 'Are you sure you want to delete \"' + chosenProject + '\"?'
     let hbox = htmlElements.yesOrNo;
     // remove all existing buttons
     while (hbox.firstChild) {
