@@ -1,0 +1,11 @@
+.dialog-class {
+    padding: 0px;
+    overflow-y: hidden;
+    resize: vertical;
+}
+
+.files-div {
+    overflow-y: hidden;
+    display: flex;
+    gap: 4px;
+}

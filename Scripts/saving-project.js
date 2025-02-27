@@ -54,7 +54,7 @@ htmlElements.loadButton.addEventListener('click', async () => {
             files.forEach(file => {
                 // Create a button for each existing project
                 let newButton = document.createElement('button');
-                newButton.class='btn';
+                newButton.className='btn';
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
@@ -212,7 +212,7 @@ async function selectSaveProject() {
 
                 // Create a button for each existing project
                 let newButton = document.createElement('button');
-                newButton.class='btn';
+                newButton.className='btn';
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
@@ -226,7 +226,7 @@ async function selectSaveProject() {
         let hbox = document.createElement('div');
         hbox.class = 'hbox';
         let newButton = document.createElement('button');
-        newButton.class='btn';
+        newButton.className='btn';
         newButton.textContent = 'Create New Project'
         let newInput = document.createElement('input');
         newInput.textContent = 'New Project'
@@ -353,7 +353,7 @@ async function selectDeleteProject() {
 
                 // Create a button for each existing project
                 let newButton = document.createElement('button');
-                newButton.class='btn';
+                newButton.className='btn';
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
@@ -388,7 +388,7 @@ async function openAreYouSureDialog(chosenProject) {
 
     // Create a button for yes
     let yesButton = document.createElement('button');
-    yesButton.class='btn';
+    yesButton.className='btn';
     yesButton.textContent = 'yes'
     yesButton.addEventListener('click', async () => {
         htmlElements.areYouSureDialog.close();
@@ -397,7 +397,7 @@ async function openAreYouSureDialog(chosenProject) {
 
     // Create a button for no
     let noButton = document.createElement('button');
-    noButton.class='btn';
+    noButton.className='btn';
     noButton.textContent = 'no'
     noButton.addEventListener('click', async () => {
         htmlElements.areYouSureDialog.close();
