@@ -23,7 +23,8 @@ export let globalState = {
     wavesurferWaveforms: [],
     markerNotes: [],
     regionType: new Map(),
-    globalTimelineMode: false
+    globalTimelineMode: false,
+    editBoundaryMode: false,
 };
 
 const htmlElements = {
@@ -149,6 +150,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
     // If waveform is being updated
     if(updateWaveform) {
         regionsPlugins[waveformNum].clearRegions()
+        globalState.regionType.clear();
         globalState.colorMap.clear();
         document.getElementById(labelsContainerStr).textContent = "";
         document.getElementById(annotationContainerStr).textContent = "";
@@ -218,7 +220,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
 
     // Re add markers
     if(updateWaveform) {
-        globalState.regionType.clear();
         globalState.markerNotes[waveformNum].keys().forEach(element => {
             // Add marker at time
             const marker = htmlElements.regions[waveformNum].addRegion({
@@ -438,6 +439,77 @@ export function setupNextWaveform() {
         }
     });
 
+    // Handle region update for editing boundaries
+    htmlElements.regions[num].on('region-updated', (region) => {
+        if(globalState.regionType.get(region) === 'marker') return;
+        if (!globalState.editBoundaryMode) return;
+
+        let index = htmlElements.regions[0].regions.findIndex(r => r.id === region.id);
+        if (index === -1) return;
+
+        let movedStart = window.segmentData[0][index].start !== region.start;
+
+        let prevRegion = getPrevRegion(0, index);
+        let nextRegion = getNextRegion(0, index);
+
+        // Enforce limits so you can't go before previous or after next segment
+        let minStart = prevRegion ? prevRegion.start : 0; // Can't move before previous start
+        let maxEnd = nextRegion ? nextRegion.end : globalState.wavesurferWaveforms[0].getDuration(); // Can't extend beyond next region
+
+        let newStart = Math.max(region.start, minStart);
+        let newEnd = Math.min(region.end, maxEnd);
+
+        // Apply the constraints
+        region.setOptions({ start: newStart, end: newEnd });
+
+        // Adjust adjacent regions to stay connected
+        if (nextRegion) nextRegion.setOptions({ start: newEnd });
+        if (prevRegion) prevRegion.setOptions({ end: newStart });
+
+        // Update segment data
+        if(movedStart) {
+            // Update start of current
+            window.segmentData[0][index].start = newStart;
+            // Update end of prev
+            if(index > 0)
+                window.segmentData[0][index-1].end = newStart;
+        } else {
+            // Update end of current
+            window.segmentData[0][index].end = newEnd;
+            // Update start of next
+            if(index+1 < window.segmentData[0].length)
+                window.segmentData[0][index+1].start = newEnd;
+        }
+
+        updateSegmentElementsList(window.segmentData[0], false, 0);
+    });
+
 
     return num;
+}
+
+
+// Get previous region that is not a marker
+function getPrevRegion(waveformNum, index) {
+    index--;
+    let region = htmlElements.regions[waveformNum].regions.at(index);
+    while(globalState.regionType.get(region) === 'marker') {
+        index--;
+        if(index < 0) return null;
+        region = htmlElements.regions[waveformNum].regions.at(index);
+    }
+    if(index < 0) return null;
+    return region;
+}
+
+// Get next region that is not a marker
+function getNextRegion(waveformNum, index) {
+    let region = htmlElements.regions[waveformNum].regions.at(index + 1);
+    while(globalState.regionType.get(region) === 'marker') {
+        index++;
+        if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
+        region = htmlElements.regions[waveformNum].regions.at(index + 1);
+    }
+    if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
+    return region;
 }
