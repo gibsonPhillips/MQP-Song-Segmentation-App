@@ -76,9 +76,7 @@
     visibility: hidden;
 }
 
-.segment-annotation-input0,
-.segment-annotation-input1,
-.segment-annotation-input2 {
+[class^="segment-annotation-input"] {
     position: absolute;
     pointer-events: auto;
     height: 50px;
@@ -90,9 +88,7 @@
     resize: none;
 }
 
-.region-label-input0,
-.region-label-input1,
-.region-label-input2 {
+[class^="region-label-input"] {
     position: absolute;
     pointer-events: auto;
     height: 20px;

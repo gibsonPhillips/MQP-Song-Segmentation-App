@@ -3,17 +3,12 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-window.songFilePaths = ['','',''];
-window.segmentData = [[],[],[]];
-window.clusters = [0, 0, 0];
+window.songFilePaths = [];
+window.segmentData = [];
+window.clusters = [];
 
-// Initialize the Regions plugin
-// const regions = RegionsPlugin.create();
-const regionsPlugins = [
-    RegionsPlugin.create(),
-    RegionsPlugin.create(),
-    RegionsPlugin.create()
-]
+let regionsPlugins = [];
+let currentlyEditing = false;
 
 export let globalState = {
     // stores label color map
@@ -21,42 +16,21 @@ export let globalState = {
     // headers for segment data
     headers: ["number", "start", "end", "label"],
     // stores the wavesurfer regions for segments
-    segmentRegions: [
-        [],
-        [],
-        []
-    ],
+    segmentRegions: [],
     currentZoom: 10,
-    timelines: [null, null, null],
+    timelines: [],
     groupEditingMode: false,
-    wavesurferWaveforms: [
-        WaveSurfer.create({
-            container: '#waveform0',
-            waveColor: 'rgb(200, 0, 200)',
-            progressColor: 'rgb(100, 0, 100)',
-            minPxPerSec: 100,
-            plugins: [regionsPlugins[0], ZoomPlugin.create({scale:0.1})],
-        }),
-        WaveSurfer.create({
-            container: '#waveform1',
-            waveColor: 'rgb(200, 0, 200)',
-            progressColor: 'rgb(100, 0, 100)',
-            minPxPerSec: 100,
-            plugins: [regionsPlugins[1], ZoomPlugin.create({scale:0.1})],
-        }),
-        WaveSurfer.create({
-            container: '#waveform2',
-            waveColor: 'rgb(200, 0, 200)',
-            progressColor: 'rgb(100, 0, 100)',
-            minPxPerSec: 100,
-            plugins: [regionsPlugins[2], ZoomPlugin.create({scale:0.1})],
-        })
-    ],
-    markerNotes: [new Map(), new Map(), new Map()],
-    regionType: new Map()
+    wavesurferWaveforms: [],
+    markerNotes: [],
+    regionType: new Map(),
+    globalTimelineMode: false,
+    editBoundaryMode: false,
 };
 
 const htmlElements = {
+    // Larger elements
+    timeline: document.getElementById("timeline"),
+
     // Constants for HTML elements
     segmentDetailsDialog: document.querySelector('#segment-details-dialog'),
     removeBoundaryDialog: document.querySelector('#remove-boundary-dialog'),
@@ -106,6 +80,7 @@ const htmlElements = {
     // are you sure dialog
     areYouSureDialog: document.querySelector('#are-you-sure-dialog'),
     areYouSureHeader: document.getElementById('are-you-sure-header'),
+    yesOrNo: document.querySelector('#yes-or-no'),
     closeAreYouSureDialogButton: document.querySelector('#close-are-you-sure-dialog'),
 
     // error dialog
@@ -116,6 +91,7 @@ const htmlElements = {
     // marker dialog
     markerDialog: document.getElementById('marker-dialog'),
     closeMarkerDialog: document.getElementById('marker-dialog-close'),
+    deleteMarker: document.getElementById('delete-marker'),
     saveMarker: document.getElementById('save-marker'),
     markerTitle: document.getElementById('marker-dialog-title'),
     markerNote: document.getElementById('marker-dialog-note'),
@@ -174,6 +150,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
     // If waveform is being updated
     if(updateWaveform) {
         regionsPlugins[waveformNum].clearRegions()
+        globalState.regionType.clear();
         globalState.colorMap.clear();
         document.getElementById(labelsContainerStr).textContent = "";
         document.getElementById(annotationContainerStr).textContent = "";
@@ -243,7 +220,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
 
     // Re add markers
     if(updateWaveform) {
-        globalState.regionType.clear();
         globalState.markerNotes[waveformNum].keys().forEach(element => {
             // Add marker at time
             const marker = htmlElements.regions[waveformNum].addRegion({
@@ -371,23 +347,169 @@ export function presentErrorDialog(message) {
 // loads the song in the app
 export async function loadSong(filePath) {
     console.log('File path:', filePath);
-    let num = getNextWaveform();
+    let num = setupNextWaveform();
     if(num == -1) return;
     window.songFilePaths[num] = filePath;
     regionsPlugins[num].clearRegions();
     await globalState.wavesurferWaveforms[num].load(filePath);
     globalState.currentZoom = 10;
     updateTimeline(num);
+    return num;
 }
 
 // Gets the next available waveform
-export function getNextWaveform() {
-    let num = 0;
-    let filePath = window.songFilePaths[num];
-    while(filePath !== '') {
-        num++;
-        filePath = window.songFilePaths[num];
-        if(num > 2) return -1;
-    }
+export function setupNextWaveform() {
+    // Create div elements for label, waveform, segment annotations
+    let num = window.songFilePaths.length;
+    let labelsContainer = document.createElement("div");
+    labelsContainer.className = "labels-container";
+    labelsContainer.id = "labels-container" + String(num);
+    // labelsContainer.style = "height: 22px;"
+    let waveform = document.createElement("div");
+    waveform.className = "waveform";
+    waveform.id = "waveform" + String(num);
+    let segmentAnnotationContainer = document.createElement("div");
+    segmentAnnotationContainer.className = "segment-annotation-container";
+    segmentAnnotationContainer.id = "segment-annotation-container" + String(num);
+    // segmentAnnotationContainer.style = "height: 0px; visibility: hidden;"
+
+    htmlElements.timeline.appendChild(labelsContainer);
+    htmlElements.timeline.appendChild(waveform);
+    htmlElements.timeline.appendChild(segmentAnnotationContainer);
+
+    // Add necessary elements to global variables
+    window.songFilePaths.push('');
+    window.segmentData.push([]);
+    window.clusters.push(0);
+    regionsPlugins.push(RegionsPlugin.create());
+    globalState.segmentRegions.push([]);
+    globalState.timelines.push(null);
+    globalState.wavesurferWaveforms.push(WaveSurfer.create({
+        container: "#waveform" + String(num),
+        waveColor: 'rgb(200, 0, 200)',
+        progressColor: 'rgb(100, 0, 100)',
+        minPxPerSec: 100,
+        plugins: [regionsPlugins[num], ZoomPlugin.create({scale:0.1})],
+    }));
+    globalState.markerNotes.push(new Map());
+
+    // Set up scroll and zoom for wavesurfer
+    globalState.wavesurferWaveforms[num].on("scroll", () => {
+        if(currentlyEditing) return;
+        const currentScroll = globalState.wavesurferWaveforms[num].getScroll();
+
+        if(globalState.globalTimelineMode) {
+            currentlyEditing = true;
+            for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+                const waveform = globalState.wavesurferWaveforms[i];
+                if(waveform.getDuration() > 0) {
+                    waveform.setScroll(currentScroll);
+                    updateLabelPositions(i);
+                    updateSegmentAnnotationPositions(i);
+                }
+            }
+            currentlyEditing = false;
+        } else {
+            updateLabelPositions(num);
+            updateSegmentAnnotationPositions(num);
+        }
+    });
+
+    // Update labels and timeline on zoom
+    globalState.wavesurferWaveforms[num].on("zoom", (newPxPerSec) => {
+        if(currentlyEditing) return;
+        globalState.currentZoom = newPxPerSec;
+
+        if(globalState.globalTimelineMode) {
+            currentlyEditing = true;
+            for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+                const waveform = globalState.wavesurferWaveforms[i];
+                if(waveform.getDuration() > 0) {
+                    waveform.zoom(newPxPerSec);
+                    updateLabelPositions(i);
+                    updateSegmentAnnotationPositions(i);
+                    updateTimeline(i);
+                }
+            }
+            currentlyEditing = false;
+        } else {
+            updateLabelPositions(num);
+            updateSegmentAnnotationPositions(num);
+            updateTimeline(num);
+        }
+    });
+
+    // Handle region update for editing boundaries
+    htmlElements.regions[num].on('region-updated', (region) => {
+        if(globalState.regionType.get(region) === 'marker') return;
+        if (!globalState.editBoundaryMode) return;
+
+        let index = htmlElements.regions[0].regions.findIndex(r => r.id === region.id);
+        if (index === -1) return;
+
+        let movedStart = window.segmentData[0][index].start !== region.start;
+
+        let prevRegion = getPrevRegion(0, index);
+        let nextRegion = getNextRegion(0, index);
+
+        // Enforce limits so you can't go before previous or after next segment
+        let minStart = prevRegion ? prevRegion.start : 0; // Can't move before previous start
+        let maxEnd = nextRegion ? nextRegion.end : globalState.wavesurferWaveforms[0].getDuration(); // Can't extend beyond next region
+
+        let newStart = Math.max(region.start, minStart);
+        let newEnd = Math.min(region.end, maxEnd);
+
+        // Apply the constraints
+        region.setOptions({ start: newStart, end: newEnd });
+
+        // Adjust adjacent regions to stay connected
+        if (nextRegion) nextRegion.setOptions({ start: newEnd });
+        if (prevRegion) prevRegion.setOptions({ end: newStart });
+
+        // Update segment data
+        if(movedStart) {
+            // Update start of current
+            window.segmentData[0][index].start = newStart;
+            // Update end of prev
+            if(index > 0)
+                window.segmentData[0][index-1].end = newStart;
+        } else {
+            // Update end of current
+            window.segmentData[0][index].end = newEnd;
+            // Update start of next
+            if(index+1 < window.segmentData[0].length)
+                window.segmentData[0][index+1].start = newEnd;
+        }
+
+        updateSegmentElementsList(window.segmentData[0], false, 0);
+    });
+
+
     return num;
+}
+
+
+// Get previous region that is not a marker
+function getPrevRegion(waveformNum, index) {
+    index--;
+    let region = htmlElements.regions[waveformNum].regions.at(index);
+    while(globalState.regionType.get(region) === 'marker') {
+        index--;
+        if(index < 0) return null;
+        region = htmlElements.regions[waveformNum].regions.at(index);
+    }
+    if(index < 0) return null;
+    return region;
+}
+
+// Get next region that is not a marker
+function getNextRegion(waveformNum, index) {
+    let region = htmlElements.regions[waveformNum].regions.at(index + 1);
+    while(globalState.regionType.get(region) === 'marker') {
+        index++;
+        if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
+        region = htmlElements.regions[waveformNum].regions.at(index + 1);
+    }
+    if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
+    return region;
 }

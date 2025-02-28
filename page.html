@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="CSS/page.css" />
     <link rel="stylesheet" href="CSS/collapse.css" />
     <link rel="stylesheet" href="CSS/loading.css" />
+    <link rel="stylesheet" href="CSS/dialogs.css" />
 
 
 
@@ -51,6 +52,7 @@
                         <a href="#" id="save">Save Project</a>
                         <a href="#" id="delete">Delete Project</a>
                         <a href="#" id="chooseSong">Import Song</a>
+                        <a href="#" id="export">Export Data</a>
                         <input type="file" id="fileInput" accept=".wav" style="display: none;">
                     </div>
                 </div>
@@ -239,11 +241,12 @@
     </div>
 
 
-    <dialog id="segment-details-dialog">
-        <h2>Segment Details</h2>
-        <button class="btn" id="close-dialog">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
+    <dialog id="segment-details-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-dialog"></button>
+            <h1 class="title">Segment Details</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -258,56 +261,71 @@
         </table>
     </dialog>
 
-    <dialog id="load-dialog">
-        <h2 id>Choose Project to Load</h2>
-        <button class="btn" id="close-load-dialog">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
+    <dialog id="load-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-load-dialog"></button>
+            <h1 class="title">Choose Project to Load</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
         <div class="window-pane">
-            <div class="vbox" id="load-files"></div>
+            <div class="vbox files-div" id="load-files"></div>
         </div>
     </dialog>
 
-    <dialog id="save-dialog">
-        <h2 id>Choose Project to Save to</h2>
-        <button class="btn" id="close-save-dialog">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
-        <div>
+    <dialog id="save-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-save-dialog"></button>
+            <h1 class="title">Choose Project to Save to</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="files-div">
             <input type="checkbox" id="save-audio-checkbox">
             <label for="save-audio-checkbox">Save audio file</label>
         </div>
         <div class="window-pane">
-            <div class="vbox" id="save-files"></div>
+            <div class="vbox files-div" id="save-files"></div>
         </div>
     </dialog>
 
-    <dialog id="delete-dialog">
-        <h2 id>Choose Project(s) to Delete</h2>
-        <button class="btn" id="close-delete-dialog">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
+    <dialog id="delete-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-delete-dialog"></button>
+            <h1 class="title">Choose Project to Delete</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
         <div class="window-pane">
-            <div class="vbox" id="delete-files"></div>
+            <div class="vbox files-div" id="delete-files"></div>
         </div>
     </dialog>
 
-    <dialog id="are-you-sure-dialog">
-        <h2 id="are-you-sure-header"></h2>
-        <button class="btn" id="close-are-you-sure-dialog">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
-        <div class="window-pane">
-            <div class="hbox" id="yes-or-no"></div>
+    <dialog id="are-you-sure-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-are-you-sure-dialog"></button>
+            <h1 class="title" id="are-you-sure-header">Are you Sure?</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
         </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="hbox files-div" id="yes-or-no"></div>
     </dialog>
 
-    <dialog id="error-dialog">
-        <h2>Error!</h2>
-        <button class="btn" id="close-error-dialog">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
-        <div id="error-message"></div>
+    <dialog id="error-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-error-dialog"></button>
+            <h1 class="title">Error!</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <div class="files-div" id="error-message"></div>
     </dialog>
 
     <dialog id="remove-boundary-dialog">
@@ -317,13 +335,15 @@
     </dialog>
 
     <dialog id="marker-dialog">
-        <h2>Marker</h2>
-        <button class="btn" id="marker-dialog-close">
-            <img src="resources/icons/xmark.svg" alt="Close Button">
-        </button>
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="marker-dialog-close"></button>
+            <h1 class="title">Marker</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
         <div id="marker-dialog-container">
             <input type="text" value="Placeholder" id="marker-dialog-title">
             <textarea id="marker-dialog-note">Placeholder</textarea>
+            <button class="btn" id="delete-marker">Delete</button>
             <button class="btn" id="save-marker">Save</button>
         </div>
 
