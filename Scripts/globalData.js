@@ -3,6 +3,7 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
+
 window.songFilePaths = [];
 window.segmentData = [];
 window.clusters = [];
@@ -29,7 +30,7 @@ export let globalState = {
 
 const htmlElements = {
     // Larger elements
-    timeline: document.getElementById("timeline"),
+    timeline: document.getElementById("waveforms"),
 
     // Constants for HTML elements
     segmentDetailsDialog: document.querySelector('#segment-details-dialog'),
@@ -178,6 +179,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 color: globalState.colorMap.get(element.label),
                 drag: false,
                 resize: false,
+                // height: waveformsHeight
             });
 
             globalState.regionType.set(region, 'segment');
@@ -357,8 +359,68 @@ export async function loadSong(filePath) {
     return num;
 }
 
+
+
+
+// determines  the height for all the waveforms
+let slider = document.getElementById('trackHeight')
+let root = document.documentElement; // Selects :root
+let waveformsHeight = parseInt(slider.value);    // gets value from the slider. Default value set there. 
+
+slider.addEventListener("input", function () {
+    let divHeight = parseInt(slider.value);
+
+    root.style.setProperty("--track-height", divHeight + "px");
+    waveformsHeight = divHeight;
+})
+
+// to count out id's sequentially
+let idCounter = 0
+
+
+
+// function that creates the next tracks as new waveforms are being added
+function NewTrack() {
+
+    // Create a new div element
+    const trackDiv = document.createElement("div");
+    trackDiv.classList.add("trackers");
+
+
+    // Create a new button element
+    // const button = document.createElement("button");
+    // button.id = "button " + idCounter;
+    // button.textContent = "button";
+    // button.classList.add("btn");
+
+    // algorithm button
+    const algoBtn = document.createElement("button");
+    algoBtn.id = "button" + idCounter;
+    algoBtn.textContent = "Segment!";
+    algoBtn.classList.add("btn");
+    // segment details button
+    // boundaries button
+
+
+    // Append the buttons to the div
+    trackDiv.appendChild(algoBtn);
+
+    // Append the div to the body (or any other container)
+    document.getElementById("tracks").appendChild(trackDiv);
+
+    // iterate idCounter
+    idCounter++
+}
+
+
 // Gets the next available waveform
 export function setupNextWaveform() {
+
+    // calls out to make a new track alongside the new waveform
+    NewTrack()
+    console.log("newtrack")
+
+
     // Create div elements for label, waveform, segment annotations
     let num = window.songFilePaths.length;
     let labelsContainer = document.createElement("div");
@@ -390,6 +452,7 @@ export function setupNextWaveform() {
         progressColor: 'rgb(100, 0, 100)',
         minPxPerSec: 100,
         plugins: [regionsPlugins[num], ZoomPlugin.create({scale:0.1})],
+        height: waveformsHeight,
     }));
     globalState.markerNotes.push(new Map());
 

@@ -16,14 +16,4 @@ for (i = 0; i < coll.length; i++) {
 }
 
 
-// Track height slider stuff
-
-let slider = document.getElementById('trackheight')
-let root = document.documentElement; // Selects :root
-
-slider.addEventListener("input", function () {
-    let divHeight = parseInt(slider.value)
-
-    root.style.setProperty("--track-height", divHeight + "px")
-})
 
