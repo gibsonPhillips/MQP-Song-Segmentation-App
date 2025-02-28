@@ -467,8 +467,8 @@ async function parseSegmentDataFile(segmentDataFilePath) {
 
     if (result.content !== 'No data') {
         let rowsText = result.content.trim().split('\n');
-        rowsText.pop()
         rowsText.forEach(textRow => {
+            console.log(textRow);
             let textTuple = textRow.split(',')
             let obj = {
                 number: parseInt(textTuple[0]),
