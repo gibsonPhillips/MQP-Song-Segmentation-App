@@ -1,0 +1,14 @@
+.dialog-class {
+    padding: 0px;
+    overflow-y: hidden;
+    resize: vertical;
+    font-family: Chicago_12;
+}
+
+.files-div {
+    overflow-y: hidden;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    padding: 5px;
+}
