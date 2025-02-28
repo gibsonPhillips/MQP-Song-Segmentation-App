@@ -7,7 +7,6 @@ let isSyncingScroll = false;
 // this flashes the functionality so scrolling 
 // isn't detected as a scroll action to sync
 function syncScroll(source, target) {
-    console.log("here with ", source, " and ", target)
     if (isSyncingScroll) return;
     isSyncingScroll = true;
     target.scrollTop = source.scrollTop;

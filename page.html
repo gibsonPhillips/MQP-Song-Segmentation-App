@@ -81,6 +81,11 @@
                 <button class="btn" id="group-editing">Group Editing</button>
                 <button class="btn" id="segment-annotations">Segment Annotations</button>
                 <button class="btn" id="global-timeline">Global Timeline</button>
+
+                <div class="modeless-dialog vbox">
+                    <input id="trackheight" type="range" min="0" max="800" value="200" />
+                </div>
+
                 <div class="modeless-dialog vbox">
                     <input id="variability-slider" type="range" min="0" max="800" value="400" />
                 </div>
@@ -169,7 +174,7 @@
 
                 <!-- These waveforms need to be dynamically added as needed -->
 
-                <!-- <div class="labels-container" id="labels-container0"></div>
+                <div class="labels-container" id="labels-container0"></div>
                 <div class="waveform" id="waveform0"></div>
                 <div class="segment-annotation-container" id="segment-annotation-container0"></div>
 
@@ -179,7 +184,7 @@
 
                 <div class="labels-container" id="labels-container2"></div>
                 <div class="waveform" id="waveform2"></div>
-                <div class="segment-annotation-container" id="segment-annotation-container1"></div> -->
+                <div class="segment-annotation-container" id="segment-annotation-container1"></div>
 
                 <div id="waveforms">
                     <!-- This is for scrolling and spacing demo -->
@@ -332,6 +337,8 @@
     <script type="module" src="scripts/saving-project.js"></script>
     <script type="module" src="scripts/loading_demo.js"></script>
     <script type="module" src="scripts/scrolling.js"></script>
+    <script type="module" src="scripts/GUI.js"></script>
+
 
 </body>
 
