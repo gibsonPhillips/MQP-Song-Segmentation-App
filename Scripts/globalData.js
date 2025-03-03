@@ -25,6 +25,7 @@ export let globalState = {
     regionType: new Map(),
     globalTimelineMode: false,
     editBoundaryMode: false,
+    waveformNums: []
 };
 
 const htmlElements = {
@@ -115,6 +116,7 @@ const htmlElements = {
     groupEditingButton: document.getElementById("group-editing"),
     segmentAnnotationButton: document.getElementById("segment-annotations"),
     globalTimelineButton: document.getElementById("global-timeline"),
+    deleteTrackButton: document.getElementById("delete-track"),
     regions: regionsPlugins,
 };
 export default htmlElements;
@@ -360,18 +362,22 @@ export async function loadSong(filePath) {
 // Gets the next available waveform
 export function setupNextWaveform() {
     // Create div elements for label, waveform, segment annotations
-    let num = window.songFilePaths.length;
+    let num = 0;
+    if(globalState.waveformNums.length == 0) {
+        globalState.waveformNums.push(0);
+    } else {
+        num = globalState.waveformNums[globalState.waveformNums.length - 1] + 1;
+        globalState.waveformNums.push(num);
+    }
     let labelsContainer = document.createElement("div");
     labelsContainer.className = "labels-container";
     labelsContainer.id = "labels-container" + String(num);
-    // labelsContainer.style = "height: 22px;"
     let waveform = document.createElement("div");
     waveform.className = "waveform";
     waveform.id = "waveform" + String(num);
     let segmentAnnotationContainer = document.createElement("div");
     segmentAnnotationContainer.className = "segment-annotation-container";
     segmentAnnotationContainer.id = "segment-annotation-container" + String(num);
-    // segmentAnnotationContainer.style = "height: 0px; visibility: hidden;"
 
     htmlElements.timeline.appendChild(labelsContainer);
     htmlElements.timeline.appendChild(waveform);

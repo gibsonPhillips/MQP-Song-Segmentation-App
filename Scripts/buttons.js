@@ -117,6 +117,28 @@ htmlElements.globalTimelineButton.onclick = () => {
     }
 }
 
+
+htmlElements.deleteTrackButton.onclick = () => {
+    let waveformNum = 0;
+    let index = globalState.waveformNums.indexOf(waveformNum);
+
+    // Remove HTML elements
+    document.getElementById("labels-container" + String(waveformNum)).remove();
+    document.getElementById("waveform" + String(waveformNum)).remove();
+    document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
+    
+    // Remove elements from global variables
+    // globalState.waveformNums.splice(index, 1);
+    // window.songFilePaths.splice(index, 1);
+    // window.segmentData.splice(index, 1);
+    // window.clusters.splice(index, 1);
+    // htmlElements.regions.splice(index, 1);
+    // globalState.segmentRegions.splice(index, 1);
+    // globalState.timelines.splice(index, 1);
+    // globalState.wavesurferWaveforms.splice(index, 1);
+    // globalState.markerNotes.splice(index, 1);
+}
+
 /*
 document.getElementById("thisisn").addEventListener("click", function() {
 
