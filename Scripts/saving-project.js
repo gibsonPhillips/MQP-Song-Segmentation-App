@@ -463,8 +463,6 @@ async function parseSegmentDataFile(segmentDataFilePath) {
     let rows = [];
     let result = await window.api.getFile(segmentDataFilePath);
 
-    console.log(result);
-
     if (result.content !== 'No data') {
         let rowsText = result.content.trim().split('\n');
         rowsText.forEach(textRow => {
@@ -479,7 +477,6 @@ async function parseSegmentDataFile(segmentDataFilePath) {
             };
             rows.push(obj);
         })
-        console.log(rows)
     }
     return rows;
 }
@@ -489,8 +486,6 @@ async function parseMarkerDataFile(markerDataFilePath) {
     let markerNotes = new Map();
     let result = await window.api.getFile(markerDataFilePath);
 
-    console.log(result);
-
     if (result.content !== 'No data') {
 
         let rowsText = result.content.trim().split('\n');
@@ -498,7 +493,6 @@ async function parseMarkerDataFile(markerDataFilePath) {
             let textTuple = textRow.split(',')
             markerNotes.set(parseFloat(textTuple[0]), {start: parseFloat(textTuple[0]), title: textTuple[1], note: textTuple[2]});
         })
-        console.log(markerNotes)
     }
     return markerNotes;
 }

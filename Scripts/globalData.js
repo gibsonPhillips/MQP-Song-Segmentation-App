@@ -195,6 +195,9 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                     updateOneSegmentLabel(element, event.target.value);
                 }                
             });
+            labelInput.addEventListener("input", function(event) {
+                this.value = this.value.replace(/,/g, "");
+            });
             document.getElementById(labelsContainerStr).appendChild(labelInput);
 
             // Sync text input value with region data
@@ -209,6 +212,9 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             annotationInput.className = "segment-annotation-input" + String(waveformNum);
             annotationInput.addEventListener("blur", (event) => {
                 element.annotation = event.target.value;
+            });
+            annotationInput.addEventListener("input", function(event) {
+                this.value = this.value.replace(/,/g, "");
             });
             document.getElementById(annotationContainerStr).appendChild(annotationInput);
 
