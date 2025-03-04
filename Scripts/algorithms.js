@@ -39,7 +39,6 @@ async function segment(algorithm) {
 
         // Parse the JSON response
         const data = await response.json();
-        console.log(data)
         window.segmentData[0] = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
