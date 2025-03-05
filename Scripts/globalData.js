@@ -26,6 +26,7 @@ export let globalState = {
     regionType: [],
     globalTimelineMode: false,
     editBoundaryMode: [],
+    waveformNums: []
 };
 
 const htmlElements = {
@@ -515,7 +516,7 @@ function CreateAlgorithmDropdownButton(waveformNum) {
 function createSegmentDetailsButton(waveformNum) {
     
     const button = document.createElement("button");
-    button.id = "segment-Details-" + idCounter;
+    button.id = "segment-details-" + waveformNum;
     button.textContent = "Details";
     button.classList.add("btn");
 
@@ -574,24 +575,6 @@ function createBoundaryDropdownButton(waveformNum) {
     dropdownContent.appendChild(link4);
     link4.addEventListener("click", () => {externalAddMarker(waveformNum)});
 
-    
-    // // List of dropdown items
-    // const boundaryOptions = [
-    //     { id: "add-boundary", text: "Add Boundary" },
-    //     { id: "remove-boundary", text: "Remove Boundary" },
-    //     { id: "change-boundary", text: "Change Boundary" },
-    //     { id: "add-marker", text: "Add Marker Note" }
-    // ];
-
-    // // Create and append links
-    // boundaryOptions.forEach(option => {
-    //     const link = document.createElement("a");
-    //     link.href = "#";
-    //     link.id = option.id;
-    //     link.textContent = option.text;
-    //     dropdownContent.appendChild(link);
-    // });
-
     // Append button and dropdown content to dropdown container
     dropdown.appendChild(button);
     dropdown.appendChild(dropdownContent);
@@ -611,49 +594,64 @@ function createBoundaryDropdownButton(waveformNum) {
     return dropdown;
 }
 
+// Create delete track button for the track
+function createDeleteTrackButton(waveformNum) {
+    const button = document.createElement("button");
+    button.id = "delete-track";
+    button.textContent = "Delete Track";
+    button.classList.add("btn");
+
+    // add event listener
+    button.addEventListener("click", function() {
+        // Remove HTML elements
+        document.getElementById("labels-container" + String(waveformNum)).remove();
+        document.getElementById("waveform" + String(waveformNum)).remove();
+        document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
+        document.getElementById("track" + String(waveformNum)).remove();
+    })
+
+    return button;
+}
+
 // function that creates the next tracks as new waveforms are being added
 function NewTrack(waveformNum) {
 
     // Create a new div element to be track
     const trackDiv = document.createElement("div");
+    trackDiv.id = "track" + String(waveformNum);
     trackDiv.classList.add("trackers");
     
     // make the buttons
     let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
     let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
-
-
-    // Create a new button element
-    // const button = document.createElement("button");
-    // button.id = "button " + idCounter;
-    // button.textContent = "button";
-    // button.classList.add("btn");
-        
-
+    let deleteTrackButton = createDeleteTrackButton(waveformNum);  
 
     // Append the buttons to the div
     trackDiv.appendChild(algDropdown);
     trackDiv.appendChild(boundaryDropdown);
     trackDiv.appendChild(segmentDetailsButton);
-
+    trackDiv.appendChild(deleteTrackButton);
 
     // Append the div to the body (or any other container)
     document.getElementById("tracks").appendChild(trackDiv);
-
-
-    // iterate idCounter
-    idCounter++
 }
 
 
 // Gets the next available waveform
 export function setupNextWaveform() {
     // Create div elements for label, waveform, segment annotations
-    let num = window.songFilePaths.length;
+    // let num = window.songFilePaths.length;
+    let num = 0;
+    if(globalState.waveformNums.length == 0) {
+        globalState.waveformNums.push(0);
+    } else {
+        num = globalState.waveformNums[globalState.waveformNums.length - 1] + 1;
+        globalState.waveformNums.push(num);
+    }
 
     // calls out to make a new track alongside the new waveform
-    NewTrack(num)
+    NewTrack(num);
 
     let labelsContainer = document.createElement("div");
     labelsContainer.className = "labels-container";
