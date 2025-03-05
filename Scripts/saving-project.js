@@ -217,7 +217,7 @@ async function selectSaveProject() {
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
                     htmlElements.saveMenuDialog.close();
-                    saveTheData(chosenProject, htmlElements.saveAudioCheckbox.checked)
+                    saveTheData(chosenProject, 0, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
                 })
                 vbox.appendChild(newButton);
             });
@@ -237,7 +237,7 @@ async function selectSaveProject() {
 
             await window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
                 console.log('Directory creation handled successfully.');
-                saveTheData(chosenProject, htmlElements.saveAudioCheckbox.checked)
+                saveTheData(chosenProject, 0, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
                 console.error('Issue creating directory:\n' + error);
@@ -261,36 +261,36 @@ async function selectSaveProject() {
 }
 
 //save the project data
-async function saveTheData(chosenProject, saveAudioFile) {
+async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
 
     if (chosenProject != '') {
 
         let saveDirectoryPath = workspace + "\\" + chosenProject
         console.log('saveDirectoryPath: ' + saveDirectoryPath);
 
-        if (window.segmentData[0] != null && window.segmentData[0].length != 0) {
+        if (window.segmentData[waveformNum] != null && window.segmentData[waveformNum].length != 0) {
 
             try {
 
                 // Writing the segment data to the file
                 let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
-                let segmentDataText = createSegmentDataFileText(0);
+                let segmentDataText = createSegmentDataFileText(waveformNum);
                 window.api.writeToFile(saveSegmentDataFilePath, segmentDataText);
 
                 // Writing the metadata to the file
                 let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
-                let metadataText = createMetadataFileText();
+                let metadataText = createMetadataFileText(waveformNum);
                 window.api.writeToFile(saveMetadataFilePath, metadataText);
 
                 // Writing the marker notes
                 let saveMarkerNotesFilePath = saveDirectoryPath + '\\' + chosenProject + '-markerdata.txt';
-                let markerNotesData = createMarkerNotesFileText(0);
+                let markerNotesData = createMarkerNotesFileText(waveformNum);
                 window.api.writeToFile(saveMarkerNotesFilePath, markerNotesData);
 
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
-                    let filePathEnd = window.songFilePaths[0].split("\\").pop();
-                    window.api.copySongFile(window.songFilePaths[0], saveDirectoryPath + '\\' + filePathEnd);
+                    let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
+                    window.api.copySongFile(window.songFilePaths[waveformNum], saveDirectoryPath + '\\' + filePathEnd);
                 }
 
             } catch (error) {
@@ -518,8 +518,8 @@ function createSegmentDataFileText(waveformNum) {
     return text;
 }
 
-function createMetadataFileText() {
-    return window.songFilePath;
+function createMetadataFileText(waveformNum) {
+    return window.songFilePaths[waveformNum];
 }
 
 function createMarkerNotesFileText(waveformNum) {
