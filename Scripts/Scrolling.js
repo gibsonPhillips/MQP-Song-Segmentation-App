@@ -14,6 +14,6 @@ function syncScroll(source, target) {
 }
 
 tracks.addEventListener('scroll', () => syncScroll(tracks, timeline));
-timeline.addEventListener('scroll', () => syncScroll(timeline, tracks));
+// timeline.addEventListener('scroll', () => syncScroll(timeline, tracks));
 
 
