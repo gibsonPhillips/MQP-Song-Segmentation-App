@@ -1,12 +1,13 @@
-import { globalState, updateSegmentElementsList, updateTimeline, loadSong } from './globalData.js';
+import { globalState, updateSegmentElementsList, updateTimeline, loadSong, setExternalSegment, setExternalAutoSegment } from './globalData.js';
 import htmlElements from './globalData.js';
+// import {LoadingState, ResetButtonContent, Lbutton} from "./loading_demo.js"
 
 // Algorithm buttons
-htmlElements.algorithm1Button.addEventListener("click", () => {segment(1)});
-htmlElements.algorithm2Button.addEventListener("click", () => {segment(2)});
-htmlElements.algorithm3Button.addEventListener("click", () => {segment(3)});
-htmlElements.algorithm4Button.addEventListener("click", () => {segment(4)});
-htmlElements.algorithmAutoButton.addEventListener("click", () => {autoSegment(4, 4, 0, false)}); // auto to highest scoring algorithm
+// document.getElementById("segement-algorithm1").addEventListener("click", () => {segment(1)});
+// document.getElementById("segement-algorithm2").addEventListener("click", () => {segment(2)});
+// document.getElementById("segement-algorithm3").addEventListener("click", () => {segment(3)});
+// document.getElementById("segement-algorithm4").addEventListener("click", () => {segment(4)});
+// document.getElementById("auto-segment").addEventListener("click", () => {autoSegment(4, 4, 0, false)}); // auto to highest scoring algorithm
 
 // Import button
 htmlElements.importButton.addEventListener('click', async () => {
@@ -18,13 +19,17 @@ htmlElements.importButton.addEventListener('click', async () => {
     }
 });
 
+// Set the function in global.js
+setExternalSegment(segment);
+
 // runs the segmentation algorithm
 // TODO handle multiple waveforms
-async function segment(algorithm) {
-    const inputName = window.songFilePaths[0];
-    window.clusters[0] = determineVariability();
+async function segment(algorithm, waveformNum) {
+    const inputName = window.songFilePaths[waveformNum];
+    window.clusters[waveformNum] = determineVariability();
     try {
         console.log("Segmenting begin");
+        LoadingState(Lbutton);
 
         // Send a POST request to the Python server
         const response = await fetch('http://127.0.0.1:5000/call-python', {
@@ -32,23 +37,25 @@ async function segment(algorithm) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : window.clusters[0] }),
+            body: JSON.stringify({ song: inputName, algorithm : algorithm, clusters : window.clusters[waveformNum] }),
         });
 
         console.log("Segmenting end");
+        ResetButtonContent(0);
 
         // Parse the JSON response
         const data = await response.json();
-        window.segmentData[0] = data.map(row => {
+        console.log(data)
+        window.segmentData[waveformNum] = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
 
         // Add in segment annotation
-        window.segmentData[0].forEach(obj => {
+        window.segmentData[waveformNum].forEach(obj => {
             obj.annotation = "";
         });
 
-        updateSegmentElementsList(window.segmentData[0], true, 0)
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum)
     } catch (error) {
         console.error('Error:', error);
     }
@@ -62,9 +69,12 @@ function determineVariability() {
     return num
 }
 
+// Set the function in global.js
+setExternalAutoSegment(autoSegment);
+
 // TODO handle multiple waveforms
-async function autoSegment(clusters, closestClusters, closestAverage, finalCall) {
-    const inputName = window.songFilePaths[0];
+async function autoSegment(clusters, closestClusters, closestAverage, finalCall, waveformNum) {
+    const inputName = window.songFilePaths[waveformNum];
     try {
         console.log("Segmenting begin");
 
@@ -94,9 +104,9 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall)
         let average = determineAverageSegmentLength(segmentData);
 
         if(finalCall) {
-            window.segmentData[0] = segmentData;
-            window.clusters[0] = closestClusters;
-            updateSegmentElementsList(window.segmentData[0], true, 0);
+            window.segmentData[waveformNum] = segmentData;
+            window.clusters[waveformNum] = closestClusters;
+            updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
             return;
         }
 
@@ -105,12 +115,12 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall)
             closestClusters = clusters;
 
             if(average < 25) {
-                autoSegment(clusters-1, closestClusters, closestAverage, false);
+                autoSegment(clusters-1, closestClusters, closestAverage, false, waveformNum);
             } else {
-                autoSegment(clusters+1, closestClusters, closestAverage, false);
+                autoSegment(clusters+1, closestClusters, closestAverage, false, waveformNum);
             }
         } else {
-            autoSegment(closestClusters, closestClusters, closestAverage, true);
+            autoSegment(closestClusters, closestClusters, closestAverage, true, waveformNum);
         }
     } catch (error) {
         console.error('Error:', error);

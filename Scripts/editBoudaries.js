@@ -1,98 +1,106 @@
-import { globalState, updateSegmentElementsList, setExternalFunction } from './globalData.js';
+import { globalState, updateSegmentElementsList, setExternalFunction, setExternalAdd, setExternalRemove, setExternalChange, setExternalAddMarker, setExternalDeleteMarker, setExternalSaveMarker } from './globalData.js';
 import htmlElements from './globalData.js';
 
 // let editBoundaryMode = false;
 let currentMarker;
 
+
+setExternalAdd(addBoundaryButtonAction);
 // TODO hanlde mulitple waveforms
-htmlElements.addBoundaryButton.onclick = () => {
+function addBoundaryButtonAction(waveformNum) {
     // Reset edit mode
-    globalState.editBoundaryMode = false;
-    htmlElements.changeBoundaryButton.style.backgroundColor = "white";
+    globalState.editBoundaryMode[waveformNum] = false;
+    // htmlElements.changeBoundaryButton.style.backgroundColor = "white";
 
     // Get click time (relative to waveform duration)
-    const time = globalState.wavesurferWaveforms[0].getCurrentTime();
+    const time = globalState.wavesurferWaveforms[waveformNum].getCurrentTime();
     if(time === 0) return;
 
     // Determine location
     let i = 0;
-    let currentTime = window.segmentData[0][i].start;
+    let currentTime = window.segmentData[waveformNum][i].start;
     while(time > currentTime) {
         i++;
-        currentTime = window.segmentData[0][i].start;
+        currentTime = window.segmentData[waveformNum][i].start;
     }
 
     // Add to boundaryData
-    let element = {"number": i+1, "start": time, "end": window.segmentData[0][i].start, "label": window.clusters[0], "annotation": ""};
-    window.clusters[0]++;
-    window.segmentData[0].splice(i, 0, element);
+    let element = {"number": i+1, "start": time, "end": window.segmentData[waveformNum][i].start, "label": window.clusters[waveformNum], "annotation": ""};
+    window.clusters[waveformNum]++;
+    window.segmentData[waveformNum].splice(i, 0, element);
 
     // Update segments
-    window.segmentData[0][i-1].end = time;
-    for(let j = i+1; j < window.segmentData[0].length; j++) {
-        window.segmentData[0][j].number = j+1;
+    window.segmentData[waveformNum][i-1].end = time;
+    for(let j = i+1; j < window.segmentData[waveformNum].length; j++) {
+        window.segmentData[waveformNum][j].number = j+1;
     }
 
-    updateSegmentElementsList(window.segmentData[0], true, 0);
+    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
 
+setExternalRemove(removeBoundaryButtonAction);
 // TODO hanlde mulitple waveforms
-htmlElements.removeBoundaryButton.onclick = () => {
+function removeBoundaryButtonAction(waveformNum) {
     // Reset edit mode
-    globalState.editBoundaryMode = false;
-    htmlElements.changeBoundaryButton.style.backgroundColor = "white";
+    globalState.editBoundaryMode[waveformNum] = false;
+    // htmlElements.changeBoundaryButton.style.backgroundColor = "white";
 
     // Get click time (relative to waveform duration)
-    const time = globalState.wavesurferWaveforms[0].getCurrentTime();
+    const time = globalState.wavesurferWaveforms[waveformNum].getCurrentTime();
     
     // Find closest boundary
     let closestBoundaryIndex = 0;
-    let closetBoundaryTime = Math.abs(window.segmentData[0][0].start - time);
-    window.segmentData[0].forEach(element => {
+    let closetBoundaryTime = Math.abs(window.segmentData[waveformNum][0].start - time);
+    window.segmentData[waveformNum].forEach(element => {
         if(Math.abs(element.start - time) < closetBoundaryTime) {
             closetBoundaryTime = Math.abs(element.start - time);
             closestBoundaryIndex = element.number - 1;
         }
     });
 
-    if(closestBoundaryIndex != 0 && closestBoundaryIndex != window.segmentData[0].length-1) {
+    if(closestBoundaryIndex != 0 && closestBoundaryIndex != window.segmentData[waveformNum].length-1) {
         // Combine with previous (get rid of current index, add to previous)
-        window.segmentData[0][closestBoundaryIndex-1].end = window.segmentData[0][closestBoundaryIndex].end;
-        window.segmentData[0].splice(closestBoundaryIndex, 1);
-        for(let i = closestBoundaryIndex; i < window.segmentData[0].length; i++) {
-            window.segmentData[0][i].number = i+1;
+        window.segmentData[waveformNum][closestBoundaryIndex-1].end = window.segmentData[waveformNum][closestBoundaryIndex].end;
+        window.segmentData[waveformNum].splice(closestBoundaryIndex, 1);
+        for(let i = closestBoundaryIndex; i < window.segmentData[waveformNum].length; i++) {
+            window.segmentData[waveformNum][i].number = i+1;
         }
-        updateSegmentElementsList(window.segmentData[0], true, 0);
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
     }
 }
 
+setExternalChange(changeBoundaryButtonAction);
 // TODO hanlde mulitple waveforms
-htmlElements.changeBoundaryButton.onclick = () => {
-    globalState.editBoundaryMode = !globalState.editBoundaryMode;
+function changeBoundaryButtonAction(waveformNum) {
+    globalState.editBoundaryMode[waveformNum] = !globalState.editBoundaryMode[waveformNum];
 
-    if (!globalState.editBoundaryMode) {
-        htmlElements.changeBoundaryButton.style.backgroundColor = "white";
+    if (!globalState.editBoundaryMode[waveformNum]) {
+        // htmlElements.changeBoundaryButton.style.backgroundColor = "white";
     } else {
-        htmlElements.changeBoundaryButton.style.backgroundColor = "rgb(255,197,61)";
+        // htmlElements.changeBoundaryButton.style.backgroundColor = "rgb(255,197,61)";
     }
 
     // TODO update with multiple waveforms
-    htmlElements.regions[0].regions.forEach(element => {
-        if(globalState.regionType.get(element) === 'segment') {
+    console.log(htmlElements.regions[waveformNum].regions)
+    htmlElements.regions[waveformNum].regions.forEach(element => {
+        console.log("HELLO1")
+        if(globalState.regionType[waveformNum].get(element) === 'segment') {
+            console.log("HELLO2")
             element.setOptions({
-                resize: globalState.editBoundaryMode
+                resize: globalState.editBoundaryMode[waveformNum]
             });
         }
     });
 }
 
+setExternalAddMarker(addMarkerButtonAction);
 // Add marker to waveform
-htmlElements.addMarkerButton.onclick = () => {
+function addMarkerButtonAction(waveformNum) {
     // Get click time (relative to waveform duration)
-    const time = globalState.wavesurferWaveforms[0].getCurrentTime();
+    const time = globalState.wavesurferWaveforms[waveformNum].getCurrentTime();
 
     // Add marker at time
-    const marker = htmlElements.regions[0].addRegion({
+    const marker = htmlElements.regions[waveformNum].addRegion({
         start: time,
         content: "",
         color: "rgba(255, 0, 0, 0.5)",
@@ -102,10 +110,10 @@ htmlElements.addMarkerButton.onclick = () => {
     marker.element.style.minWidth = "4px";
     marker.element.style.backgroundColor = "rgba(255, 0, 0)";
 
-    globalState.regionType.set(marker, 'marker');
+    globalState.regionType[waveformNum].set(marker, 'marker');
 
     marker.on('click', () => {
-        openMarkerNote(marker, globalState.markerNotes[0]);
+        openMarkerNote(marker, globalState.markerNotes[waveformNum]);
     });
 
     currentMarker = marker;
@@ -116,14 +124,16 @@ htmlElements.addMarkerButton.onclick = () => {
     htmlElements.markerDialog.showModal();
 }
 
+setExternalSaveMarker(saveMarkerButtonAction);
 // Saving marker note
-htmlElements.saveMarker.onclick = () => {
+function saveMarkerButtonAction() {
     globalState.markerNotes[0].set(currentMarker.start, {start: currentMarker.start, title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
     htmlElements.markerDialog.close();
 }
 
+setExternalDeleteMarker(deleteMarkerButtonAction)
 // Deleting marker note
-htmlElements.deleteMarker.onclick = () => {
+function deleteMarkerButtonAction() {
     globalState.markerNotes[0].delete(currentMarker.start);
     updateSegmentElementsList(window.segmentData[0], true, 0);
     htmlElements.markerDialog.close();
