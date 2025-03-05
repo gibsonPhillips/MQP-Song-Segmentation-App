@@ -157,6 +157,9 @@
     width: 100%;
     border-style: solid;
     border-width: 2px;
+
+    display: flex;
+    flex-direction: row;
 }
 
 /* delete me after demo */
@@ -206,4 +209,9 @@
     width: 100%;
 
     align-content: center;
+}
+
+/* this makes the waveforms height adjustment work */
+#shadow-root.scroll {
+    height: 500px;
 }
