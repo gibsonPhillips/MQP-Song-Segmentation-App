@@ -1,6 +1,6 @@
 import { globalState, updateSegmentElementsList, updateTimeline, loadSong, setExternalSegment, setExternalAutoSegment } from './globalData.js';
 import htmlElements from './globalData.js';
-import {LoadingState, ResetButtonContent, Lbutton} from "./loading_demo.js"
+// import {LoadingState, ResetButtonContent, Lbutton} from "./loading_demo.js"
 
 // Algorithm buttons
 // document.getElementById("segement-algorithm1").addEventListener("click", () => {segment(1)});
