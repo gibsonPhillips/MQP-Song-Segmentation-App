@@ -1,8 +1,9 @@
-import { globalState, updateSegmentElementsList, setExternalFunction, setExternalAdd, setExternalRemove, setExternalChange, setExternalAddMarker, setExternalDeleteMarker, setExternalSaveMarker } from './globalData.js';
+import { globalState, updateSegmentElementsList, setExternalOpenMarker, setExternalAdd, setExternalRemove, setExternalChange, setExternalAddMarker } from './globalData.js';
 import htmlElements from './globalData.js';
 
 // let editBoundaryMode = false;
 let currentMarker;
+let currentWaveformNum;
 
 
 setExternalAdd(addBoundaryButtonAction);
@@ -113,10 +114,11 @@ function addMarkerButtonAction(waveformNum) {
     globalState.regionType[waveformNum].set(marker, 'marker');
 
     marker.on('click', () => {
-        openMarkerNote(marker, globalState.markerNotes[waveformNum]);
+        openMarkerNote(marker, globalState.markerNotes[waveformNum], waveformNum);
     });
 
     currentMarker = marker;
+    currentWaveformNum = waveformNum;
 
     htmlElements.markerTitle.value = "";
     htmlElements.markerNote.value = "";
@@ -124,26 +126,28 @@ function addMarkerButtonAction(waveformNum) {
     htmlElements.markerDialog.showModal();
 }
 
-setExternalSaveMarker(saveMarkerButtonAction);
 // Saving marker note
-function saveMarkerButtonAction() {
-    globalState.markerNotes[0].set(currentMarker.start, {start: currentMarker.start, title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
+htmlElements.saveMarker.onclick = () => {
+    console.log(currentWaveformNum)
+    globalState.markerNotes[currentWaveformNum].set(currentMarker.start, {start: currentMarker.start, title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
     htmlElements.markerDialog.close();
 }
 
-setExternalDeleteMarker(deleteMarkerButtonAction)
 // Deleting marker note
-function deleteMarkerButtonAction() {
-    globalState.markerNotes[0].delete(currentMarker.start);
-    updateSegmentElementsList(window.segmentData[0], true, 0);
+htmlElements.deleteMarker.onclick = () => {
+    console.log(currentWaveformNum)
+    globalState.markerNotes[currentWaveformNum].delete(currentMarker.start);
+    updateSegmentElementsList(window.segmentData[currentWaveformNum], true, currentWaveformNum);
     htmlElements.markerDialog.close();
 }
 
 // Set the function in global.js
-setExternalFunction(openMarkerNote);
+setExternalOpenMarker(openMarkerNote);
 
-function openMarkerNote(marker, markerNotesMap) {
+function openMarkerNote(marker, markerNotesMap, waveformNum) {
     currentMarker = marker;
+    currentWaveformNum = waveformNum;
+    console.log(currentWaveformNum)
     const currentMarkerMap = markerNotesMap.get(marker.start)
 
     htmlElements.markerTitle.value = currentMarkerMap.title;

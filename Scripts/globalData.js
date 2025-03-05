@@ -136,9 +136,9 @@ const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
 // Sets external function for openMarkerNote in editBoundaries.js
-let externalFunction = null;
-export function setExternalFunction(fn) {
-    externalFunction = fn;
+let externalOpenMarker = null;
+export function setExternalOpenMarker(fn) {
+    externalOpenMarker = fn;
 }
 
 let externalSegment = null;
@@ -169,16 +169,6 @@ export function setExternalChange(fn) {
 let externalAddMarker = null;
 export function setExternalAddMarker(fn) {
     externalAddMarker = fn;
-}
-
-let externalDeleteMarker = null;
-export function setExternalDeleteMarker(fn) {
-    externalDeleteMarker = fn;
-}
-
-let externalSaveMarker = null;
-export function setExternalSaveMarker(fn) {
-    externalSaveMarker = fn;
 }
 
 // Updates the segment elements and display in table
@@ -280,8 +270,8 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             globalState.regionType[waveformNum].set(marker, 'marker');
 
             marker.on('click', () => {
-                if (externalFunction) {
-                    externalFunction(marker, globalState.markerNotes[waveformNum]);
+                if (externalOpenMarker) {
+                    externalOpenMarker(marker, globalState.markerNotes[waveformNum], waveformNum);
                 } else {
                     console.warn("External function not set!");
                 }
