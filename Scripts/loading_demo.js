@@ -7,10 +7,11 @@ Lbutton.addEventListener('click', function () {
 
 
 // initiate loading state of button
-function LoadingState(id) {
+export function LoadingState(id, button = Lbutton) {
+    console.log(`here 1`)
 // call all children elements of our button
     // const button = document.getElementById(id);
-    const childNodes = Lbutton.childNodes;
+    const childNodes = button.childNodes;
     console.log(childNodes)
     
     // assign each child to a variable
@@ -34,7 +35,9 @@ function LoadingState(id) {
 
 
 // this function resets any button from loading state back to static and ready
-function ResetButtonContent(id) {
+export function ResetButtonContent(id) {
+
+    console.log(`here 2`)
     // call all children elements of our button
     const button = document.getElementById(id);
     const childNodes = button.childNodes;
