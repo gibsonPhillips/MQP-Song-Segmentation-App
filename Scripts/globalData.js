@@ -482,23 +482,41 @@ function CreateAlgorithmDropdownButton(waveformNum) {
             { id: "auto-segment", text: "Auto Segment" }
         ];
 
-        // Create and append links
-        let index = 1;
-        algorithms.forEach(alg => {
-            const link = document.createElement("a");
-            link.href = "#";
-            link.id = alg.id;
-            link.textContent = alg.text;
-            dropdownContent.appendChild(link);
-            console.log(index);
-            // if(index === 5) {
-                link.addEventListener("click", () => {externalAutoSegment(4, 4, 0, false, waveformNum)});
-            // } else {
-            //     link.addEventListener("click", () => {externalSegment(Number(index), waveformNum)});
-            // }
-            index++;
-            
-        });
+        // Create and append links for each algorithm
+        const algorithm1 = document.createElement("a");
+        algorithm1.href = "#";
+        algorithm1.id = "segment-algorithm1";
+        algorithm1.textContent = "Algorithm 1";
+        dropdownContent.appendChild(algorithm1);
+        algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
+
+        const algorithm2 = document.createElement("a");
+        algorithm2.href = "#";
+        algorithm2.id = "segment-algorithm2";
+        algorithm2.textContent = "Algorithm 2";
+        dropdownContent.appendChild(algorithm2);
+        algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
+
+        const algorithm3 = document.createElement("a");
+        algorithm3.href = "#";
+        algorithm3.id = "segment-algorithm3";
+        algorithm3.textContent = "Algorithm 3";
+        dropdownContent.appendChild(algorithm3);
+        algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
+
+        const algorithm4 = document.createElement("a");
+        algorithm4.href = "#";
+        algorithm4.id = "segment-algorithm4";
+        algorithm4.textContent = "Algorithm 4";
+        dropdownContent.appendChild(algorithm4);
+        algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
+
+        const algorithmAuto = document.createElement("a");
+        algorithmAuto.href = "#";
+        algorithmAuto.id = "auto-segment";
+        algorithmAuto.textContent = "Auto Segment";
+        dropdownContent.appendChild(algorithmAuto);
+        algorithmAuto.addEventListener("click", () => {externalAutoSegment(4, 4, 0, false, waveformNum)});
 
         // Append button and dropdown content to dropdown container
         dropdown.appendChild(algoButton);
