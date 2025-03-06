@@ -267,6 +267,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 color: "rgba(255, 0, 0, 0.5)",
                 drag: false,
                 resize: false,
+                // height: waveformsHeight,
             });
             globalState.regionType[waveformNum].set(marker, 'marker');
 
@@ -424,6 +425,7 @@ function setWaveformHeights(divHeight) {
     // assigns correct height
     waveforms.forEach(element => {
         element.style.height = divHeight + "px";
+        // element.style.overflowX("clip", "scroll", "important")
     // console.log(waveformDivs);
     });
 }

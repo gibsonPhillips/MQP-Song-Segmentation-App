@@ -230,6 +230,6 @@
 }
 
 /* this makes the waveforms height adjustment work */
-#shadow-root.scroll {
+/* #shadow-root.scroll {
     height: 500px;
-}
+} */
