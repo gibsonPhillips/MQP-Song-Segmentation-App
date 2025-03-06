@@ -457,6 +457,7 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         // Create button
         const algoButton = document.createElement("button");
         algoButton.classList.add("btn");
+        algoButton.classList.add("track-button")
         algoButton.id = "algorithms-dropdown-button";
         algoButton.textContent = "Algorithms";
 
@@ -519,6 +520,8 @@ function createSegmentDetailsButton(waveformNum) {
     button.id = "segment-details-" + waveformNum;
     button.textContent = "Details";
     button.classList.add("btn");
+    button.classList.add("track-button");
+
 
     // add event listener
     button.addEventListener("click", function() {
@@ -539,6 +542,7 @@ function createBoundaryDropdownButton(waveformNum) {
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
+    button.classList.add("track-button");
     button.id = "boundaries-dropdown-button";
     button.textContent = "Boundaries";
 
@@ -600,6 +604,7 @@ function createDeleteTrackButton(waveformNum) {
     button.id = "delete-track";
     button.textContent = "Delete Track";
     button.classList.add("btn");
+    button.classList.add("track-button");
 
     // add event listener
     button.addEventListener("click", function() {
