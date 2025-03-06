@@ -329,8 +329,8 @@ async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
 
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
-                    let filePathEnd = window.songFilePaths[0].split("\\").pop();
-                    window.api.copySongFile(window.songFilePaths[0], saveDirectoryPath + '\\' + filePathEnd);
+                    let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
+                    window.api.copySongFile(window.songFilePaths[waveformNum], saveDirectoryPath + '\\' + filePathEnd);
                 }
 
             } catch (error) {
