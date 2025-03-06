@@ -1,5 +1,5 @@
 import htmlElements from './globalData.js';
-import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList } from './globalData.js';
+import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveProject, setExternalExportData } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -76,42 +76,54 @@ htmlElements.loadButton.addEventListener('click', async () => {
     });
 });
 
-// when save is clicked
-htmlElements.saveButton.addEventListener('click', async () => {
-    console.log(window.songFilePaths[0])
+//// when save is clicked
+//htmlElements.saveButton.addEventListener('click', async () => {
+//    saveProject(0)
+//});
 
-    if (window.songFilePaths[0] != '' && window.songFilePaths[0] != null) {
+setExternalSaveProject(saveProject);
+// Saves the project
+function saveProject(waveformNum) {
+    console.log(window.songFilePaths[waveformNum])
+
+    if (window.songFilePaths[waveformNum] != '' && window.songFilePaths[waveformNum] != null) {
 //        let filePathEnd = window.songFilePath.split("\\").pop();
 //        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
 //        console.log(filePathEnd)
-        selectSaveProject();
+        selectSaveProject(waveformNum);
 
     } else {
         console.log('No audio selected')
         presentErrorDialog('No audio selected')
     }
-});
+}
 
 // when delete is clicked
 htmlElements.deleteButton.addEventListener('click', async () => {
     selectDeleteProject();
 });
 
-htmlElements.exportButton.addEventListener('click', async () => {
-    let exportStats = calculateExportStats(0)
-    let fileText = createExportFileText(exportStats, 0)
+//htmlElements.exportButton.addEventListener('click', async () => {
+//    exportData(0);
+//});
+
+setExternalExportData(exportData);
+// exports the data
+async function exportData(waveformNum) {
+    let exportStats = calculateExportStats(waveformNum)
+    let fileText = createExportFileText(exportStats, waveformNum)
     console.log(fileText)
     const filePath = await window.api.saveFile();
     if (filePath) {
         window.api.writeToFile(filePath, fileText).then((result) => {
             console.log('saved successfully')
         }).catch((err) => {
-            console.err(err)
+            console.error(err)
         });
     } else {
         console.log('unable to save')
     }
-});
+}
 
 
 // Functionality functions
@@ -196,7 +208,7 @@ function determineNumClusters(waveformNum) {
 
 
 // Queues the pop-up dialog to save the project
-async function selectSaveProject() {
+async function selectSaveProject(waveformNum) {
     // Get the save files
     let chosenProject = ''
     let vbox = htmlElements.saveFiles;
@@ -217,7 +229,7 @@ async function selectSaveProject() {
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
                     htmlElements.saveMenuDialog.close();
-                    saveTheData(chosenProject, 0, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                    saveTheData(chosenProject, waveformNum, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
                 })
                 vbox.appendChild(newButton);
             });
@@ -237,7 +249,7 @@ async function selectSaveProject() {
 
             await window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
                 console.log('Directory creation handled successfully.');
-                saveTheData(chosenProject, 0, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                saveTheData(chosenProject, waveformNum, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
                 console.error('Issue creating directory:\n' + error);
@@ -317,8 +329,8 @@ async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
 
                 // Copy song the song (if set to true)
                 if (saveAudioFile) {
-                    let filePathEnd = window.songFilePaths[0].split("\\").pop();
-                    window.api.copySongFile(window.songFilePaths[0], saveDirectoryPath + '\\' + filePathEnd);
+                    let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
+                    window.api.copySongFile(window.songFilePaths[waveformNum], saveDirectoryPath + '\\' + filePathEnd);
                 }
 
             } catch (error) {

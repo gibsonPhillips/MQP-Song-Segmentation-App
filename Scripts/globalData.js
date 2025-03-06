@@ -39,7 +39,6 @@ const htmlElements = {
 
     // import/export buttons
     importButton: document.getElementById('chooseSong'),
-    exportButton: document.querySelector('#export'),
 
     // Segment buttons
     segmentDetailsButton: document.querySelector('#segment-details'),
@@ -101,7 +100,6 @@ const htmlElements = {
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
-    saveButton: document.getElementById('save'),
     deleteButton: document.getElementById('delete'),
 
     // drop down stuff
@@ -170,6 +168,16 @@ export function setExternalChange(fn) {
 let externalAddMarker = null;
 export function setExternalAddMarker(fn) {
     externalAddMarker = fn;
+}
+
+let externalSaveProject = null;
+export function setExternalSaveProject(fn) {
+    externalSaveProject = fn;
+}
+
+let externalExportData = null;
+export function setExternalExportData(fn) {
+    externalExportData = fn;
 }
 
 // Updates the segment elements and display in table
@@ -594,6 +602,57 @@ function createBoundaryDropdownButton(waveformNum) {
     return dropdown;
 }
 
+// helper function creates button for save system and adds event listener for each track
+function createSaveDropdownButton(waveformNum) {
+    // Create dropdown container
+    const dropdown = document.createElement("div");
+    dropdown.classList.add("dropdown");
+    dropdown.id = "save-dropdown";
+
+    // Create button
+    const button = document.createElement("button");
+    button.classList.add("btn");
+    button.id = "save-dropdown-button";
+    button.textContent = "Saving and Exporting";
+
+    // Create dropdown content container
+    const dropdownContent = document.createElement("div");
+    dropdownContent.classList.add("dropdown-content");
+    dropdownContent.id = "save-dropdown-content";
+
+    const link1 = document.createElement("a");
+    link1.href = "#";
+    link1.id = "save";
+    link1.textContent = "Save Song Project";
+    dropdownContent.appendChild(link1);
+    link1.addEventListener("click", () => {externalSaveProject(waveformNum)});
+
+    const link2 = document.createElement("a");
+    link2.href = "#";
+    link2.id = "export";
+    link2.textContent = "Export Data";
+    dropdownContent.appendChild(link2);
+    link2.addEventListener("click", () => {externalExportData(waveformNum)});
+
+    // Append button and dropdown content to dropdown container
+    dropdown.appendChild(button);
+    dropdown.appendChild(dropdownContent);
+
+    // Toggle dropdown on button click
+    button.addEventListener("click", function () {
+        dropdownContent.classList.toggle("show");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (event) {
+        if (!button.contains(event.target) && !dropdownContent.contains(event.target)) {
+            dropdownContent.classList.remove("show");
+        }
+    });
+
+    return dropdown;
+}
+
 // Create delete track button for the track
 function createDeleteTrackButton(waveformNum) {
     const button = document.createElement("button");
@@ -624,12 +683,14 @@ function NewTrack(waveformNum) {
     // make the buttons
     let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
+    let saveDropdown = createSaveDropdownButton(waveformNum);
     let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
     let deleteTrackButton = createDeleteTrackButton(waveformNum);  
 
     // Append the buttons to the div
     trackDiv.appendChild(algDropdown);
     trackDiv.appendChild(boundaryDropdown);
+    trackDiv.appendChild(saveDropdown);
     trackDiv.appendChild(segmentDetailsButton);
     trackDiv.appendChild(deleteTrackButton);
 
