@@ -1,13 +1,6 @@
 import { globalState, updateSegmentElementsList, updateTimeline, loadSong, setExternalSegment, setExternalAutoSegment } from './globalData.js';
 import htmlElements from './globalData.js';
-// import {LoadingState, ResetButtonContent, Lbutton} from "./loading_demo.js"
-
-// Algorithm buttons
-// document.getElementById("segement-algorithm1").addEventListener("click", () => {segment(1)});
-// document.getElementById("segement-algorithm2").addEventListener("click", () => {segment(2)});
-// document.getElementById("segement-algorithm3").addEventListener("click", () => {segment(3)});
-// document.getElementById("segement-algorithm4").addEventListener("click", () => {segment(4)});
-// document.getElementById("auto-segment").addEventListener("click", () => {autoSegment(4, 4, 0, false)}); // auto to highest scoring algorithm
+// import {LoadingState, ResetButtonContent} from "./loading_demo.js"
 
 // Import button
 htmlElements.importButton.addEventListener('click', async () => {
@@ -29,7 +22,7 @@ async function segment(algorithm, waveformNum) {
     window.clusters[waveformNum] = determineVariability();
     try {
         console.log("Segmenting begin");
-        LoadingState(Lbutton);
+        // LoadingState(htmlElements.algorithmsDropdown);
 
         // Send a POST request to the Python server
         const response = await fetch('http://127.0.0.1:5000/call-python', {
@@ -41,7 +34,7 @@ async function segment(algorithm, waveformNum) {
         });
 
         console.log("Segmenting end");
-        ResetButtonContent(0);
+        // ResetButtonContent(0);
 
         // Parse the JSON response
         const data = await response.json();

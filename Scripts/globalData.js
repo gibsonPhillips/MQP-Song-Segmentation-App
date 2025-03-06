@@ -39,7 +39,6 @@ const htmlElements = {
 
     // import/export buttons
     importButton: document.getElementById('chooseSong'),
-    exportButton: document.querySelector('#export'),
 
     // Segment buttons
     segmentDetailsButton: document.querySelector('#segment-details'),
@@ -101,7 +100,6 @@ const htmlElements = {
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
-    saveButton: document.getElementById('save'),
     deleteButton: document.getElementById('delete'),
 
     // drop down stuff
@@ -170,6 +168,16 @@ export function setExternalChange(fn) {
 let externalAddMarker = null;
 export function setExternalAddMarker(fn) {
     externalAddMarker = fn;
+}
+
+let externalSaveProject = null;
+export function setExternalSaveProject(fn) {
+    externalSaveProject = fn;
+}
+
+let externalExportData = null;
+export function setExternalExportData(fn) {
+    externalExportData = fn;
 }
 
 // Updates the segment elements and display in table
@@ -477,23 +485,41 @@ function CreateAlgorithmDropdownButton(waveformNum) {
             { id: "auto-segment", text: "Auto Segment" }
         ];
 
-        // Create and append links
-        let index = 1;
-        algorithms.forEach(alg => {
-            const link = document.createElement("a");
-            link.href = "#";
-            link.id = alg.id;
-            link.textContent = alg.text;
-            dropdownContent.appendChild(link);
-            console.log(index);
-            // if(index === 5) {
-                link.addEventListener("click", () => {externalAutoSegment(4, 4, 0, false, waveformNum)});
-            // } else {
-            //     link.addEventListener("click", () => {externalSegment(Number(index), waveformNum)});
-            // }
-            index++;
-            
-        });
+        // Create and append links for each algorithm
+        const algorithm1 = document.createElement("a");
+        algorithm1.href = "#";
+        algorithm1.id = "segment-algorithm1";
+        algorithm1.textContent = "Algorithm 1";
+        dropdownContent.appendChild(algorithm1);
+        algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
+
+        const algorithm2 = document.createElement("a");
+        algorithm2.href = "#";
+        algorithm2.id = "segment-algorithm2";
+        algorithm2.textContent = "Algorithm 2";
+        dropdownContent.appendChild(algorithm2);
+        algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
+
+        const algorithm3 = document.createElement("a");
+        algorithm3.href = "#";
+        algorithm3.id = "segment-algorithm3";
+        algorithm3.textContent = "Algorithm 3";
+        dropdownContent.appendChild(algorithm3);
+        algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
+
+        const algorithm4 = document.createElement("a");
+        algorithm4.href = "#";
+        algorithm4.id = "segment-algorithm4";
+        algorithm4.textContent = "Algorithm 4";
+        dropdownContent.appendChild(algorithm4);
+        algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
+
+        const algorithmAuto = document.createElement("a");
+        algorithmAuto.href = "#";
+        algorithmAuto.id = "auto-segment";
+        algorithmAuto.textContent = "Auto Segment";
+        dropdownContent.appendChild(algorithmAuto);
+        algorithmAuto.addEventListener("click", () => {externalAutoSegment(4, 4, 0, false, waveformNum)});
 
         // Append button and dropdown content to dropdown container
         dropdown.appendChild(algoButton);
@@ -600,6 +626,57 @@ function createBoundaryDropdownButton(waveformNum) {
     return dropdown;
 }
 
+// helper function creates button for save system and adds event listener for each track
+function createSaveDropdownButton(waveformNum) {
+    // Create dropdown container
+    const dropdown = document.createElement("div");
+    dropdown.classList.add("dropdown");
+    dropdown.id = "save-dropdown";
+
+    // Create button
+    const button = document.createElement("button");
+    button.classList.add("btn");
+    button.id = "save-dropdown-button";
+    button.textContent = "Saving and Exporting";
+
+    // Create dropdown content container
+    const dropdownContent = document.createElement("div");
+    dropdownContent.classList.add("dropdown-content");
+    dropdownContent.id = "save-dropdown-content";
+
+    const link1 = document.createElement("a");
+    link1.href = "#";
+    link1.id = "save";
+    link1.textContent = "Save Song Project";
+    dropdownContent.appendChild(link1);
+    link1.addEventListener("click", () => {externalSaveProject(waveformNum)});
+
+    const link2 = document.createElement("a");
+    link2.href = "#";
+    link2.id = "export";
+    link2.textContent = "Export Data";
+    dropdownContent.appendChild(link2);
+    link2.addEventListener("click", () => {externalExportData(waveformNum)});
+
+    // Append button and dropdown content to dropdown container
+    dropdown.appendChild(button);
+    dropdown.appendChild(dropdownContent);
+
+    // Toggle dropdown on button click
+    button.addEventListener("click", function () {
+        dropdownContent.classList.toggle("show");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (event) {
+        if (!button.contains(event.target) && !dropdownContent.contains(event.target)) {
+            dropdownContent.classList.remove("show");
+        }
+    });
+
+    return dropdown;
+}
+
 // Create delete track button for the track
 function createDeleteTrackButton(waveformNum) {
     const button = document.createElement("button");
@@ -620,6 +697,63 @@ function createDeleteTrackButton(waveformNum) {
     return button;
 }
 
+function createPlayButton(waveformNum) {
+    const playButton = document.createElement("button");
+    playButton.classList.add("btn");
+    playButton.id = "play";
+
+    const img = document.createElement("img");
+    img.src = "resources/icons/play-solid.svg";
+    img.alt = "Play Button";
+
+    playButton.appendChild(img);
+    playButton.onclick = () => {
+        if(globalState.wavesurferWaveforms[waveformNum].getDuration() > 0) {
+            globalState.wavesurferWaveforms[waveformNum].playPause()
+            if(globalState.wavesurferWaveforms[waveformNum].isPlaying()) {
+                // pause icon
+                playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+            } else {
+                // play icon
+                playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+            }
+        }
+    }
+    return playButton;
+}
+
+function createForwardButton(waveformNum) {
+    const forwardButton = document.createElement("button");
+    forwardButton.classList.add("btn");
+    forwardButton.id = "forward";
+
+    const img = document.createElement("img");
+    img.src = "resources/icons/forward15-seconds.svg";
+    img.alt = "Play Button";
+
+    forwardButton.appendChild(img);
+    forwardButton.onclick = () => {
+        globalState.wavesurferWaveforms[waveformNum].skip(15)
+    }
+    return forwardButton;
+}
+
+function createBackwardButton(waveformNum) {
+    const backwardButton = document.createElement("button");
+    backwardButton.classList.add("btn");
+    backwardButton.id = "backward";
+
+    const img = document.createElement("img");
+    img.src = "resources/icons/backward15-seconds.svg";
+    img.alt = "Play Button";
+
+    backwardButton.appendChild(img);
+    backwardButton.onclick = () => {
+        globalState.wavesurferWaveforms[waveformNum].skip(-15)
+    }
+    return backwardButton;
+}
+
 // function that creates the next tracks as new waveforms are being added
 function NewTrack(waveformNum) {
 
@@ -631,14 +765,22 @@ function NewTrack(waveformNum) {
     // make the buttons
     let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
+    let saveDropdown = createSaveDropdownButton(waveformNum);
     let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
     let deleteTrackButton = createDeleteTrackButton(waveformNum);  
+    let playButton = createPlayButton(waveformNum);
+    let forwardButton = createForwardButton(waveformNum);
+    let backwardButton = createBackwardButton(waveformNum);
 
     // Append the buttons to the div
+    trackDiv.appendChild(playButton);
     trackDiv.appendChild(algDropdown);
     trackDiv.appendChild(boundaryDropdown);
+    trackDiv.appendChild(saveDropdown);
     trackDiv.appendChild(segmentDetailsButton);
     trackDiv.appendChild(deleteTrackButton);
+    trackDiv.appendChild(forwardButton);
+    trackDiv.appendChild(backwardButton);
 
     // Append the div to the body (or any other container)
     document.getElementById("tracks").appendChild(trackDiv);
