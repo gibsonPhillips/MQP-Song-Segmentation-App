@@ -188,8 +188,8 @@ document.getElementById("expand").addEventListener("click", function() {
 document.addEventListener("DOMContentLoaded", function () {
     const dropdowns = [
         { button: htmlElements.fileDropdown, menu: htmlElements.fileDropdownContent },
-        { button: htmlElements.algorithmsDropdown, menu: htmlElements.algorithmsDropdownContent },
-        { button: htmlElements.boundariesDropdown, menu: htmlElements.boundariesDropdownContent }
+        // { button: htmlElements.algorithmsDropdown, menu: htmlElements.algorithmsDropdownContent },
+        // { button: htmlElements.boundariesDropdown, menu: htmlElements.boundariesDropdownContent }
     ];
 
     dropdowns.forEach(({ button, menu }) => {

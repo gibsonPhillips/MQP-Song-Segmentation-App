@@ -56,7 +56,7 @@
                         <input type="file" id="fileInput" accept=".wav" style="display: none;">
                     </div>
                 </div>
-                <div class="dropdown" id="algorithms-dropdown">
+                <!-- <div class="dropdown" id="algorithms-dropdown">
                     <button class="btn" id="algorithms-dropdown-button">Algorithms</button>
                     <div class="dropdown-content" id="algorithms-dropdown-content">
                         <a href="#" id="segment-algorithm1">Algorithm 1</a>
@@ -74,7 +74,7 @@
                         <a href="#" id="change-boundary">Change Boundary</a>
                         <a href="#" id="add-marker">Add Marker Note</a>
                     </div>
-                </div>
+                </div> -->
                 <button class="btn" id="segment-details">Segment Details</button>
                 <button class="btn" id="loading-button">
                     <i style="display: none" class="fa fa-circle-o-notch fa-spin"></i>
@@ -83,6 +83,14 @@
                 <button class="btn" id="group-editing">Group Editing</button>
                 <button class="btn" id="segment-annotations">Segment Annotations</button>
                 <button class="btn" id="global-timeline">Global Timeline</button>
+
+                <div class="modeless-dialog vbox">
+                    <input id="trackHeight" type="range" min="0" max="800" value="163" />
+                </div>
+
+                <div class="modeless-dialog vbox">
+                    <input id="variability-slider" type="range" min="0" max="800" value="400" />
+                </div>
                 <button class="btn" id="play">
                     <img src="resources/icons/play-solid.svg" alt="Play Button">
                 </button>
@@ -101,8 +109,8 @@
             </div>
         </div>
 
-        <div class="hbox" id="mod-time">
-            <div class="window" id="modifiers">
+        <div id="track-time">
+            <div class="window" id="tracks-window">
                 <div id="expanders">
                     <div class="title-bar" id="expand" style="display:none">
                         <button aria-label="Close" class="collapsible coll" id="expand-button" style="display:none">
@@ -116,21 +124,83 @@
                         <!-- this keeps the button from collapsing width :*) -->
                         <div style="width:20px"></div>
                     </button>
-                    <h1 class="title">Modifiers</h1>
+                    <h1 class="title">Tracks</h1>
                     <button aria-label="Resize" disabled class="hidden"></button>
                 </div>
 
                 <!-- Little line separator -->
                 <div class="separator"></div>
 
-                <div class="modeless-dialog vbox cull">
-                    <input id="variability-slider" type="range" min="0" max="800" value="400" />
+                <div id="tracks">
+                    <div style="display: none" class="trackers">
+                        <p>Tracks</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="window" id="timeline"></div>
+            <div id="timeline">
+                <div id="timestamps">timestamp</div>
+
+                <!-- Little Line Separator -->
+                <div class="separator"></div>
+
+                <!-- These waveforms need to be dynamically added as needed -->
+
+                <!-- <div class="labels-container" id="labels-container0"></div>
+                <div class="waveform" id="waveform0"></div>
+                <div class="segment-annotation-container" id="segment-annotation-container0"></div>
+
+                <div class="labels-container" id="labels-container1"></div>
+                <div class="waveform" id="waveform1"></div>
+                <div class="segment-annotation-container" id="segment-annotation-container1"></div>
+
+                <div class="labels-container" id="labels-container2"></div>
+                <div class="waveform" id="waveform2"></div>
+                <div class="segment-annotation-container" id="segment-annotation-container1"></div> -->
+
+                <div id="waveforms">
+                    <div style="display: none" class="testing-waveforms">
+                        <!-- This is for scrolling and spacing demo -->
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                        <div class="testers">
+                            <p>Waveforms</p>
+                        </div>
+                    </div>
+
+
+                </div>
+                <!-- <div class="modeless-dialog"></div> -->
+            </div>
         </div>
     </div>
+    </div>
+
 
     <dialog id="segment-details-dialog" class="dialog-class">
         <div class="title-bar">
@@ -247,6 +317,9 @@
     <script type="module" src="scripts/algorithms.js"></script>
     <script type="module" src="scripts/saving-project.js"></script>
     <script type="module" src="scripts/loading_demo.js"></script>
+    <script type="module" src="scripts/scrolling.js"></script>
+    <script type="module" src="scripts/GUI.js"></script>
+
 
 </body>
 

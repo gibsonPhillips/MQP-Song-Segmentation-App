@@ -3,6 +3,7 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
+
 window.songFilePaths = [];
 window.segmentData = [];
 window.clusters = [];
@@ -22,14 +23,14 @@ export let globalState = {
     groupEditingMode: false,
     wavesurferWaveforms: [],
     markerNotes: [],
-    regionType: new Map(),
+    regionType: [],
     globalTimelineMode: false,
-    editBoundaryMode: false,
+    editBoundaryMode: [],
 };
 
 const htmlElements = {
     // Larger elements
-    timeline: document.getElementById("timeline"),
+    timeline: document.getElementById("waveforms"),
 
     // Constants for HTML elements
     segmentDetailsDialog: document.querySelector('#segment-details-dialog'),
@@ -140,6 +141,46 @@ export function setExternalFunction(fn) {
     externalFunction = fn;
 }
 
+let externalSegment = null;
+export function setExternalSegment(fn) {
+    externalSegment = fn;
+}
+
+let externalAutoSegment = null;
+export function setExternalAutoSegment(fn) {
+    externalAutoSegment = fn;
+}
+
+let externalAddBoundary = null;
+export function setExternalAdd(fn) {
+    externalAddBoundary = fn;
+}
+
+let externalRemoveBoundary = null;
+export function setExternalRemove(fn) {
+    externalRemoveBoundary = fn;
+}
+
+let externalChangeBoundary = null;
+export function setExternalChange(fn) {
+    externalChangeBoundary = fn;
+}
+
+let externalAddMarker = null;
+export function setExternalAddMarker(fn) {
+    externalAddMarker = fn;
+}
+
+let externalDeleteMarker = null;
+export function setExternalDeleteMarker(fn) {
+    externalDeleteMarker = fn;
+}
+
+let externalSaveMarker = null;
+export function setExternalSaveMarker(fn) {
+    externalSaveMarker = fn;
+}
+
 // Updates the segment elements and display in table
 export function updateSegmentElementsList(elements, updateWaveform, waveformNum) {
     const tbody = document.getElementById('segment-elements');
@@ -150,7 +191,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
     // If waveform is being updated
     if(updateWaveform) {
         regionsPlugins[waveformNum].clearRegions()
-        globalState.regionType.clear();
+        globalState.regionType[waveformNum].clear();
         globalState.colorMap.clear();
         document.getElementById(labelsContainerStr).textContent = "";
         document.getElementById(annotationContainerStr).textContent = "";
@@ -178,9 +219,10 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 color: globalState.colorMap.get(element.label),
                 drag: false,
                 resize: false,
+                // height: waveformsHeight
             });
 
-            globalState.regionType.set(region, 'segment');
+            globalState.regionType[waveformNum].set(region, 'segment');
 
             // Create segment label for region
             let labelInput = document.createElement("input");
@@ -235,11 +277,11 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 drag: false,
                 resize: false,
             });
-            globalState.regionType.set(marker, 'marker');
+            globalState.regionType[waveformNum].set(marker, 'marker');
 
             marker.on('click', () => {
                 if (externalFunction) {
-                    externalFunction(marker, globalState.markerNotes[0]);
+                    externalFunction(marker, globalState.markerNotes[waveformNum]);
                 } else {
                     console.warn("External function not set!");
                 }
@@ -363,10 +405,266 @@ export async function loadSong(filePath) {
     return num;
 }
 
+// helper function to set the track heights when called. 
+function setTrackHeights(divHeight) {
+    root.style.setProperty("--track-height", divHeight + "px");
+    waveformsHeight = divHeight;
+}
+
+// helper function to set the waveform heights when called
+function setWaveformHeights(divHeight) {
+
+    // will collect all of the dynamically added waveform divs
+    let waveforms = [];
+
+    // selects everything in the shadow-root placing them into the waveforms array
+    let hostElement = document.querySelectorAll('*');
+    hostElement.forEach(element =>{
+        if (element.shadowRoot){
+
+            console.log(element.shadowRoot);
+            let scrollElement = element.shadowRoot.querySelector(".scroll");
+            console.log(`class ${scrollElement}`)
+            waveforms.push(scrollElement)
+        }
+    });
+
+
+    // assigns correct height
+    waveforms.forEach(element => {
+        element.style.height = divHeight + "px";
+    // console.log(waveformDivs);
+    });
+}
+
+// determines  the height for all the waveforms
+let slider = document.getElementById('trackHeight')
+let root = document.documentElement; // Selects :root
+let waveformsHeight = parseInt(slider.value);    // gets value from the slider. Default value set there. 
+
+slider.addEventListener("input", function () {
+    let divHeight = parseInt(slider.value);
+
+    // dynamically call the helpers to set trackheights and waveformheights
+    setTrackHeights(divHeight)
+    setWaveformHeights(divHeight)
+    
+})
+
+
+// to count out id's sequentially
+let idCounter = 0
+
+
+// helper function creates button and adds event listener for each track
+function CreateAlgorithmDropdownButton(waveformNum) {
+    // Create dropdown container
+        const dropdown = document.createElement("div");
+        dropdown.classList.add("dropdown");
+        dropdown.id = "algorithms-dropdown";
+
+        // Create button
+        const algoButton = document.createElement("button");
+        algoButton.classList.add("btn");
+        algoButton.id = "algorithms-dropdown-button";
+        algoButton.textContent = "Algorithms";
+
+        // Create dropdown content container
+        const dropdownContent = document.createElement("div");
+        dropdownContent.classList.add("dropdown-content");
+        dropdownContent.id = "algorithms-dropdown-content";
+
+        // List of algorithms
+        const algorithms = [
+            { id: "segment-algorithm1", text: "Algorithm 1" },
+            { id: "segment-algorithm2", text: "Algorithm 2" },
+            { id: "segment-algorithm3", text: "Algorithm 3" },
+            { id: "segment-algorithm4", text: "Algorithm 4" },
+            { id: "auto-segment", text: "Auto Segment" }
+        ];
+
+        // Create and append links
+        let index = 1;
+        algorithms.forEach(alg => {
+            const link = document.createElement("a");
+            link.href = "#";
+            link.id = alg.id;
+            link.textContent = alg.text;
+            dropdownContent.appendChild(link);
+            console.log(index);
+            // if(index === 5) {
+                link.addEventListener("click", () => {externalAutoSegment(4, 4, 0, false, waveformNum)});
+            // } else {
+            //     link.addEventListener("click", () => {externalSegment(Number(index), waveformNum)});
+            // }
+            index++;
+            
+        });
+
+        // Append button and dropdown content to dropdown container
+        dropdown.appendChild(algoButton);
+        dropdown.appendChild(dropdownContent);
+
+        // Toggle dropdown on button click
+        algoButton.addEventListener("click", function () {
+            dropdownContent.classList.toggle("show");
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function (event) {
+            if (!algoButton.contains(event.target) && !dropdownContent.contains(event.target)) {
+                dropdownContent.classList.remove("show");
+            }
+        });
+
+        // Append dropdown to the body (or any other container)
+        return(dropdown);
+}
+
+// helper function creates button and adds event listener for each track
+function createSegmentDetailsButton(waveformNum) {
+    
+    const button = document.createElement("button");
+    button.id = "segment-Details-" + idCounter;
+    button.textContent = "Details";
+    button.classList.add("btn");
+
+    // add event listener
+    button.addEventListener("click", function() {
+        
+        console.log("make this work sometimes")
+    })
+
+    return(button);
+}
+
+// helper function creates button and adds event listener for each track
+function createBoundaryDropdownButton(waveformNum) {
+    // Create dropdown container
+    const dropdown = document.createElement("div");
+    dropdown.classList.add("dropdown");
+    dropdown.id = "boundaries-dropdown";
+
+    // Create button
+    const button = document.createElement("button");
+    button.classList.add("btn");
+    button.id = "boundaries-dropdown-button";
+    button.textContent = "Boundaries";
+
+    // Create dropdown content container
+    const dropdownContent = document.createElement("div");
+    dropdownContent.classList.add("dropdown-content");
+    dropdownContent.id = "boundaries-dropdown-content";
+
+    const link1 = document.createElement("a");
+    link1.href = "#";
+    link1.id = "add-boundary";
+    link1.textContent = "Add Boundary";
+    dropdownContent.appendChild(link1);
+    link1.addEventListener("click", () => {externalAddBoundary(waveformNum)});
+
+    const link2 = document.createElement("a");
+    link2.href = "#";
+    link2.id = "remove-boundary";
+    link2.textContent = "Remove Boundary";
+    dropdownContent.appendChild(link2);
+    link2.addEventListener("click", () => {externalRemoveBoundary(waveformNum)});
+
+    const link3 = document.createElement("a");
+    link3.href = "#";
+    link3.id = "change-boundary";
+    link3.textContent = "Change Boundary";
+    dropdownContent.appendChild(link3);
+    link3.addEventListener("click", () => {externalChangeBoundary(waveformNum)});
+    
+    const link4 = document.createElement("a");
+    link4.href = "#";
+    link4.id = "add-marker";
+    link4.textContent = "Add Marker";
+    dropdownContent.appendChild(link4);
+    link4.addEventListener("click", () => {externalAddMarker(waveformNum)});
+
+    
+    // // List of dropdown items
+    // const boundaryOptions = [
+    //     { id: "add-boundary", text: "Add Boundary" },
+    //     { id: "remove-boundary", text: "Remove Boundary" },
+    //     { id: "change-boundary", text: "Change Boundary" },
+    //     { id: "add-marker", text: "Add Marker Note" }
+    // ];
+
+    // // Create and append links
+    // boundaryOptions.forEach(option => {
+    //     const link = document.createElement("a");
+    //     link.href = "#";
+    //     link.id = option.id;
+    //     link.textContent = option.text;
+    //     dropdownContent.appendChild(link);
+    // });
+
+    // Append button and dropdown content to dropdown container
+    dropdown.appendChild(button);
+    dropdown.appendChild(dropdownContent);
+
+    // Toggle dropdown on button click
+    button.addEventListener("click", function () {
+        dropdownContent.classList.toggle("show");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (event) {
+        if (!button.contains(event.target) && !dropdownContent.contains(event.target)) {
+            dropdownContent.classList.remove("show");
+        }
+    });
+
+    return dropdown;
+}
+
+// function that creates the next tracks as new waveforms are being added
+function NewTrack(waveformNum) {
+
+    // Create a new div element to be track
+    const trackDiv = document.createElement("div");
+    trackDiv.classList.add("trackers");
+    
+    // make the buttons
+    let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
+    let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
+    let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
+
+
+    // Create a new button element
+    // const button = document.createElement("button");
+    // button.id = "button " + idCounter;
+    // button.textContent = "button";
+    // button.classList.add("btn");
+        
+
+
+    // Append the buttons to the div
+    trackDiv.appendChild(algDropdown);
+    trackDiv.appendChild(boundaryDropdown);
+    trackDiv.appendChild(segmentDetailsButton);
+
+
+    // Append the div to the body (or any other container)
+    document.getElementById("tracks").appendChild(trackDiv);
+
+
+    // iterate idCounter
+    idCounter++
+}
+
+
 // Gets the next available waveform
 export function setupNextWaveform() {
     // Create div elements for label, waveform, segment annotations
     let num = window.songFilePaths.length;
+
+    // calls out to make a new track alongside the new waveform
+    NewTrack(num)
+
     let labelsContainer = document.createElement("div");
     labelsContainer.className = "labels-container";
     labelsContainer.id = "labels-container" + String(num);
@@ -392,12 +690,15 @@ export function setupNextWaveform() {
     globalState.timelines.push(null);
     globalState.wavesurferWaveforms.push(WaveSurfer.create({
         container: "#waveform" + String(num),
-        waveColor: 'rgb(200, 0, 200)',
-        progressColor: 'rgb(100, 0, 100)',
+        waveColor: 'rgb(92, 92, 92)',
+        progressColor: 'rgb(5, 5, 5)',
         minPxPerSec: 100,
         plugins: [regionsPlugins[num], ZoomPlugin.create({scale:0.1})],
+        height: waveformsHeight,
     }));
     globalState.markerNotes.push(new Map());
+    globalState.editBoundaryMode.push(false);
+    globalState.regionType.push(new Map());
 
     // Set up scroll and zoom for wavesurfer
     globalState.wavesurferWaveforms[num].on("scroll", () => {
@@ -447,20 +748,20 @@ export function setupNextWaveform() {
 
     // Handle region update for editing boundaries
     htmlElements.regions[num].on('region-updated', (region) => {
-        if(globalState.regionType.get(region) === 'marker') return;
-        if (!globalState.editBoundaryMode) return;
+        if(globalState.regionType[num].get(region) === 'marker') return;
+        if (!globalState.editBoundaryMode[num]) return;
 
-        let index = htmlElements.regions[0].regions.findIndex(r => r.id === region.id);
+        let index = htmlElements.regions[num].regions.findIndex(r => r.id === region.id);
         if (index === -1) return;
 
-        let movedStart = window.segmentData[0][index].start !== region.start;
+        let movedStart = window.segmentData[num][index].start !== region.start;
 
-        let prevRegion = getPrevRegion(0, index);
-        let nextRegion = getNextRegion(0, index);
+        let prevRegion = getPrevRegion(num, index);
+        let nextRegion = getNextRegion(num, index);
 
         // Enforce limits so you can't go before previous or after next segment
         let minStart = prevRegion ? prevRegion.start : 0; // Can't move before previous start
-        let maxEnd = nextRegion ? nextRegion.end : globalState.wavesurferWaveforms[0].getDuration(); // Can't extend beyond next region
+        let maxEnd = nextRegion ? nextRegion.end : globalState.wavesurferWaveforms[num].getDuration(); // Can't extend beyond next region
 
         let newStart = Math.max(region.start, minStart);
         let newEnd = Math.min(region.end, maxEnd);
@@ -475,19 +776,19 @@ export function setupNextWaveform() {
         // Update segment data
         if(movedStart) {
             // Update start of current
-            window.segmentData[0][index].start = newStart;
+            window.segmentData[num][index].start = newStart;
             // Update end of prev
             if(index > 0)
-                window.segmentData[0][index-1].end = newStart;
+                window.segmentData[num][index-1].end = newStart;
         } else {
             // Update end of current
-            window.segmentData[0][index].end = newEnd;
+            window.segmentData[num][index].end = newEnd;
             // Update start of next
-            if(index+1 < window.segmentData[0].length)
-                window.segmentData[0][index+1].start = newEnd;
+            if(index+1 < window.segmentData[num].length)
+                window.segmentData[num][index+1].start = newEnd;
         }
 
-        updateSegmentElementsList(window.segmentData[0], false, 0);
+        updateSegmentElementsList(window.segmentData[num], false, num);
     });
 
 
@@ -499,7 +800,7 @@ export function setupNextWaveform() {
 function getPrevRegion(waveformNum, index) {
     index--;
     let region = htmlElements.regions[waveformNum].regions.at(index);
-    while(globalState.regionType.get(region) === 'marker') {
+    while(globalState.regionType[waveformNum].get(region) === 'marker') {
         index--;
         if(index < 0) return null;
         region = htmlElements.regions[waveformNum].regions.at(index);
@@ -511,7 +812,7 @@ function getPrevRegion(waveformNum, index) {
 // Get next region that is not a marker
 function getNextRegion(waveformNum, index) {
     let region = htmlElements.regions[waveformNum].regions.at(index + 1);
-    while(globalState.regionType.get(region) === 'marker') {
+    while(globalState.regionType[waveformNum].get(region) === 'marker') {
         index++;
         if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
         region = htmlElements.regions[waveformNum].regions.at(index + 1);
