@@ -39,7 +39,6 @@ const htmlElements = {
 
     // import/export buttons
     importButton: document.getElementById('chooseSong'),
-    exportButton: document.querySelector('#export'),
 
     // Segment buttons
     segmentDetailsButton: document.querySelector('#segment-details'),
@@ -101,7 +100,6 @@ const htmlElements = {
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
-    saveButton: document.getElementById('save'),
     deleteButton: document.getElementById('delete'),
 
     // drop down stuff

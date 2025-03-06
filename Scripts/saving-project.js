@@ -76,10 +76,10 @@ htmlElements.loadButton.addEventListener('click', async () => {
     });
 });
 
-// when save is clicked
-htmlElements.saveButton.addEventListener('click', async () => {
-    saveProject(0)
-});
+//// when save is clicked
+//htmlElements.saveButton.addEventListener('click', async () => {
+//    saveProject(0)
+//});
 
 setExternalSaveProject(saveProject);
 // Saves the project
@@ -103,9 +103,9 @@ htmlElements.deleteButton.addEventListener('click', async () => {
     selectDeleteProject();
 });
 
-htmlElements.exportButton.addEventListener('click', async () => {
-    exportData(0);
-});
+//htmlElements.exportButton.addEventListener('click', async () => {
+//    exportData(0);
+//});
 
 setExternalExportData(exportData);
 // exports the data
