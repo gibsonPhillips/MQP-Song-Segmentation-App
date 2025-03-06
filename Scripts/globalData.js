@@ -690,6 +690,63 @@ function createDeleteTrackButton(waveformNum) {
     return button;
 }
 
+function createPlayButton(waveformNum) {
+    const playButton = document.createElement("button");
+    playButton.classList.add("btn");
+    playButton.id = "play";
+
+    const img = document.createElement("img");
+    img.src = "resources/icons/play-solid.svg";
+    img.alt = "Play Button";
+
+    playButton.appendChild(img);
+    playButton.onclick = () => {
+        if(globalState.wavesurferWaveforms[waveformNum].getDuration() > 0) {
+            globalState.wavesurferWaveforms[waveformNum].playPause()
+            if(globalState.wavesurferWaveforms[waveformNum].isPlaying()) {
+                // pause icon
+                playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
+            } else {
+                // play icon
+                playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
+            }
+        }
+    }
+    return playButton;
+}
+
+function createForwardButton(waveformNum) {
+    const forwardButton = document.createElement("button");
+    forwardButton.classList.add("btn");
+    forwardButton.id = "forward";
+
+    const img = document.createElement("img");
+    img.src = "resources/icons/forward15-seconds.svg";
+    img.alt = "Play Button";
+
+    forwardButton.appendChild(img);
+    forwardButton.onclick = () => {
+        globalState.wavesurferWaveforms[waveformNum].skip(15)
+    }
+    return forwardButton;
+}
+
+function createBackwardButton(waveformNum) {
+    const backwardButton = document.createElement("button");
+    backwardButton.classList.add("btn");
+    backwardButton.id = "backward";
+
+    const img = document.createElement("img");
+    img.src = "resources/icons/backward15-seconds.svg";
+    img.alt = "Play Button";
+
+    backwardButton.appendChild(img);
+    backwardButton.onclick = () => {
+        globalState.wavesurferWaveforms[waveformNum].skip(-15)
+    }
+    return backwardButton;
+}
+
 // function that creates the next tracks as new waveforms are being added
 function NewTrack(waveformNum) {
 
@@ -704,13 +761,19 @@ function NewTrack(waveformNum) {
     let saveDropdown = createSaveDropdownButton(waveformNum);
     let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
     let deleteTrackButton = createDeleteTrackButton(waveformNum);  
+    let playButton = createPlayButton(waveformNum);
+    let forwardButton = createForwardButton(waveformNum);
+    let backwardButton = createBackwardButton(waveformNum);
 
     // Append the buttons to the div
+    trackDiv.appendChild(playButton);
     trackDiv.appendChild(algDropdown);
     trackDiv.appendChild(boundaryDropdown);
     trackDiv.appendChild(saveDropdown);
     trackDiv.appendChild(segmentDetailsButton);
     trackDiv.appendChild(deleteTrackButton);
+    trackDiv.appendChild(forwardButton);
+    trackDiv.appendChild(backwardButton);
 
     // Append the div to the body (or any other container)
     document.getElementById("tracks").appendChild(trackDiv);
