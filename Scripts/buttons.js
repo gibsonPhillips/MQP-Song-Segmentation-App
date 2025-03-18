@@ -4,10 +4,6 @@ import htmlElements from './globalData.js';
 let segmentAnnotationsPresent = false;
 
 // Button click actions
-htmlElements.segmentDetailsButton.onclick = () => {
-    htmlElements.segmentDetailsDialog.showModal();
-}
-
 htmlElements.closeDialogButton.onclick = () => {
     htmlElements.segmentDetailsDialog.close();
 }

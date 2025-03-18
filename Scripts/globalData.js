@@ -182,10 +182,8 @@ export function setExternalExportData(fn) {
 
 // Updates the segment elements and display in table
 export function updateSegmentElementsList(elements, updateWaveform, waveformNum) {
-    const tbody = document.getElementById('segment-elements');
     const labelsContainerStr = 'labels-container' + String(waveformNum);
     const annotationContainerStr = 'segment-annotation-container' + String(waveformNum);
-    tbody.innerHTML = ''
 
     // If waveform is being updated
     if(updateWaveform) {
@@ -197,14 +195,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
     }
 
     elements.forEach(element => {
-        let tr = document.createElement('tr');
-        for (let key in element) {
-            let td = document.createElement('td');
-            td.textContent = element[key]
-            tr.appendChild(td)
-        }
-        tbody.appendChild(tr);
-
         if(!globalState.colorMap.has(element.label)) {
             globalState.colorMap.set(element.label, getColor(globalState.colorMap.size));
         }
@@ -563,8 +553,20 @@ function createSegmentDetailsButton(waveformNum) {
 
     // add event listener
     button.addEventListener("click", function() {
-        
-        console.log("make this work sometimes")
+        const tbody = document.getElementById('segment-elements');
+        tbody.innerHTML = ''
+    
+        window.segmentData[waveformNum].forEach(element => {
+            let tr = document.createElement('tr');
+            for (let key in element) {
+                let td = document.createElement('td');
+                td.textContent = element[key]
+                tr.appendChild(td)
+            }
+            tbody.appendChild(tr);
+        });
+
+        htmlElements.segmentDetailsDialog.showModal();
     })
 
     return(button);
