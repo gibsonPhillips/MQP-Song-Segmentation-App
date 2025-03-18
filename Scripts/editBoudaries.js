@@ -111,14 +111,31 @@ function addMarkerButtonAction(waveformNum) {
     marker.element.style.minWidth = "6px";
     marker.element.style.backgroundColor = "rgba(255, 0, 0)";
 
+    // Create a flag element
+    const flag = document.createElement("div");
+    flag.innerText = "🔻";
+    flag.style.position = "absolute";
+    flag.style.top = "0";
+    flag.style.left = "50%";
+    flag.style.transform = "translateX(-50%)";
+    flag.style.fontSize = "14px";
+    flag.style.backgroundColor = "rgba(255, 0, 0)";
+    flag.style.padding = "2px 4px";
+    flag.style.zIndex = "10";
+
+    // Append the flag to the marker
+    marker.element.appendChild(flag);
+
     globalState.regionType[waveformNum].set(marker, 'marker');
 
     marker.element.addEventListener('mouseenter', () => {
         marker.element.style.backgroundColor = "rgb(255,197,61)";
+        flag.style.backgroundColor = "rgb(255,197,61)";
     });
 
     marker.element.addEventListener('mouseleave', () => {
         marker.element.style.backgroundColor = "rgba(255, 0, 0)";
+        flag.style.backgroundColor = "rgba(255, 0, 0)";
     });
 
     marker.on('click', () => {
