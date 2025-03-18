@@ -231,9 +231,9 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
             labelInput.addEventListener("blur", (event) => {
                 if(globalState.groupEditingMode) {
-                    updateGroupSegmentLabel(element, event.target.value);
+                    updateGroupSegmentLabel(element, event.target.value, waveformNum);
                 } else {
-                    updateOneSegmentLabel(element, event.target.value);
+                    updateOneSegmentLabel(element, event.target.value, waveformNum);
                 }                
             });
             labelInput.addEventListener("input", function(event) {
@@ -320,21 +320,21 @@ export function updateSegmentAnnotationPositions(waveformNum) {
 
 // Updates the specified segment elements label value
 // TODO update with mulitple waveforms
-function updateOneSegmentLabel(segmentElement, value) {
+function updateOneSegmentLabel(segmentElement, value, waveformNum) {
     segmentElement.label = value;
-    updateSegmentElementsList(window.segmentData[0], true, 0);
+    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
 
 // Updates the specified segment elements label value for all those labels
 // TODO update with mulitple waveforms
-function updateGroupSegmentLabel(segmentElement, value) {
+function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
     let label = segmentElement.label;
     window.segmentData[0].forEach(element => {
         if(element.label === label) {
             element.label = value;
         }
     });
-    updateSegmentElementsList(window.segmentData[0], true, 0);
+    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
 
 // Gets the next color to be used for segment region
