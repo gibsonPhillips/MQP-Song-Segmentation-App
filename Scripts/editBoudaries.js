@@ -108,10 +108,18 @@ function addMarkerButtonAction(waveformNum) {
         drag: false,
         resize: false,
     });
-    marker.element.style.minWidth = "4px";
+    marker.element.style.minWidth = "6px";
     marker.element.style.backgroundColor = "rgba(255, 0, 0)";
 
     globalState.regionType[waveformNum].set(marker, 'marker');
+
+    marker.element.addEventListener('mouseenter', () => {
+        marker.element.style.backgroundColor = "rgb(255,197,61)";
+    });
+
+    marker.element.addEventListener('mouseleave', () => {
+        marker.element.style.backgroundColor = "rgba(255, 0, 0)";
+    });
 
     marker.on('click', () => {
         openMarkerNote(marker, globalState.markerNotes[waveformNum], waveformNum);

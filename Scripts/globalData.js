@@ -277,9 +277,19 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 color: "rgba(255, 0, 0, 0.5)",
                 drag: false,
                 resize: false,
-                // height: waveformsHeight,
             });
+            marker.element.style.minWidth = "6px";
+            marker.element.style.backgroundColor = "rgba(255, 0, 0)";
+        
             globalState.regionType[waveformNum].set(marker, 'marker');
+        
+            marker.element.addEventListener('mouseenter', () => {
+                marker.element.style.backgroundColor = "rgb(255,197,61)";
+            });
+        
+            marker.element.addEventListener('mouseleave', () => {
+                marker.element.style.backgroundColor = "rgba(255, 0, 0)";
+            });
 
             marker.on('click', () => {
                 if (externalOpenMarker) {
