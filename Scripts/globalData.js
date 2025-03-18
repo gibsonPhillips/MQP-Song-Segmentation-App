@@ -229,13 +229,25 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             labelInput.value = element.label;
             labelInput.className = "region-label-input" + String(waveformNum);
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
-            labelInput.addEventListener("blur", (event) => {
-                if(globalState.groupEditingMode) {
-                    updateGroupSegmentLabel(element, event.target.value, waveformNum);
-                } else {
-                    updateOneSegmentLabel(element, event.target.value, waveformNum);
-                }                
+
+            labelInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    if(globalState.groupEditingMode) {
+                        updateGroupSegmentLabel(element, event.target.value, waveformNum);
+                    } else {
+                        updateOneSegmentLabel(element, event.target.value, waveformNum);
+                    }  
+                }
             });
+
+            // labelInput.addEventListener("blur", (event) => {
+            //     if(globalState.groupEditingMode) {
+            //         updateGroupSegmentLabel(element, event.target.value, waveformNum);
+            //     } else {
+            //         updateOneSegmentLabel(element, event.target.value, waveformNum);
+            //     }                
+            // });
+            
             labelInput.addEventListener("input", function(event) {
                 this.value = this.value.replace(/,/g, "");
             });
@@ -319,14 +331,12 @@ export function updateSegmentAnnotationPositions(waveformNum) {
 }
 
 // Updates the specified segment elements label value
-// TODO update with mulitple waveforms
 function updateOneSegmentLabel(segmentElement, value, waveformNum) {
     segmentElement.label = value;
     updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
 
 // Updates the specified segment elements label value for all those labels
-// TODO update with mulitple waveforms
 function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
     let label = segmentElement.label;
     window.segmentData[waveformNum].forEach(element => {
