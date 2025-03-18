@@ -329,7 +329,7 @@ function updateOneSegmentLabel(segmentElement, value, waveformNum) {
 // TODO update with mulitple waveforms
 function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
     let label = segmentElement.label;
-    window.segmentData[0].forEach(element => {
+    window.segmentData[waveformNum].forEach(element => {
         if(element.label === label) {
             element.label = value;
         }
