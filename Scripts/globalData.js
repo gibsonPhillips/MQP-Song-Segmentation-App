@@ -275,6 +275,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 color: "rgba(255, 0, 0, 0.5)",
                 drag: false,
                 resize: false,
+                // height: waveformsHeight,
             });
             globalState.regionType[waveformNum].set(marker, 'marker');
 
@@ -432,6 +433,7 @@ function setWaveformHeights(divHeight) {
     // assigns correct height
     waveforms.forEach(element => {
         element.style.height = divHeight + "px";
+        // element.style.overflowX("clip", "scroll", "important")
     // console.log(waveformDivs);
     });
 }
@@ -465,6 +467,7 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         // Create button
         const algoButton = document.createElement("button");
         algoButton.classList.add("btn");
+        algoButton.classList.add("track-button")
         algoButton.id = "algorithms-dropdown-button";
         algoButton.textContent = "Algorithms";
 
@@ -545,6 +548,8 @@ function createSegmentDetailsButton(waveformNum) {
     button.id = "segment-details-" + waveformNum;
     button.textContent = "Details";
     button.classList.add("btn");
+    button.classList.add("track-button");
+
 
     // add event listener
     button.addEventListener("click", function() {
@@ -565,6 +570,7 @@ function createBoundaryDropdownButton(waveformNum) {
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
+    button.classList.add("track-button");
     button.id = "boundaries-dropdown-button";
     button.textContent = "Boundaries";
 
@@ -677,6 +683,7 @@ function createDeleteTrackButton(waveformNum) {
     button.id = "delete-track";
     button.textContent = "Delete Track";
     button.classList.add("btn");
+    button.classList.add("track-button");
 
     // add event listener
     button.addEventListener("click", function() {

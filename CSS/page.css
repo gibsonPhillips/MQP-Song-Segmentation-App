@@ -150,6 +150,8 @@
 
 
 .trackers {
+
+    /* trackheight controlled from event listener slider */
     height: var(--track-height, "200px");
     transition: height 0.2s ease-in-out;
 
@@ -158,8 +160,24 @@
     border-style: solid;
     border-width: 2px;
 
+    /* controls the buttons within */
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: left;
+
+
+
+
+}
+
+/* controls button layout within the tracks */
+.track-button {
+    flex: 1 1 auto;
+    min-width: 10px;
+
+    height: 29px;
 }
 
 /* delete me after demo */
@@ -212,6 +230,6 @@
 }
 
 /* this makes the waveforms height adjustment work */
-#shadow-root.scroll {
+/* #shadow-root.scroll {
     height: 500px;
-}
+} */
