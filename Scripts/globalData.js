@@ -182,10 +182,8 @@ export function setExternalExportData(fn) {
 
 // Updates the segment elements and display in table
 export function updateSegmentElementsList(elements, updateWaveform, waveformNum) {
-    const tbody = document.getElementById('segment-elements');
     const labelsContainerStr = 'labels-container' + String(waveformNum);
     const annotationContainerStr = 'segment-annotation-container' + String(waveformNum);
-    tbody.innerHTML = ''
 
     // If waveform is being updated
     if(updateWaveform) {
@@ -197,14 +195,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
     }
 
     elements.forEach(element => {
-        let tr = document.createElement('tr');
-        for (let key in element) {
-            let td = document.createElement('td');
-            td.textContent = element[key]
-            tr.appendChild(td)
-        }
-        tbody.appendChild(tr);
-
         if(!globalState.colorMap.has(element.label)) {
             globalState.colorMap.set(element.label, getColor(globalState.colorMap.size));
         }
@@ -229,13 +219,25 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             labelInput.value = element.label;
             labelInput.className = "region-label-input" + String(waveformNum);
             labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
-            labelInput.addEventListener("blur", (event) => {
-                if(globalState.groupEditingMode) {
-                    updateGroupSegmentLabel(element, event.target.value);
-                } else {
-                    updateOneSegmentLabel(element, event.target.value);
-                }                
+
+            labelInput.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    if(globalState.groupEditingMode) {
+                        updateGroupSegmentLabel(element, event.target.value, waveformNum);
+                    } else {
+                        updateOneSegmentLabel(element, event.target.value, waveformNum);
+                    }  
+                }
             });
+
+            // labelInput.addEventListener("blur", (event) => {
+            //     if(globalState.groupEditingMode) {
+            //         updateGroupSegmentLabel(element, event.target.value, waveformNum);
+            //     } else {
+            //         updateOneSegmentLabel(element, event.target.value, waveformNum);
+            //     }                
+            // });
+            
             labelInput.addEventListener("input", function(event) {
                 this.value = this.value.replace(/,/g, "");
             });
@@ -275,9 +277,36 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 color: "rgba(255, 0, 0, 0.5)",
                 drag: false,
                 resize: false,
-                // height: waveformsHeight,
             });
+            marker.element.style.minWidth = "6px";
+            marker.element.style.backgroundColor = "rgba(255, 0, 0)";
+
+            // Create a flag element
+            const flag = document.createElement("div");
+            flag.innerText = "🔻";
+            flag.style.position = "absolute";
+            flag.style.top = "0";
+            flag.style.left = "50%";
+            flag.style.transform = "translateX(-50%)";
+            flag.style.fontSize = "14px";
+            flag.style.backgroundColor = "rgba(255, 0, 0)";
+            flag.style.padding = "2px 4px";
+            flag.style.zIndex = "10";
+
+            // Append the flag to the marker
+            marker.element.appendChild(flag);
+        
             globalState.regionType[waveformNum].set(marker, 'marker');
+        
+            marker.element.addEventListener('mouseenter', () => {
+                marker.element.style.backgroundColor = "rgb(255,197,61)";
+                flag.style.backgroundColor = "rgb(255,197,61)";
+            });
+        
+            marker.element.addEventListener('mouseleave', () => {
+                marker.element.style.backgroundColor = "rgba(255, 0, 0)";
+                flag.style.backgroundColor = "rgba(255, 0, 0)";
+            });
 
             marker.on('click', () => {
                 if (externalOpenMarker) {
@@ -319,22 +348,20 @@ export function updateSegmentAnnotationPositions(waveformNum) {
 }
 
 // Updates the specified segment elements label value
-// TODO update with mulitple waveforms
-function updateOneSegmentLabel(segmentElement, value) {
+function updateOneSegmentLabel(segmentElement, value, waveformNum) {
     segmentElement.label = value;
-    updateSegmentElementsList(window.segmentData[0], true, 0);
+    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
 
 // Updates the specified segment elements label value for all those labels
-// TODO update with mulitple waveforms
-function updateGroupSegmentLabel(segmentElement, value) {
+function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
     let label = segmentElement.label;
-    window.segmentData[0].forEach(element => {
+    window.segmentData[waveformNum].forEach(element => {
         if(element.label === label) {
             element.label = value;
         }
     });
-    updateSegmentElementsList(window.segmentData[0], true, 0);
+    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
 
 // Gets the next color to be used for segment region
@@ -553,8 +580,20 @@ function createSegmentDetailsButton(waveformNum) {
 
     // add event listener
     button.addEventListener("click", function() {
-        
-        console.log("make this work sometimes")
+        const tbody = document.getElementById('segment-elements');
+        tbody.innerHTML = ''
+    
+        window.segmentData[waveformNum].forEach(element => {
+            let tr = document.createElement('tr');
+            for (let key in element) {
+                let td = document.createElement('td');
+                td.textContent = element[key]
+                tr.appendChild(td)
+            }
+            tbody.appendChild(tr);
+        });
+
+        htmlElements.segmentDetailsDialog.showModal();
     })
 
     return(button);
