@@ -1,7 +1,6 @@
-import { globalState, updateSegmentElementsList, setExternalOpenMarker, setExternalAdd, setExternalRemove, setExternalChange, setExternalAddMarker } from './globalData.js';
+import { globalState, updateSegmentElementsList, setExternalOpenMarker, setExternalAdd, setExternalRemove, setExternalAddMarker } from './globalData.js';
 import htmlElements from './globalData.js';
 
-// let editBoundaryMode = false;
 let currentMarker;
 let currentWaveformNum;
 
@@ -10,8 +9,8 @@ setExternalAdd(addBoundaryButtonAction);
 // TODO hanlde mulitple waveforms
 function addBoundaryButtonAction(waveformNum) {
     // Reset edit mode
-    globalState.editBoundaryMode[waveformNum] = false;
-    // htmlElements.changeBoundaryButton.style.backgroundColor = "white";
+    globalState.editBoundaryMode = false;
+    htmlElements.modifyBoundariesButton.style.backgroundColor = "white";
 
     // Get click time (relative to waveform duration)
     const time = globalState.wavesurferWaveforms[waveformNum].getCurrentTime();
@@ -43,8 +42,8 @@ setExternalRemove(removeBoundaryButtonAction);
 // TODO hanlde mulitple waveforms
 function removeBoundaryButtonAction(waveformNum) {
     // Reset edit mode
-    globalState.editBoundaryMode[waveformNum] = false;
-    // htmlElements.changeBoundaryButton.style.backgroundColor = "white";
+    globalState.editBoundaryMode = false;
+    htmlElements.modifyBoundariesButton.style.backgroundColor = "white";
 
     // Get click time (relative to waveform duration)
     const time = globalState.wavesurferWaveforms[waveformNum].getCurrentTime();
@@ -68,30 +67,6 @@ function removeBoundaryButtonAction(waveformNum) {
         }
         updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
     }
-}
-
-setExternalChange(changeBoundaryButtonAction);
-// TODO hanlde mulitple waveforms
-function changeBoundaryButtonAction(waveformNum) {
-    globalState.editBoundaryMode[waveformNum] = !globalState.editBoundaryMode[waveformNum];
-
-    if (!globalState.editBoundaryMode[waveformNum]) {
-        // htmlElements.changeBoundaryButton.style.backgroundColor = "white";
-    } else {
-        // htmlElements.changeBoundaryButton.style.backgroundColor = "rgb(255,197,61)";
-    }
-
-    // TODO update with multiple waveforms
-    console.log(htmlElements.regions[waveformNum].regions)
-    htmlElements.regions[waveformNum].regions.forEach(element => {
-        console.log("HELLO1")
-        if(globalState.regionType[waveformNum].get(element) === 'segment') {
-            console.log("HELLO2")
-            element.setOptions({
-                resize: globalState.editBoundaryMode[waveformNum]
-            });
-        }
-    });
 }
 
 setExternalAddMarker(addMarkerButtonAction);
