@@ -866,7 +866,7 @@ function NewTrack(waveformNum) {
     trackDiv.appendChild(boundaryDropdown);
     trackDiv.appendChild(saveDropdown);
     trackDiv.appendChild(segmentDetailsButton);
-    trackDiv.appendChild(deleteTrackButton);
+    // trackDiv.appendChild(deleteTrackButton);
     trackDiv.appendChild(forwardButton);
     trackDiv.appendChild(backwardButton);
 
