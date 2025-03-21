@@ -32,39 +32,6 @@ htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
 }
 
-htmlElements.playButton.onclick = () => {
-    if(globalState.wavesurferWaveforms[0].getDuration() > 0) {
-        globalState.wavesurferWaveforms[0].playPause()
-        if(globalState.wavesurferWaveforms[0].isPlaying()) {
-            // pause icon
-            htmlElements.playButton.innerHTML = '<img src="resources/icons/pause-solid.svg" alt="Pause Button">';
-        } else {
-            // play icon
-            htmlElements.playButton.innerHTML = '<img src="resources/icons/play-solid.svg" alt="Play Button">';
-        }
-    }
-}
-
-htmlElements.forwardButton.onclick = () => {
-    globalState.wavesurferWaveforms[0].skip(15)
-}
-
-htmlElements.backButton.onclick = () => {
-    globalState.wavesurferWaveforms[0].skip(-15)
-}
-
-// htmlElements.zoomInButton.onclick = () => {
-//     globalState.currentZoom += 10;
-//     globalState.wavesurferWaveforms[0].zoom(globalState.currentZoom);
-//     updateTimeline(0);
-// }
-
-// htmlElements.zoomOutButton.onclick = () => {
-//     globalState.currentZoom -= 10;
-//     globalState.wavesurferWaveforms[0].zoom(globalState.currentZoom);
-//     updateTimeline(0);
-// }
-
 htmlElements.groupEditingButton.onclick = () => {
     globalState.groupEditingMode = !globalState.groupEditingMode;
 
@@ -113,16 +80,25 @@ htmlElements.globalTimelineButton.onclick = () => {
     }
 }
 
-/*
-document.getElementById("thisisn").addEventListener("click", function() {
+htmlElements.modifyBoundariesButton.onclick = () => {
+    globalState.editBoundaryMode = !globalState.editBoundaryMode;
 
-    // resizes the whole mod window
-    document.querySelectorAll("#modifiers").forEach(item => {
-        item.style.width = item.style.width === "30px" ? "15%" : "30px";
-    });
+    if (!globalState.editBoundaryMode) {
+        htmlElements.modifyBoundariesButton.style.backgroundColor = "white";
+    } else {
+        htmlElements.modifyBoundariesButton.style.backgroundColor = "rgb(255,197,61)";
+    }
 
-});
-*/
+    for(let i = 0; i < htmlElements.regions.length; i++) {
+        htmlElements.regions[i].regions.forEach(element => {
+            if(globalState.regionType[i].get(element) === 'segment') {
+                element.setOptions({
+                    resize: globalState.editBoundaryMode
+                });
+            }
+        });
+    }
+}
 
 // collapsing functions
 // toggles every time the x button is clicked

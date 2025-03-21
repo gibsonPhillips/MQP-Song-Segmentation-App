@@ -26,7 +26,7 @@ export let globalState = {
     markerNotes: [],
     regionType: [],
     globalTimelineMode: false,
-    editBoundaryMode: [],
+    editBoundaryMode: false,
     waveformNums: []
 };
 
@@ -42,19 +42,12 @@ const htmlElements = {
     importButton: document.getElementById('chooseSong'),
 
     // Segment buttons
-    segmentDetailsButton: document.querySelector('#segment-details'),
+    // segmentDetailsButton: document.querySelector('#segment-details'),
     closeDialogButton: document.querySelector('#close-dialog'),
-    addBoundaryButton: document.querySelector('#add-boundary'),
-    removeBoundaryButton: document.querySelector('#remove-boundary'),
-    changeBoundaryButton: document.querySelector('#change-boundary'),
-    addMarkerButton: document.querySelector("#add-marker"),
-
-    // wavesurfer buttons
-    playButton: document.querySelector('#play'),
-    forwardButton: document.querySelector('#forward'),
-    backButton: document.querySelector('#backward'),
-    // zoomInButton: document.querySelector('#zoom-in'),
-    // zoomOutButton: document.querySelector('#zoom-out'),
+    // addBoundaryButton: document.querySelector('#add-boundary'),
+    // removeBoundaryButton: document.querySelector('#remove-boundary'),
+    // changeBoundaryButton: document.querySelector('#change-boundary'),
+    // addMarkerButton: document.querySelector("#add-marker"),
 
     // algorithm buttons
     algorithm1Button: document.getElementById("segment-algorithm1"),
@@ -113,9 +106,11 @@ const htmlElements = {
     boundariesDropdownContent: document.getElementById("boundaries-dropdown-content"),
     boundariesDropdown: document.getElementById("boundaries-dropdown"),
     boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
+
     groupEditingButton: document.getElementById("group-editing"),
     segmentAnnotationButton: document.getElementById("segment-annotations"),
     globalTimelineButton: document.getElementById("global-timeline"),
+    modifyBoundariesButton: document.getElementById("modify-boundaries"),
     regions: regionsPlugins,
 };
 export default htmlElements;
@@ -553,41 +548,32 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         dropdownContent.classList.add("dropdown-content");
         dropdownContent.id = "algorithms-dropdown-content";
 
-        // List of algorithms
-        const algorithms = [
-            { id: "segment-algorithm1", text: "Algorithm 1" },
-            { id: "segment-algorithm2", text: "Algorithm 2" },
-            { id: "segment-algorithm3", text: "Algorithm 3" },
-            { id: "segment-algorithm4", text: "Algorithm 4" },
-            { id: "auto-segment", text: "Auto Segment" }
-        ];
-
         // Create and append links for each algorithm
         const algorithm1 = document.createElement("a");
         algorithm1.href = "#";
         algorithm1.id = "segment-algorithm1";
-        algorithm1.textContent = "Algorithm 1";
+        algorithm1.textContent = "Algorithm 1: Human Percieved Frequencies";
         dropdownContent.appendChild(algorithm1);
         algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
 
         const algorithm2 = document.createElement("a");
         algorithm2.href = "#";
         algorithm2.id = "segment-algorithm2";
-        algorithm2.textContent = "Algorithm 2";
+        algorithm2.textContent = "Algorithm 2: Equal Distance Frequencies";
         dropdownContent.appendChild(algorithm2);
         algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
 
         const algorithm3 = document.createElement("a");
         algorithm3.href = "#";
         algorithm3.id = "segment-algorithm3";
-        algorithm3.textContent = "Algorithm 3";
+        algorithm3.textContent = "Algorithm 3: Human Percieved Frequencies";
         dropdownContent.appendChild(algorithm3);
         algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
 
         const algorithm4 = document.createElement("a");
         algorithm4.href = "#";
         algorithm4.id = "segment-algorithm4";
-        algorithm4.textContent = "Algorithm 4";
+        algorithm4.textContent = "Algorithm 4: Multi-use";
         dropdownContent.appendChild(algorithm4);
         algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
 
@@ -681,13 +667,6 @@ function createBoundaryDropdownButton(waveformNum) {
     link2.textContent = "Remove Boundary";
     dropdownContent.appendChild(link2);
     link2.addEventListener("click", () => {externalRemoveBoundary(waveformNum)});
-
-    const link3 = document.createElement("a");
-    link3.href = "#";
-    link3.id = "change-boundary";
-    link3.textContent = "Change Boundary";
-    dropdownContent.appendChild(link3);
-    link3.addEventListener("click", () => {externalChangeBoundary(waveformNum)});
     
     const link4 = document.createElement("a");
     link4.href = "#";
@@ -930,8 +909,20 @@ export function setupNextWaveform() {
         height: waveformsHeight,
     }));
     globalState.markerNotes.push(new Map());
-    globalState.editBoundaryMode.push(false);
     globalState.regionType.push(new Map());
+
+    // Reset edit mode
+    globalState.editBoundaryMode = false;
+    htmlElements.modifyBoundariesButton.style.backgroundColor = "white";
+    for(let i = 0; i < htmlElements.regions.length; i++) {
+        htmlElements.regions[i].regions.forEach(element => {
+            if(globalState.regionType[i].get(element) === 'segment') {
+                element.setOptions({
+                    resize: globalState.editBoundaryMode
+                });
+            }
+        });
+    }
 
     // Set up scroll and zoom for wavesurfer
     globalState.wavesurferWaveforms[num].on("scroll", () => {
@@ -982,7 +973,7 @@ export function setupNextWaveform() {
     // Handle region update for editing boundaries
     htmlElements.regions[num].on('region-updated', (region) => {
         if(globalState.regionType[num].get(region) === 'marker') return;
-        if (!globalState.editBoundaryMode[num]) return;
+        if (!globalState.editBoundaryMode) return;
 
         let index = htmlElements.regions[num].regions.findIndex(r => r.id === region.id);
         if (index === -1) return;
