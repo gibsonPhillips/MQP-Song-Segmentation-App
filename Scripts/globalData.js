@@ -548,41 +548,32 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         dropdownContent.classList.add("dropdown-content");
         dropdownContent.id = "algorithms-dropdown-content";
 
-        // List of algorithms
-        const algorithms = [
-            { id: "segment-algorithm1", text: "Algorithm 1" },
-            { id: "segment-algorithm2", text: "Algorithm 2" },
-            { id: "segment-algorithm3", text: "Algorithm 3" },
-            { id: "segment-algorithm4", text: "Algorithm 4" },
-            { id: "auto-segment", text: "Auto Segment" }
-        ];
-
         // Create and append links for each algorithm
         const algorithm1 = document.createElement("a");
         algorithm1.href = "#";
         algorithm1.id = "segment-algorithm1";
-        algorithm1.textContent = "Algorithm 1";
+        algorithm1.textContent = "Algorithm 1: Human Percieved Frequencies";
         dropdownContent.appendChild(algorithm1);
         algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
 
         const algorithm2 = document.createElement("a");
         algorithm2.href = "#";
         algorithm2.id = "segment-algorithm2";
-        algorithm2.textContent = "Algorithm 2";
+        algorithm2.textContent = "Algorithm 2: Equal Distance Frequencies";
         dropdownContent.appendChild(algorithm2);
         algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
 
         const algorithm3 = document.createElement("a");
         algorithm3.href = "#";
         algorithm3.id = "segment-algorithm3";
-        algorithm3.textContent = "Algorithm 3";
+        algorithm3.textContent = "Algorithm 3: Human Percieved Frequencies";
         dropdownContent.appendChild(algorithm3);
         algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
 
         const algorithm4 = document.createElement("a");
         algorithm4.href = "#";
         algorithm4.id = "segment-algorithm4";
-        algorithm4.textContent = "Algorithm 4";
+        algorithm4.textContent = "Algorithm 4: Multi-use";
         dropdownContent.appendChild(algorithm4);
         algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
 
