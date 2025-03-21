@@ -1,5 +1,5 @@
 import htmlElements from './globalData.js';
-import { globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveProject, setExternalExportData } from './globalData.js';
+import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveProject, setExternalExportData } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -170,9 +170,7 @@ async function loadTheData(chosenProject) {
 
     let waveformNum = await loadSong(loadSongFilePath);
     window.songFilePaths[waveformNum] = loadSongFilePath
-
-    // loads the metadata
-    // implement
+    updateTrackName(chosenProject, waveformNum);
 
     // loads the segment data
     window.segmentData[waveformNum] = await parseSegmentDataFile(loadSegmentDataFilePath);
@@ -241,7 +239,7 @@ async function selectSaveProject(waveformNum) {
         newButton.className='btn';
         newButton.textContent = 'Create New Project'
         let newInput = document.createElement('input');
-        newInput.textContent = 'New Project'
+        newInput.value = window.trackNames[waveformNum];
         newButton.addEventListener('click', async () => {
             // Place holder for new project textbox
             chosenProject = newInput.value
@@ -304,6 +302,8 @@ async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
                     let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
                     window.api.copySongFile(window.songFilePaths[waveformNum], saveDirectoryPath + '\\' + filePathEnd);
                 }
+
+                updateTrackName(chosenProject, waveformNum);
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
