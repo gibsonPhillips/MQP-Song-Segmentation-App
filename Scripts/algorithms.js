@@ -1,4 +1,4 @@
-import { globalState, updateSegmentElementsList, updateTimeline, loadSong, setExternalSegment, setExternalAutoSegment } from './globalData.js';
+import { updateTrackName, globalState, updateSegmentElementsList, updateTimeline, loadSong, setExternalSegment, setExternalAutoSegment } from './globalData.js';
 import htmlElements from './globalData.js';
 // import {LoadingState, ResetButtonContent} from "./loading_demo.js"
 
@@ -6,7 +6,9 @@ import htmlElements from './globalData.js';
 htmlElements.importButton.addEventListener('click', async () => {
     const filePaths = await window.api.openFile();
     if (filePaths && filePaths.length > 0) {
-        await loadSong(filePaths[0]);
+        let waveformNum = await loadSong(filePaths[0]);
+        let filePathEnd = filePaths[0].split("\\").pop();
+        updateTrackName(filePathEnd, waveformNum);
     } else {
         console.log('No file selected');
     }

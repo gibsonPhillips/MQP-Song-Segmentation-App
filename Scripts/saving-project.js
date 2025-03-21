@@ -303,6 +303,8 @@ async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
                     window.api.copySongFile(window.songFilePaths[waveformNum], saveDirectoryPath + '\\' + filePathEnd);
                 }
 
+                updateTrackName(chosenProject, waveformNum);
+
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
                 presentErrorDialog('Error in writing to file:\n' + error)
