@@ -4,6 +4,7 @@ import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
 
+window.trackNames = [];
 window.songFilePaths = [];
 window.segmentData = [];
 window.clusters = [];
@@ -178,6 +179,13 @@ export function setExternalSaveProject(fn) {
 let externalExportData = null;
 export function setExternalExportData(fn) {
     externalExportData = fn;
+}
+
+// updates the trackname of the given waveform
+export function updateTrackName(name, waveformNum) {
+    window.trackNames[waveformNum] = name;
+    let title = document.getElementById('track-' + waveformNum + '-header');
+    title.textContent = name;
 }
 
 // Updates the segment elements and display in table
