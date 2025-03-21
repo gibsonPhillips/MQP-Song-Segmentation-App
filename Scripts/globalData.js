@@ -483,6 +483,48 @@ slider.addEventListener("input", function () {
 // to count out id's sequentially
 let idCounter = 0
 
+// helper function to create the track title bar
+function createTrackTitle(waveformNum) {
+
+    // Create the title-bar div
+    let titleBar = document.createElement('div');
+    titleBar.classList.add('title-bar');
+
+    // Create the close button
+    let closeButton = document.createElement('button');
+    closeButton.setAttribute('aria-label', 'Close');
+    closeButton.classList.add('collapsible', 'coll');
+    closeButton.setAttribute('id', 'close-track-' + waveformNum);
+
+    // add event listener
+    closeButton.addEventListener("click", function() {
+        // Remove HTML elements
+        document.getElementById("labels-container" + String(waveformNum)).remove();
+        document.getElementById("waveform" + String(waveformNum)).remove();
+        document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
+        document.getElementById("track" + String(waveformNum)).remove();
+    })
+
+    titleBar.appendChild(closeButton);
+
+    // Create the header
+    let title = document.createElement('h1');
+    title.classList.add('title');
+    title.setAttribute('id', 'track-' + waveformNum + '-header');
+    title.textContent = 'Track ' + waveformNum;
+
+    titleBar.appendChild(title);
+
+    let resizeButton = document.createElement('button');
+    resizeButton.setAttribute('aria-label', 'Resize');
+    resizeButton.disabled = true;
+    resizeButton.classList.add('hidden');
+
+    titleBar.appendChild(resizeButton);
+
+    return(titleBar);
+
+}
 
 // helper function creates button and adds event listener for each track
 function CreateAlgorithmDropdownButton(waveformNum) {
@@ -717,7 +759,7 @@ function createSaveDropdownButton(waveformNum) {
 }
 
 // Create delete track button for the track
-function createDeleteTrackButton(waveformNum) {
+function createDeleteTrackButton(waveformNum) { //CURRENTLY UNUSED
     const button = document.createElement("button");
     button.id = "delete-track";
     button.textContent = "Delete Track";
@@ -800,18 +842,25 @@ function NewTrack(waveformNum) {
     const trackDiv = document.createElement("div");
     trackDiv.id = "track" + String(waveformNum);
     trackDiv.classList.add("trackers");
-    
+
+    // make the title bar
+    let titleBar = createTrackTitle(waveformNum);
+    let titleBarSeparator = document.createElement("div");
+    titleBarSeparator.classList.add("separator");
+
     // make the buttons
     let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
     let saveDropdown = createSaveDropdownButton(waveformNum);
     let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
-    let deleteTrackButton = createDeleteTrackButton(waveformNum);  
+    // let deleteTrackButton = createDeleteTrackButton(waveformNum);
     let playButton = createPlayButton(waveformNum);
     let forwardButton = createForwardButton(waveformNum);
     let backwardButton = createBackwardButton(waveformNum);
 
     // Append the buttons to the div
+    trackDiv.appendChild(titleBar);
+    trackDiv.appendChild(titleBarSeparator);
     trackDiv.appendChild(playButton);
     trackDiv.appendChild(algDropdown);
     trackDiv.appendChild(boundaryDropdown);
