@@ -40,7 +40,6 @@ async function segment(algorithm, waveformNum) {
 
         // Parse the JSON response
         const data = await response.json();
-        console.log(data)
         window.segmentData[waveformNum] = data.map(row => {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
@@ -128,6 +127,5 @@ function determineAverageSegmentLength(segmentData) {
     segmentData.forEach(element => {
         totalLength += element.end - element.start;
     });
-    console.log(totalLength/segmentData.length);
     return totalLength/segmentData.length;
 }
