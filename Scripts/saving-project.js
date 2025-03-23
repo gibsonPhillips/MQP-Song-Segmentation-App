@@ -188,7 +188,6 @@ async function loadTheData(chosenProject) {
         console.log('No marker data loaded');
     } else {
         updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
-        // window.clusters[waveformNum] = determineNumClusters(waveformNum);
     }
 }
 

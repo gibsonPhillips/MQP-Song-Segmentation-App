@@ -17,8 +17,6 @@ export let globalState = {
     colorMap: new Map(),
     // headers for segment data
     headers: ["number", "start", "end", "label"],
-    // stores the wavesurfer regions for segments
-    segmentRegions: [],
     currentZoom: 10,
     timelines: [],
     groupEditingMode: false,
@@ -27,7 +25,18 @@ export let globalState = {
     regionType: [],
     globalTimelineMode: false,
     editBoundaryMode: false,
-    waveformNums: []
+    waveformNums: [],
+    defaultColors: [
+        `rgba(213, 133, 42, 0.5)`,
+        `rgba(79, 120, 176, 0.5)`,
+        `rgba(132, 192, 63, 0.5)`,
+        `rgba(142, 87, 168, 0.5)`,
+        `rgba(169, 86, 88, 0.5)`,
+        `rgba(180, 205, 50, 0.5)`,
+        `rgba(62, 66, 193, 0.5)`,
+        `rgba(186, 69, 144, 0.5)`,
+        `rgba(88, 167, 109, 0.5)`    
+    ]
 };
 
 const htmlElements = {
@@ -42,12 +51,7 @@ const htmlElements = {
     importButton: document.getElementById('chooseSong'),
 
     // Segment buttons
-    // segmentDetailsButton: document.querySelector('#segment-details'),
     closeDialogButton: document.querySelector('#close-dialog'),
-    // addBoundaryButton: document.querySelector('#add-boundary'),
-    // removeBoundaryButton: document.querySelector('#remove-boundary'),
-    // changeBoundaryButton: document.querySelector('#change-boundary'),
-    // addMarkerButton: document.querySelector("#add-marker"),
 
     // algorithm buttons
     algorithm1Button: document.getElementById("segment-algorithm1"),
@@ -91,6 +95,10 @@ const htmlElements = {
     markerTitle: document.getElementById('marker-dialog-title'),
     markerNote: document.getElementById('marker-dialog-note'),
 
+    // context menu
+    colorDialog: document.getElementById('color-dialog'),
+    colorContainer: document.getElementById('color-container'),
+
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadButton: document.getElementById('load'),
@@ -115,17 +123,6 @@ const htmlElements = {
 };
 export default htmlElements;
 
-let defaultColors = [
-    `rgba(213, 133, 42, 0.5)`,
-    `rgba(79, 120, 176, 0.5)`,
-    `rgba(132, 192, 63, 0.5)`,
-    `rgba(142, 87, 168, 0.5)`,
-    `rgba(169, 86, 88, 0.5)`,
-    `rgba(180, 205, 50, 0.5)`,
-    `rgba(62, 66, 193, 0.5)`,
-    `rgba(186, 69, 144, 0.5)`,
-    `rgba(88, 167, 109, 0.5)`    
-]
 // Give regions a random color when there are no more default colors
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
@@ -232,14 +229,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                     }  
                 }
             });
-
-            // labelInput.addEventListener("blur", (event) => {
-            //     if(globalState.groupEditingMode) {
-            //         updateGroupSegmentLabel(element, event.target.value, waveformNum);
-            //     } else {
-            //         updateOneSegmentLabel(element, event.target.value, waveformNum);
-            //     }                
-            // });
             
             labelInput.addEventListener("input", function(event) {
                 this.value = this.value.replace(/,/g, "");
@@ -263,6 +252,57 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 this.value = this.value.replace(/,/g, "");
             });
             document.getElementById(annotationContainerStr).appendChild(annotationInput);
+
+            // Listen for right-click (contextmenu event)
+            region.element.addEventListener('contextmenu', (e) => {
+                e.preventDefault(); // Prevent default browser menu
+    
+                let selectedBox = null;
+                let selectedColor = region.color;
+                let selectedLabel = element.label;
+                let labels = document.getElementById(labelsContainerStr).children;
+
+                htmlElements.colorContainer.textContent = '';
+                globalState.defaultColors.forEach(color => {
+                    const box = document.createElement('div');
+                    box.classList.add('color-box');
+                    box.style.backgroundColor = color;
+    
+                    // set current selection to current color
+                    if(color === selectedColor) {
+                        box.classList.add('selected');
+                        selectedBox = box;
+                    }
+            
+                    // update color when new color box is clicked
+                    box.addEventListener('click', () => {
+                        if (selectedBox) {
+                            selectedBox.classList.remove('selected');
+                        }
+                        box.classList.add('selected');
+                        selectedBox = box;
+                        selectedColor = box.style.backgroundColor;
+
+                        globalState.colorMap.set(element.label, selectedColor);
+
+                        // update all segments with the selected label
+                        for(let i = 0; i < elements.length; i++) {
+                            let tempElement = elements[i];
+                            let tempRegion = htmlElements.regions[waveformNum].regions[i];
+                            let tempLabel = labels[i];
+                            if(tempElement.label === selectedLabel) {
+                                tempRegion.color = selectedColor;
+                                tempRegion.element.style.backgroundColor = selectedColor;
+                                tempLabel.style.backgroundColor = selectedColor;
+                            }
+                        }
+                    });
+            
+                    htmlElements.colorContainer.appendChild(box);
+                });
+    
+                htmlElements.colorDialog.showModal();
+            });
 
             // Update position when region is moved/resized
             region.on("update-end", () => updateLabelPositions(waveformNum));
@@ -372,7 +412,7 @@ function getColor(length) {
     if(length > 10) {
         return randomColor();
     } else {
-        return defaultColors[length];
+        return globalState.defaultColors[length];
     }
 }
 
@@ -898,7 +938,6 @@ export function setupNextWaveform() {
     window.segmentData.push([]);
     window.clusters.push(0);
     regionsPlugins.push(RegionsPlugin.create());
-    globalState.segmentRegions.push([]);
     globalState.timelines.push(null);
     globalState.wavesurferWaveforms.push(WaveSurfer.create({
         container: "#waveform" + String(num),
