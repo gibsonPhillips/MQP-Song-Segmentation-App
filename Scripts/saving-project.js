@@ -1,5 +1,5 @@
 import htmlElements from './globalData.js';
-import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveProject, setExternalExportData } from './globalData.js';
+import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData } from './globalData.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -37,37 +37,35 @@ htmlElements.openWorkspaceButton.addEventListener('click', async () => {
     });
 });
 
-// when load is clicked
-htmlElements.loadButton.addEventListener('click', async () => {
+// when load track is clicked
+htmlElements.loadTrackButton.addEventListener('click', async () => {
 
     // scan the directory
-    let chosenProject = ''
-    let vbox = htmlElements.loadFiles;
+    let chosenTrack = ''
+    let vbox = htmlElements.loadTrackFiles;
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
     window.api.getDirectoryContents(workspace).then((files) => {
         if (files.length != 0) {
-        // Implement selecting the project
-        //placeholders
 
             files.forEach(file => {
-                // Create a button for each existing project
+                // Create a button for each existing track
                 let newButton = document.createElement('button');
                 newButton.className='btn';
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
-                    chosenProject = file
-                    console.log(chosenProject);
-                    htmlElements.loadMenuDialog.close();
-                    loadTheData(chosenProject)
+                    chosenTrack = file
+                    console.log(chosenTrack);
+                    htmlElements.loadTrackMenuDialog.close();
+                    loadTheTrackData(chosenTrack)
                 })
                 vbox.appendChild(newButton)
             });
         }
 
         //Show the dialog
-        htmlElements.loadMenuDialog.showModal();
+        htmlElements.loadTrackMenuDialog.showModal();
 
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
@@ -76,21 +74,21 @@ htmlElements.loadButton.addEventListener('click', async () => {
     });
 });
 
-//// when save is clicked
-//htmlElements.saveButton.addEventListener('click', async () => {
-//    saveProject(0)
+//// when save track is clicked
+//htmlElements.saveTrackButton.addEventListener('click', async () => {
+//    saveTrack(0)
 //});
 
-setExternalSaveProject(saveProject);
-// Saves the project
-function saveProject(waveformNum) {
+setExternalSaveTrack(saveTrack);
+// Saves the track
+function saveTrack(waveformNum) {
     console.log(window.songFilePaths[waveformNum])
 
     if (window.songFilePaths[waveformNum] != '' && window.songFilePaths[waveformNum] != null) {
 //        let filePathEnd = window.songFilePath.split("\\").pop();
 //        filePathEnd = filePathEnd.substring(0,filePathEnd.length-4);
 //        console.log(filePathEnd)
-        selectSaveProject(waveformNum);
+        selectSaveTrack(waveformNum);
 
     } else {
         console.log('No audio selected')
@@ -100,7 +98,7 @@ function saveProject(waveformNum) {
 
 // when delete is clicked
 htmlElements.deleteButton.addEventListener('click', async () => {
-    selectDeleteProject();
+    selectDeleteTrack();
 });
 
 //htmlElements.exportButton.addEventListener('click', async () => {
@@ -128,62 +126,62 @@ async function exportData(waveformNum) {
 
 // Functionality functions
 
-// loads the data
-async function loadTheData(chosenProject) {
-    // the path to the project directory
-    let projectPath = workspace + '\\' + chosenProject;
+// loads the track data
+async function loadTheTrackData(chosenTrack) {
+    // the path to the track directory
+    let trackPath = workspace + '\\' + chosenTrack;
 
     // important file paths
-    let loadSongFilePath = '';
-    let loadMetadataFilePath = '';
-    let loadSegmentDataFilePath = '';
-    let loadMarkerNotesFilePath = '';
+    let loadTrackSongFilePath = '';
+    let loadTrackMetadataFilePath = '';
+    let loadTrackSegmentDataFilePath = '';
+    let loadTrackMarkerNotesFilePath = '';
 
     // look for the files
-    await window.api.getDirectoryContents(projectPath).then((files) => {
+    await window.api.getDirectoryContents(trackPath).then((files) => {
         files.forEach(file => {
             if (file.substring(file.length-4,file.length) == '.wav') {
-                loadSongFilePath = projectPath + '\\' + file;
+                loadTrackSongFilePath = trackPath + '\\' + file;
             } else if (file.substring(file.length-13,file.length) == '-metadata.txt') {
-                loadMetadataFilePath = projectPath + '\\' + file;
+                loadTrackMetadataFilePath = trackPath + '\\' + file;
             } else if (file.substring(file.length-16,file.length) == '-segmentdata.txt') {
-                loadSegmentDataFilePath = projectPath + '\\' + file;
+                loadTrackSegmentDataFilePath = trackPath + '\\' + file;
             } else if (file.substring(file.length-15,file.length) == '-markerdata.txt') {
-                loadMarkerNotesFilePath = projectPath + '\\' + file;
+                loadTrackMarkerNotesFilePath = trackPath + '\\' + file;
             }
         })
     })
 
-    console.log('song: ' + loadSongFilePath)
-    console.log('metadata: ' + loadMetadataFilePath)
-    console.log('segment data: ' + loadSegmentDataFilePath)
-    console.log('marker data: ' + loadMarkerNotesFilePath)
+    console.log('song: ' + loadTrackSongFilePath)
+    console.log('metadata: ' + loadTrackMetadataFilePath)
+    console.log('segment data: ' + loadTrackSegmentDataFilePath)
+    console.log('marker data: ' + loadTrackMarkerNotesFilePath)
 
-    // loads the metadata
+    // loads the track metadata
 
-    let metadata = await parseMetadataFile(loadMetadataFilePath)
-    if (loadSongFilePath == '') {
-        loadSongFilePath = metadata[0]; // song file path
+    let metadata = await parseMetadataFile(loadTrackMetadataFilePath)
+    if (loadTrackSongFilePath == '') {
+        loadTrackSongFilePath = metadata[0]; // song file path
     }
 
     // loads the song
 
-    let waveformNum = await loadSong(loadSongFilePath);
-    window.songFilePaths[waveformNum] = loadSongFilePath
-    updateTrackName(chosenProject, waveformNum);
+    let waveformNum = await loadSong(loadTrackSongFilePath);
+    window.songFilePaths[waveformNum] = loadTrackSongFilePath
+    updateTrackName(chosenTrack, waveformNum);
 
-    // loads the segment data
-    window.segmentData[waveformNum] = await parseSegmentDataFile(loadSegmentDataFilePath);
+    // loads the track segment data
+    window.segmentData[waveformNum] = await parseSegmentDataFile(loadTrackSegmentDataFilePath);
     if (window.segmentData[waveformNum].length === 0) {
         console.log('No data loaded');
-        presentErrorDialog('No data loaded from ' + chosenProject);
+        presentErrorDialog('No data loaded from ' + chosenTrack);
     } else {
         updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
         window.clusters[waveformNum] = determineNumClusters(waveformNum);
     }
 
-    // loads the marker notes data
-    globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadMarkerNotesFilePath);
+    // loads the track marker notes data
+    globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadTrackMarkerNotesFilePath);
     if (globalState.markerNotes[waveformNum].size === 0) {
         console.log('No marker data loaded');
     } else {
@@ -205,49 +203,49 @@ function determineNumClusters(waveformNum) {
 }
 
 
-// Queues the pop-up dialog to save the project
-async function selectSaveProject(waveformNum) {
-    // Get the save files
-    let chosenProject = ''
-    let vbox = htmlElements.saveFiles;
+// Queues the pop-up dialog to save the track
+async function selectSaveTrack(waveformNum) {
+    // Get the save track files
+    let chosenTrack = ''
+    let vbox = htmlElements.saveTrackFiles;
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
     window.api.getDirectoryContents(workspace).then((files) => {
         if (files.length != 0) {
-        // Implement selecting the project
+        // Implement selecting the track
         //placeholders
 
             files.forEach(file => {
 
-                // Create a button for each existing project
+                // Create a button for each existing track
                 let newButton = document.createElement('button');
                 newButton.className='btn';
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
-                    chosenProject = file
-                    htmlElements.saveMenuDialog.close();
-                    saveTheData(chosenProject, waveformNum, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                    chosenTrack = file
+                    htmlElements.saveTrackMenuDialog.close();
+                    saveTheTrackData(chosenTrack, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
                 })
                 vbox.appendChild(newButton);
             });
         }
-        // New Project button
+        // New Track button
         let hbox = document.createElement('div');
         hbox.class = 'hbox';
         let newButton = document.createElement('button');
         newButton.className='btn';
-        newButton.textContent = 'Create New Project'
+        newButton.textContent = 'Create New Track'
         let newInput = document.createElement('input');
         newInput.value = window.trackNames[waveformNum];
         newButton.addEventListener('click', async () => {
-            // Place holder for new project textbox
-            chosenProject = newInput.value
-            htmlElements.saveMenuDialog.close();
+            // Place holder for new track textbox
+            chosenTrack = newInput.value
+            htmlElements.saveTrackMenuDialog.close();
 
-            await window.api.createDirectory(workspace + '\\' + chosenProject).then((result) => {
+            await window.api.createDirectory(workspace + '\\' + chosenTrack).then((result) => {
                 console.log('Directory creation handled successfully.');
-                saveTheData(chosenProject, waveformNum, htmlElements.saveAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                saveTheTrackData(chosenTrack, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
             }).catch((error) => {
                 // Throw error if there is an issue creating the directory
                 console.error('Issue creating directory:\n' + error);
@@ -262,7 +260,7 @@ async function selectSaveProject(waveformNum) {
         vbox.appendChild(hbox);
 
         //Show the dialog
-        htmlElements.saveMenuDialog.showModal();
+        htmlElements.saveTrackMenuDialog.showModal();
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
         console.error('Issue getting the files within the directory:\n' + error);
@@ -270,40 +268,40 @@ async function selectSaveProject(waveformNum) {
     });
 }
 
-//save the project data
-async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
+//save the track data
+async function saveTheTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
 
-    if (chosenProject != '') {
+    if (chosenTrack != '') {
 
-        let saveDirectoryPath = workspace + "\\" + chosenProject
-        console.log('saveDirectoryPath: ' + saveDirectoryPath);
+        let saveTrackDirectoryPath = workspace + "\\" + chosenTrack
+        console.log('saveTrackDirectoryPath: ' + saveTrackDirectoryPath);
 
         if (window.segmentData[waveformNum] != null && window.segmentData[waveformNum].length != 0) {
 
             try {
 
                 // Writing the segment data to the file
-                let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
+                let saveTrackSegmentDataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-segmentdata.txt';
                 let segmentDataText = createSegmentDataFileText(waveformNum);
-                window.api.writeToFile(saveSegmentDataFilePath, segmentDataText);
+                window.api.writeToFile(saveTrackSegmentDataFilePath, segmentDataText);
 
                 // Writing the metadata to the file
-                let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
+                let saveTrackMetadataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-metadata.txt';
                 let metadataText = createMetadataFileText(waveformNum);
-                window.api.writeToFile(saveMetadataFilePath, metadataText);
+                window.api.writeToFile(saveTrackMetadataFilePath, metadataText);
 
                 // Writing the marker notes
-                let saveMarkerNotesFilePath = saveDirectoryPath + '\\' + chosenProject + '-markerdata.txt';
+                let saveTrackMarkerNotesFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-markerdata.txt';
                 let markerNotesData = createMarkerNotesFileText(waveformNum);
-                window.api.writeToFile(saveMarkerNotesFilePath, markerNotesData);
+                window.api.writeToFile(saveTrackMarkerNotesFilePath, markerNotesData);
 
                 // Copy song the song (if set to true)
-                if (saveAudioFile) {
+                if (saveTrackAudioFile) {
                     let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
-                    window.api.copySongFile(window.songFilePaths[waveformNum], saveDirectoryPath + '\\' + filePathEnd);
+                    window.api.copySongFile(window.songFilePaths[waveformNum], saveTrackDirectoryPath + '\\' + filePathEnd);
                 }
 
-                updateTrackName(chosenProject, waveformNum);
+                updateTrackName(chosenTrack, waveformNum);
 
             } catch (error) {
                 console.error('Error in writing to file:\n', error);
@@ -316,21 +314,21 @@ async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
             try {
 
                 // Writing the segment data to the file
-                let saveSegmentDataFilePath = saveDirectoryPath + '\\' + chosenProject + '-segmentdata.txt';
-                window.api.writeToFile(saveSegmentDataFilePath, 'No data');
+                let saveTrackSegmentDataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-segmentdata.txt';
+                window.api.writeToFile(saveTrackSegmentDataFilePath, 'No data');
 
                 // Writing the metadata to the file
-                let saveMetadataFilePath = saveDirectoryPath + '\\' + chosenProject + '-metadata.txt';
-                window.api.writeToFile(saveMetadataFilePath, 'No data');
+                let saveTrackMetadataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-metadata.txt';
+                window.api.writeToFile(saveTrackMetadataFilePath, 'No data');
 
                 // Writing the marker notes
-                let saveMarkerNotesFilePath = saveDirectoryPath + '\\' + chosenProject + '-markerdata.txt';
-                window.api.writeToFile(saveMarkerNotesFilePath, 'No data');
+                let saveTrackMarkerNotesFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-markerdata.txt';
+                window.api.writeToFile(saveTrackMarkerNotesFilePath, 'No data');
 
                 // Copy song the song (if set to true)
-                if (saveAudioFile) {
+                if (saveTrackAudioFile) {
                     let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
-                    window.api.copySongFile(window.songFilePaths[waveformNum], saveDirectoryPath + '\\' + filePathEnd);
+                    window.api.copySongFile(window.songFilePaths[waveformNum], saveTrackDirectoryPath + '\\' + filePathEnd);
                 }
 
             } catch (error) {
@@ -348,37 +346,37 @@ async function saveTheData(chosenProject, waveformNum, saveAudioFile) {
     // Implement Saving of the song file
 }
 
-async function selectDeleteProject() {
+async function selectDeleteTrack() {
 
     // scan the directory
-    let chosenProject = ''
-    let vbox = htmlElements.deleteFiles;
+    let chosenTrack = ''
+    let vbox = htmlElements.deleteTrackFiles;
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
     window.api.getDirectoryContents(workspace).then((files) => {
         if (files.length != 0) {
-        // Implement selecting the project
+        // Implement selecting the track
         //placeholders
 
             files.forEach(file => {
 
-                // Create a button for each existing project
+                // Create a button for each existing track
                 let newButton = document.createElement('button');
                 newButton.className='btn';
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
-                    chosenProject = file
-                    console.log(chosenProject);
-                    htmlElements.deleteMenuDialog.close();
-                    openAreYouSureDialog(chosenProject)
+                    chosenTrack = file
+                    console.log(chosenTrack);
+                    htmlElements.deleteTrackMenuDialog.close();
+                    openAreYouSureDialog(chosenTrack)
                 })
                 vbox.appendChild(newButton);
             });
         }
 
         //Show the dialog
-        htmlElements.deleteMenuDialog.showModal();
+        htmlElements.deleteTrackMenuDialog.showModal();
 
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
@@ -388,10 +386,10 @@ async function selectDeleteProject() {
 
 }
 
-// asks the user if they are sure they want to delete
-async function openAreYouSureDialog(chosenProject) {
+// asks the user if they are sure they want to delete Track
+async function openAreYouSureDialog(chosenTrack) {
     let header = htmlElements.areYouSureHeader;
-    //header.innerHTML = 'Are you sure you want to delete \"' + chosenProject + '\"?'
+    //header.innerHTML = 'Are you sure you want to delete \"' + chosenTrack + '\"?'
     let hbox = htmlElements.yesOrNo;
     // remove all existing buttons
     while (hbox.firstChild) {
@@ -404,7 +402,7 @@ async function openAreYouSureDialog(chosenProject) {
     yesButton.textContent = 'yes'
     yesButton.addEventListener('click', async () => {
         htmlElements.areYouSureDialog.close();
-        deleteTheProject(chosenProject)
+        deleteTheTrack(chosenTrack)
     })
 
     // Create a button for no
@@ -421,28 +419,28 @@ async function openAreYouSureDialog(chosenProject) {
     htmlElements.areYouSureDialog.showModal();
 }
 
-// deletes the project
-async function deleteTheProject(chosenProject) {
-    console.log('Deleted: ' + chosenProject)
+// deletes the track
+async function deleteTheTrack(chosenTrack) {
+    console.log('Deleted: ' + chosenTrack)
 
-    let projectPath = workspace + '\\' + chosenProject;
+    let trackPath = workspace + '\\' + chosenTrack;
 
-    await window.api.wipeDir(projectPath).then((result) => {
-        console.log('projectWiped')
+    await window.api.wipeDir(trackPath).then((result) => {
+        console.log('Track Wiped')
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
         console.error('Issue wiping directory:\n' + error);
         presentErrorDialog('Issue wiping directory:\n' + error);
     });
 
-//    let deleteFilePromises = []
+//    let deleteTrackFilePromises = []
 //
 //    // Gets the files
-//    await window.api.getDirectoryContents(projectPath).then((files) => {
+//    await window.api.getDirectoryContents(trackPath).then((files) => {
 //        // deletes each file
 //        for (let i = 0; i < files.length; i++) {
-//            let projectFilePath = projectPath + '\\' + files[i]
-//            let deletePromise = window.api.deleteFile(projectFilePath);
+//            let trackFilePath = trackPath + '\\' + files[i]
+//            let deletePromise = window.api.deleteFile(trackFilePath);
 //            deleteFilePromises.push(deletePromise)
 //        }
 //    }).catch((err) => {
@@ -455,11 +453,11 @@ async function deleteTheProject(chosenProject) {
 //        console.log('Deleted files')
 //
 //        // deletes the directory
-//        window.api.deleteDir(projectPath).then((result) => {
-//            console.log(chosenProject + ' deleted')
+//        window.api.deleteDir(trackPath).then((result) => {
+//            console.log(chosenTrack + ' deleted')
 //        }).catch((err) => {
-//            console.error('error deleting directory: ' + chosenProject)
-//            presentErrorDialog('error deleting directory: ' + chosenProject)
+//            console.error('error deleting directory: ' + chosenTrack)
+//            presentErrorDialog('error deleting directory: ' + chosenTrack)
 //        });
 //    }).catch((err) => {
 //        console.error('error deleting files')
