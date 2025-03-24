@@ -97,7 +97,7 @@ function saveTrack(waveformNum) {
 }
 
 // when delete is clicked
-htmlElements.deleteButton.addEventListener('click', async () => {
+htmlElements.deleteTrackButton.addEventListener('click', async () => {
     selectDeleteTrack();
 });
 
