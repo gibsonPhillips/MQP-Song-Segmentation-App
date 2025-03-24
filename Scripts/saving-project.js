@@ -3,6 +3,8 @@ import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegme
 
 // Sort out the save file system
 let workspace = ''
+let tracksWorkspace = ''
+let projectsWorkspace = ''
 
 // gets the workspace
 let appdataPromise = window.api.getAppData().then((appdata) => {
@@ -12,6 +14,35 @@ let appdataPromise = window.api.getAppData().then((appdata) => {
 
     // Create a directory if it doesnt already exist
     window.api.createDirectory(workspace).then((result) => {
+
+        console.log('Directory handled successfully.');
+
+    }).catch((error) => {
+        // Throw error if there is an issue creating the directory
+        console.error(error);
+        presentErrorDialog("Issue creating the directory:\n" + error);
+    });
+
+    console.log(workspace);
+    tracksWorkspace = workspace + '\\tracks'
+    console.log(tracksWorkspace)
+
+    // Create the tracks directory if it doesnt already exist
+    window.api.createDirectory(tracksWorkspace).then((result) => {
+
+        console.log('Directory handled successfully.');
+
+    }).catch((error) => {
+        // Throw error if there is an issue creating the directory
+        console.error(error);
+        presentErrorDialog("Issue creating the directory:\n" + error);
+    });
+
+    projectsWorkspace = workspace + '\\projects'
+    console.log(projectsWorkspace)
+
+    // Create the projects directory if it doesnt already exist
+    window.api.createDirectory(projectsWorkspace).then((result) => {
 
         console.log('Directory handled successfully.');
 
@@ -46,7 +77,7 @@ htmlElements.loadTrackButton.addEventListener('click', async () => {
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
-    window.api.getDirectoryContents(workspace).then((files) => {
+    window.api.getDirectoryContents(tracksWorkspace).then((files) => {
         if (files.length != 0) {
 
             files.forEach(file => {
@@ -129,7 +160,7 @@ async function exportData(waveformNum) {
 // loads the track data
 async function loadTheTrackData(chosenTrack) {
     // the path to the track directory
-    let trackPath = workspace + '\\' + chosenTrack;
+    let trackPath = tracksWorkspace + '\\' + chosenTrack;
 
     // important file paths
     let loadTrackSongFilePath = '';
@@ -211,7 +242,7 @@ async function selectSaveTrack(waveformNum) {
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
-    window.api.getDirectoryContents(workspace).then((files) => {
+    window.api.getDirectoryContents(tracksWorkspace).then((files) => {
         if (files.length != 0) {
         // Implement selecting the track
         //placeholders
@@ -243,7 +274,7 @@ async function selectSaveTrack(waveformNum) {
             chosenTrack = newInput.value
             htmlElements.saveTrackMenuDialog.close();
 
-            await window.api.createDirectory(workspace + '\\' + chosenTrack).then((result) => {
+            await window.api.createDirectory(tracksWorkspace + '\\' + chosenTrack).then((result) => {
                 console.log('Directory creation handled successfully.');
                 saveTheTrackData(chosenTrack, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
             }).catch((error) => {
@@ -273,7 +304,7 @@ async function saveTheTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
 
     if (chosenTrack != '') {
 
-        let saveTrackDirectoryPath = workspace + "\\" + chosenTrack
+        let saveTrackDirectoryPath = tracksWorkspace + "\\" + chosenTrack
         console.log('saveTrackDirectoryPath: ' + saveTrackDirectoryPath);
 
         if (window.segmentData[waveformNum] != null && window.segmentData[waveformNum].length != 0) {
@@ -354,7 +385,7 @@ async function selectDeleteTrack() {
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
-    window.api.getDirectoryContents(workspace).then((files) => {
+    window.api.getDirectoryContents(tracksWorkspace).then((files) => {
         if (files.length != 0) {
         // Implement selecting the track
         //placeholders
@@ -423,7 +454,7 @@ async function openAreYouSureDialog(chosenTrack) {
 async function deleteTheTrack(chosenTrack) {
     console.log('Deleted: ' + chosenTrack)
 
-    let trackPath = workspace + '\\' + chosenTrack;
+    let trackPath = tracksWorkspace + '\\' + chosenTrack;
 
     await window.api.wipeDir(trackPath).then((result) => {
         console.log('Track Wiped')
