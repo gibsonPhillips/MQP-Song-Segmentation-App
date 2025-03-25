@@ -57,20 +57,20 @@ const htmlElements = {
     algorithmAutoButton: document.getElementById("auto-segment"),
 
     // load menu dialog
-    loadMenuDialog: document.querySelector('#load-dialog'),
-    loadFiles: document.getElementById('load-files'),
-    closeLoadDialogButton: document.querySelector('#close-load-dialog'),
+    loadTrackMenuDialog: document.querySelector('#load-track-dialog'),
+    loadTrackFiles: document.getElementById('load-track-files'),
+    closeLoadTrackDialogButton: document.querySelector('#close-load-track-dialog'),
 
-    // save menu dialog
-    saveMenuDialog: document.querySelector('#save-dialog'),
-    saveFiles: document.getElementById('save-files'),
-    saveAudioCheckbox: document.getElementById('save-audio-checkbox'),
-    closeSaveDialogButton: document.querySelector('#close-save-dialog'),
+    // save track menu dialog
+    saveTrackMenuDialog: document.querySelector('#save-track-dialog'),
+    saveTrackFiles: document.getElementById('save-track-files'),
+    saveTrackAudioCheckbox: document.getElementById('save-track-audio-checkbox'),
+    closeSaveTrackDialogButton: document.querySelector('#close-save-track-dialog'),
 
-    // delete menu dialog
-    deleteMenuDialog: document.querySelector('#delete-dialog'),
-    deleteFiles: document.getElementById('delete-files'),
-    closeDeleteDialogButton: document.querySelector('#close-delete-dialog'),
+    // delete track menu dialog
+    deleteTrackMenuDialog: document.querySelector('#delete-track-dialog'),
+    deleteTrackFiles: document.getElementById('delete-track-files'),
+    closeDeleteTrackDialogButton: document.querySelector('#close-delete-track-dialog'),
 
     // are you sure dialog
     areYouSureDialog: document.querySelector('#are-you-sure-dialog'),
@@ -93,8 +93,8 @@ const htmlElements = {
 
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
-    loadButton: document.getElementById('load'),
-    deleteButton: document.getElementById('delete'),
+    loadTrackButton: document.getElementById('load-track'),
+    deleteTrackButton: document.getElementById('delete-track'),
 
     // drop down stuff
     fileDropdownContent: document.getElementById("file-dropdown-content"),
@@ -166,9 +166,9 @@ export function setExternalAddMarker(fn) {
     externalAddMarker = fn;
 }
 
-let externalSaveProject = null;
-export function setExternalSaveProject(fn) {
-    externalSaveProject = fn;
+let externalSaveTrack = null;
+export function setExternalSaveTrack(fn) {
+    externalSaveTrack = fn;
 }
 
 let externalExportData = null;
@@ -695,29 +695,29 @@ function createBoundaryDropdownButton(waveformNum) {
 }
 
 // helper function creates button for save system and adds event listener for each track
-function createSaveDropdownButton(waveformNum) {
+function createSaveTrackDropdownButton(waveformNum) {
     // Create dropdown container
     const dropdown = document.createElement("div");
     dropdown.classList.add("dropdown");
-    dropdown.id = "save-dropdown";
+    dropdown.id = "save-track-dropdown";
 
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
-    button.id = "save-dropdown-button";
+    button.id = "save-track-dropdown-button";
     button.textContent = "Saving and Exporting";
 
     // Create dropdown content container
     const dropdownContent = document.createElement("div");
     dropdownContent.classList.add("dropdown-content");
-    dropdownContent.id = "save-dropdown-content";
+    dropdownContent.id = "save-track-dropdown-content";
 
     const link1 = document.createElement("a");
     link1.href = "#";
-    link1.id = "save";
-    link1.textContent = "Save Song Project";
+    link1.id = "save-track";
+    link1.textContent = "Save Track";
     dropdownContent.appendChild(link1);
-    link1.addEventListener("click", () => {externalSaveProject(waveformNum)});
+    link1.addEventListener("click", () => {externalSaveTrack(waveformNum)});
 
     const link2 = document.createElement("a");
     link2.href = "#";
@@ -838,7 +838,7 @@ function NewTrack(waveformNum) {
     // make the buttons
     let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
-    let saveDropdown = createSaveDropdownButton(waveformNum);
+    let saveTrackDropdown = createSaveTrackDropdownButton(waveformNum);
     let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
     // let deleteTrackButton = createDeleteTrackButton(waveformNum);
     let playButton = createPlayButton(waveformNum);
@@ -851,7 +851,7 @@ function NewTrack(waveformNum) {
     trackDiv.appendChild(playButton);
     trackDiv.appendChild(algDropdown);
     trackDiv.appendChild(boundaryDropdown);
-    trackDiv.appendChild(saveDropdown);
+    trackDiv.appendChild(saveTrackDropdown);
     trackDiv.appendChild(segmentDetailsButton);
     // trackDiv.appendChild(deleteTrackButton);
     trackDiv.appendChild(forwardButton);
