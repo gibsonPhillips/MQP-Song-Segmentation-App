@@ -12,16 +12,16 @@ htmlElements.closeMarkerDialog.onclick = () => {
     htmlElements.markerDialog.close();
 }
 
-htmlElements.closeLoadDialogButton.onclick = () => {
-    htmlElements.loadMenuDialog.close();
+htmlElements.closeLoadTrackDialogButton.onclick = () => {
+    htmlElements.loadTrackMenuDialog.close();
 }
 
-htmlElements.closeSaveDialogButton.onclick = () => {
-    htmlElements.saveMenuDialog.close();
+htmlElements.closeSaveTrackDialogButton.onclick = () => {
+    htmlElements.saveTrackMenuDialog.close();
 }
 
-htmlElements.closeDeleteDialogButton.onclick = () => {
-    htmlElements.deleteMenuDialog.close();
+htmlElements.closeDeleteTrackDialogButton.onclick = () => {
+    htmlElements.deleteTrackMenuDialog.close();
 }
 
 htmlElements.closeAreYouSureDialogButton.onclick = () => {
