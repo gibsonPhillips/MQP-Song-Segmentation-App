@@ -167,6 +167,7 @@ async function loadTheTrackData(chosenTrack) {
     let loadTrackMetadataFilePath = '';
     let loadTrackSegmentDataFilePath = '';
     let loadTrackMarkerNotesFilePath = '';
+    let loadTrackColorDataFilePath = '';
 
     // look for the files
     await window.api.getDirectoryContents(trackPath).then((files) => {
@@ -179,6 +180,8 @@ async function loadTheTrackData(chosenTrack) {
                 loadTrackSegmentDataFilePath = trackPath + '\\' + file;
             } else if (file.substring(file.length-15,file.length) == '-markerdata.txt') {
                 loadTrackMarkerNotesFilePath = trackPath + '\\' + file;
+            } else if (file.substring(file.length-14,file.length) == '-colordata.txt') {
+                loadTrackColorDataFilePath = trackPath + '\\' + file;
             }
         })
     })
@@ -187,6 +190,7 @@ async function loadTheTrackData(chosenTrack) {
     console.log('metadata: ' + loadTrackMetadataFilePath)
     console.log('segment data: ' + loadTrackSegmentDataFilePath)
     console.log('marker data: ' + loadTrackMarkerNotesFilePath)
+    console.log('color data: ' + loadTrackColorDataFilePath)
 
     // loads the track metadata
 
@@ -215,6 +219,14 @@ async function loadTheTrackData(chosenTrack) {
     globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadTrackMarkerNotesFilePath);
     if (globalState.markerNotes[waveformNum].size === 0) {
         console.log('No marker data loaded');
+    } else {
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+    }
+
+    // loads the track color data
+    globalState.labelColors[waveformNum] = await parseColorDataFile(loadTrackColorDataFilePath);
+    if (globalState.labelColors[waveformNum].size === 0) {
+        console.log('No color data loaded');
     } else {
         updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
     }
@@ -325,6 +337,11 @@ async function saveTheTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
                 let markerNotesData = createMarkerNotesFileText(waveformNum);
                 window.api.writeToFile(saveTrackMarkerNotesFilePath, markerNotesData);
 
+                // Writing the color data
+                let saveTrackColorDataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-colordata.txt';
+                let colorData = createColorDataFileText(waveformNum);
+                window.api.writeToFile(saveTrackColorDataFilePath, colorData);
+
                 // Copy song the song (if set to true)
                 if (saveTrackAudioFile) {
                     let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
@@ -354,6 +371,10 @@ async function saveTheTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
                 // Writing the marker notes
                 let saveTrackMarkerNotesFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-markerdata.txt';
                 window.api.writeToFile(saveTrackMarkerNotesFilePath, 'No data');
+
+                // Writing the color data
+                let saveTrackColorDataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-colordata.txt';
+                window.api.writeToFile(saveTrackColorDataFilePath, 'No data');
 
                 // Copy song the song (if set to true)
                 if (saveTrackAudioFile) {
@@ -537,6 +558,22 @@ async function parseMarkerDataFile(markerDataFilePath) {
     return markerNotes;
 }
 
+// parses color data
+async function parseColorDataFile(colorDataFilePath) {
+    let colorData = new Map();
+    let result = await window.api.getFile(colorDataFilePath);
+
+    if (result.content !== 'No data') {
+
+        let rowsText = result.content.trim().split('\n');
+        rowsText.forEach(textRow => {
+            let textTuple = textRow.split(';')
+            colorData.set(textTuple[0], {label: textTuple[0], color: textTuple[1]});
+        })
+    }
+    return colorData;
+}
+
 // parses the metadata
 async function parseMetadataFile(metadataFilePath) {
     let rows = []
@@ -566,6 +603,14 @@ function createMarkerNotesFileText(waveformNum) {
     let text = '';
     globalState.markerNotes[waveformNum].forEach(marker => {
         text = text + marker.start + ',' + marker.title + ',' + marker.note +'\n';
+    });
+    return text;
+}
+
+function createColorDataFileText(waveformNum) {
+    let text = '';
+    globalState.labelColors[waveformNum].forEach(color => {
+        text = text + color.label + ';' + color.color +'\n';
     });
     return text;
 }

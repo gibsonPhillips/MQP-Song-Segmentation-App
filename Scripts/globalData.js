@@ -13,8 +13,6 @@ let regionsPlugins = [];
 let currentlyEditing = false;
 
 export let globalState = {
-    // stores label color map
-    colorMap: new Map(),
     // headers for segment data
     headers: ["number", "start", "end", "label"],
     currentZoom: 10,
@@ -26,6 +24,7 @@ export let globalState = {
     globalTimelineMode: false,
     editBoundaryMode: false,
     waveformNums: [],
+    labelColors: [],
     defaultColors: [
         `rgba(213, 133, 42, 0.5)`,
         `rgba(79, 120, 176, 0.5)`,
@@ -189,14 +188,13 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
     if(updateWaveform) {
         regionsPlugins[waveformNum].clearRegions()
         globalState.regionType[waveformNum].clear();
-        globalState.colorMap.clear();
         document.getElementById(labelsContainerStr).textContent = "";
         document.getElementById(annotationContainerStr).textContent = "";
     }
 
     elements.forEach(element => {
-        if(!globalState.colorMap.has(element.label)) {
-            globalState.colorMap.set(element.label, getColor(globalState.colorMap.size));
+        if(!globalState.labelColors[waveformNum].has(element.label)) {
+            globalState.labelColors[waveformNum].set(element.label, {label: element.label, color: getColor(globalState.labelColors[waveformNum].size)});
         }
 
 
@@ -205,7 +203,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             let region = regionsPlugins[waveformNum].addRegion({
                 start: element.start,
                 end: element.end,
-                color: globalState.colorMap.get(element.label),
+                color: globalState.labelColors[waveformNum].get(element.label).color,
                 drag: false,
                 resize: false,
                 // height: waveformsHeight
@@ -218,7 +216,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             labelInput.type = "text";
             labelInput.value = element.label;
             labelInput.className = "region-label-input" + String(waveformNum);
-            labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
+            labelInput.style.backgroundColor = globalState.labelColors[waveformNum].get(element.label).color;
 
             labelInput.addEventListener("keydown", function(event) {
                 if (event.key === "Enter") {
@@ -283,7 +281,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                         selectedBox = box;
                         selectedColor = box.style.backgroundColor;
 
-                        globalState.colorMap.set(element.label, selectedColor);
+                        globalState.labelColors[waveformNum].set(element.label, {label: element.label, color: selectedColor});
 
                         // update all segments with the selected label
                         for(let i = 0; i < elements.length; i++) {
@@ -949,6 +947,7 @@ export function setupNextWaveform() {
     }));
     globalState.markerNotes.push(new Map());
     globalState.regionType.push(new Map());
+    globalState.labelColors.push(new Map());
 
     // Reset edit mode
     globalState.editBoundaryMode = false;
