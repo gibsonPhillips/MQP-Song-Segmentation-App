@@ -1,4 +1,4 @@
-import { updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
+import { updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
@@ -37,9 +37,7 @@ htmlElements.colorPreferencesButton.onclick = () => {
 
     // Set up saving of new color legends
     htmlElements.colorLegendSave.addEventListener('click', () => {
-        console.log(htmlElements.colorLegendTextInput.value)
-        console.log(htmlElements.colorLegendColorInput.value)
-        globalState.colorLegendMap.set(htmlElements.colorLegendTextInput.value, htmlElements.colorLegendColorInput.value);
+        globalState.colorLegendMap.set(htmlElements.colorLegendTextInput.value, {label: htmlElements.colorLegendTextInput.value, color: htmlElements.colorLegendColorInput.value + "50"});
 
         const container = document.createElement('div');
         container.classList.add('color-input-picker');
@@ -49,7 +47,7 @@ htmlElements.colorPreferencesButton.onclick = () => {
 
         const colorBox = document.createElement('div');
         colorBox.classList.add('color-box');
-        colorBox.style.backgroundColor = htmlElements.colorLegendColorInput.value;    
+        colorBox.style.backgroundColor = htmlElements.colorLegendColorInput.value + "50";
 
         const deleteBtn = document.createElement('button');
         deleteBtn.classList.add('btn');
@@ -65,6 +63,11 @@ htmlElements.colorPreferencesButton.onclick = () => {
             container.textContent = '';
             globalState.colorLegendMap.delete(htmlElements.colorLegendTextInput.value);
         });
+
+        // Update existing tracks
+        for (let i = 0; i < globalState.labelColors.length; i++) {
+            updateTrackColors(i);            
+        }
 
         htmlElements.colorLegendTextInput.value = '';
     });

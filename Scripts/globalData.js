@@ -231,7 +231,8 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                         updateGroupSegmentLabel(element, event.target.value, waveformNum);
                     } else {
                         updateOneSegmentLabel(element, event.target.value, waveformNum);
-                    }  
+                    } 
+                    updateTrackColors(waveformNum); 
                 }
             });
             
@@ -302,6 +303,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                                 tempLabel.style.backgroundColor = selectedColor;
                             }
                         }
+                        updateTrackColors(waveformNum); 
                     });
             
                     htmlElements.colorContainer.appendChild(box);
@@ -399,7 +401,7 @@ export function updateSegmentAnnotationPositions(waveformNum) {
 // Updates the specified segment elements label value
 function updateOneSegmentLabel(segmentElement, value, waveformNum) {
     segmentElement.label = value;
-    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+    updateSegmentElementsList(window.segmentData[waveformNum], false, waveformNum);
 }
 
 // Updates the specified segment elements label value for all those labels
@@ -410,7 +412,7 @@ function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
             element.label = value;
         }
     });
-    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+    updateSegmentElementsList(window.segmentData[waveformNum], false, waveformNum);
 }
 
 // Gets the next color to be used for segment region
@@ -1089,4 +1091,14 @@ function getNextRegion(waveformNum, index) {
     }
     if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
     return region;
+}
+
+// Updates the specified track colors based on color preferences metadata
+export function updateTrackColors(waveformNum) {
+    globalState.labelColors[waveformNum].forEach(entry => {
+        if(globalState.colorLegendMap.has(entry.label)) {
+            globalState.labelColors[waveformNum].set(entry.label, globalState.colorLegendMap.get(entry.label));
+        }
+    });
+    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
