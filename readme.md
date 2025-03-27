@@ -1,4 +1,4 @@
-# This song goes to another school, you wouldn't know them
+# Song Slicer
 
 ## Purpose
 This 1.0 app can be used by people with no programming experience to segment songs into its form sections. 
