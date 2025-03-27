@@ -36,7 +36,7 @@
         <div class="window" id="button-bar" style="width: (100vw - 24px);">
             <div class="title-bar">
                 <button aria-label="Close" class="collapsible coll" id="but"></button>
-                <h1 class="title">button-bar</h1>
+                <h1 class="title">Song Slicer</h1>
                 <button aria-label="Resize" disabled class="hidden"></button>
             </div>
 
@@ -51,6 +51,7 @@
                         <a href="#" id="load-track">Load Track</a>
                         <a href="#" id="delete-track">Delete Track</a>
                         <a href="#" id="chooseSong">Import Song</a>
+                        <a href="#" id="colorPreferences">Color Preferences</a>
                         <input type="file" id="fileInput" accept=".wav" style="display: none;">
                     </div>
                 </div>
@@ -58,7 +59,7 @@
                     <i style="display: none" class="fa fa-circle-o-notch fa-spin"></i>
                     <span id="loading-btn-txt">Loading button</span>
                 </button>
-                <button class="btn" id="group-editing">Group Editing</button>
+                <button class="btn" id="group-editing">Segment Labels</button>
                 <button class="btn" id="segment-annotations">Segment Annotations</button>
                 <button class="btn" id="global-timeline">Global Timeline</button>
                 <button class="btn" id="modify-boundaries">Modify Boundaries</button>
@@ -267,6 +268,20 @@
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <div id="color-container"></div>
+    </dialog>
+
+    <dialog id="color-preference-dialog">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="marker-dialog-close"></button>
+            <h1 class="title">Color</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <div id="color-input-picker">
+            <input type="text" id="color-legend-text-input">
+            <input type="color" id="color-legend-color-input">
+            <button class="btn" id="save-color">Save</button>
+        </div>
+        <div id="color-legend"></div>
     </dialog>
 
     <!-- <script src="scripts/algopy.js"></script> -->

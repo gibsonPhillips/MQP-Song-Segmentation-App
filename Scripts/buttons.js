@@ -32,6 +32,74 @@ htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
 }
 
+htmlElements.colorPreferencesButton.onclick = () => {
+    htmlElements.colorLegend.textContent = '';
+
+    // Set up saving of new color legends
+    htmlElements.colorLegendSave.addEventListener('click', () => {
+        console.log(htmlElements.colorLegendTextInput.value)
+        console.log(htmlElements.colorLegendColorInput.value)
+        globalState.colorLegendMap.set(htmlElements.colorLegendTextInput.value, htmlElements.colorLegendColorInput.value);
+
+        const container = document.createElement('div');
+        container.classList.add('color-input-picker');
+
+        const text = document.createElement('span');
+        text.textContent = htmlElements.colorLegendTextInput.value;
+
+        const colorBox = document.createElement('div');
+        colorBox.classList.add('color-box');
+        colorBox.style.backgroundColor = htmlElements.colorLegendColorInput.value;    
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('btn');
+        deleteBtn.textContent = "Delete";
+        
+        container.appendChild(text);
+        container.appendChild(colorBox);
+        container.appendChild(deleteBtn);
+        htmlElements.colorLegend.appendChild(container);
+
+        // Deleting label
+        deleteBtn.addEventListener('click', () => {
+            container.textContent = '';
+            globalState.colorLegendMap.delete(htmlElements.colorLegendTextInput.value);
+        });
+
+        htmlElements.colorLegendTextInput.value = '';
+    });
+
+    // Set up color legend
+    for (const [key, value] of globalState.colorLegendMap) {
+        const container = document.createElement('div');
+        container.classList.add('color-input-picker');
+
+        const text = document.createElement('span');
+        text.textContent = key;
+
+        const colorBox = document.createElement('div');
+        colorBox.classList.add('color-box');
+        colorBox.style.backgroundColor = value;    
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('btn');
+        deleteBtn.textContent = "Delete";
+        
+        container.appendChild(text);
+        container.appendChild(colorBox);
+        container.appendChild(deleteBtn);
+        htmlElements.colorLegend.appendChild(container);
+
+        // Deleting label
+        deleteBtn.addEventListener('click', () => {
+            container.textContent = '';
+            globalState.colorLegendMap.delete(key);
+        });
+    }
+
+    htmlElements.colorPreferenceDialog.showModal();
+}
+
 htmlElements.groupEditingButton.onclick = () => {
     globalState.groupEditingMode = !globalState.groupEditingMode;
 

@@ -249,6 +249,19 @@
     border: 3px solid black;
 }
 
+.color-input-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+}
+
 /* this makes the waveforms height adjustment work */
 /* #shadow-root.scroll {
     height: 500px;

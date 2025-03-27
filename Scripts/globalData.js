@@ -25,6 +25,7 @@ export let globalState = {
     editBoundaryMode: false,
     waveformNums: [],
     labelColors: [],
+    colorLegendMap: new Map(),
     defaultColors: [
         `rgba(213, 133, 42, 0.5)`,
         `rgba(79, 120, 176, 0.5)`,
@@ -96,7 +97,13 @@ const htmlElements = {
 
     // context menu
     colorDialog: document.getElementById('color-dialog'),
+    colorPreferenceDialog: document.getElementById('color-preference-dialog'),
     colorContainer: document.getElementById('color-container'),
+    colorPreferencesButton: document.getElementById('colorPreferences'),
+    colorLegend: document.getElementById('color-legend'),
+    colorLegendTextInput: document.getElementById('color-legend-text-input'),
+    colorLegendColorInput: document.getElementById('color-legend-color-input'),
+    colorLegendSave: document.getElementById('save-color'),
 
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
@@ -260,6 +267,7 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 let selectedLabel = element.label;
                 let labels = document.getElementById(labelsContainerStr).children;
 
+                // Add in color boxes
                 htmlElements.colorContainer.textContent = '';
                 globalState.defaultColors.forEach(color => {
                     const box = document.createElement('div');
