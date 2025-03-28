@@ -48,9 +48,12 @@
                     <button class="btn" id="file-dropdown-button">File</button>
                     <div class="dropdown-content" id="file-dropdown-content">
                         <a href="#" id="open-workspace">Open Workspace</a>
+                        <a href="#" id="load-project">Load Project</a>
+                        <a href="#" id="save-project">Save Project</a>
+                        <a href="#" id="delete-project">Delete Project</a>
+                        <a href="#" id="chooseSong">Import Song</a>
                         <a href="#" id="load-track">Load Track</a>
                         <a href="#" id="delete-track">Delete Track</a>
-                        <a href="#" id="chooseSong">Import Song</a>
                         <input type="file" id="fileInput" accept=".wav" style="display: none;">
                     </div>
                 </div>
@@ -222,6 +225,52 @@
 
         <div class="window-pane">
             <div class="vbox files-div" id="delete-track-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="load-project-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-load-project-dialog"></button>
+            <h1 class="title">Choose Project to Load</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="window-pane">
+            <div class="vbox files-div" id="load-project-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="save-project-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-save-project-dialog"></button>
+            <h1 class="title">Choose Project to Save to</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="files-div">
+            <input type="checkbox" id="save-project-audio-checkbox" checked="true">
+            <label for="save-project-audio-checkbox">Save audio files</label>
+        </div>
+        <div class="window-pane">
+            <div class="vbox files-div" id="save-project-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="delete-project-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="collapsible coll" id="close-delete-project-dialog"></button>
+            <h1 class="title">Choose Project to Delete</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="window-pane">
+            <div class="vbox files-div" id="delete-project-files"></div>
         </div>
     </dialog>
 

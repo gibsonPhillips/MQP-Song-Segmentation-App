@@ -497,6 +497,51 @@ async function deleteTheTrack(chosenTrack) {
 
 }
 
+
+
+// Project Saving Functions
+
+htmlElements.loadProjectButton.addEventListener('click', async () => {
+
+    // scan the directory
+    let chosenProject = ''
+    let vbox = htmlElements.loadProjectFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(projectsWorkspace).then((files) => {
+        if (files.length != 0) {
+
+            files.forEach(file => {
+                // Create a button for each existing track
+                let newButton = document.createElement('button');
+                newButton.className='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    console.log(chosenProject);
+                    htmlElements.loadProjectMenuDialog.close();
+                    loadTheProjectData(chosenProject)
+                })
+                vbox.appendChild(newButton)
+            });
+        }
+
+        //Show the dialog
+        htmlElements.loadProjectMenuDialog.showModal();
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
+});
+
+
+function loadTheProjectData(chosenProject) {
+    console.log('loading ' + chosenProject);
+}
+
 // Helper Functions
 
 // parses the segment data
