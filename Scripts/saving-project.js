@@ -537,9 +537,81 @@ htmlElements.loadProjectButton.addEventListener('click', async () => {
     });
 });
 
+// Saves the track
+htmlElements.saveProjectButton.addEventListener('click', async () => {
+    selectSaveProject();
+});
 
 function loadTheProjectData(chosenProject) {
     console.log('loading ' + chosenProject);
+}
+
+async function selectSaveProject() {
+    // Get the save track files
+    let chosenProject = ''
+    let vbox = htmlElements.saveProjectFiles;
+    while (vbox.firstChild) {
+        vbox.removeChild(vbox.firstChild);
+    }
+    window.api.getDirectoryContents(projectsWorkspace).then((files) => {
+        if (files.length != 0) {
+        // Implement selecting the track
+        //placeholders
+
+            files.forEach(file => {
+
+                // Create a button for each existing track
+                let newButton = document.createElement('button');
+                newButton.className='btn';
+                newButton.textContent = file
+                newButton.addEventListener('click', async () => {
+                    chosenProject = file
+                    htmlElements.saveProjectMenuDialog.close();
+                    saveTheProjectData(chosenProject, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                })
+                vbox.appendChild(newButton);
+            });
+        }
+        // New Track button
+        let hbox = document.createElement('div');
+        hbox.class = 'hbox';
+        let newButton = document.createElement('button');
+        newButton.className='btn';
+        newButton.textContent = 'Create New Track'
+        let newInput = document.createElement('input');
+        newInput.value = 'New Project';
+        newButton.addEventListener('click', async () => {
+            // Place holder for new track textbox
+            chosenProject = newInput.value
+            htmlElements.saveProjectMenuDialog.close();
+
+            await window.api.createDirectory(projectsWorkspace + '\\' + chosenProject).then((result) => {
+                console.log('Directory creation handled successfully.');
+                saveTheProjectData(chosenProject, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+            }).catch((error) => {
+                // Throw error if there is an issue creating the directory
+                console.error('Issue creating directory:\n' + error);
+                presentErrorDialog('Issue creating directory:\n' + error);
+
+            });
+        })
+
+        hbox.appendChild(newInput);
+        hbox.appendChild(newButton);
+
+        vbox.appendChild(hbox);
+
+        //Show the dialog
+        htmlElements.saveProjectMenuDialog.showModal();
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
+}
+
+async function saveTheProjectData(chosenProject, saveTrackAudioFile) {
+    console.log('Chosen Project ' + chosenProject + ' ' + saveTrackAudioFile)
 }
 
 // Helper Functions
