@@ -525,6 +525,7 @@ function createTrackTitle(waveformNum) {
         document.getElementById("waveform" + String(waveformNum)).remove();
         document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
         document.getElementById("track" + String(waveformNum)).remove();
+        window.trackNames[waveformNum] = null;
     })
 
     titleBar.appendChild(closeButton);
