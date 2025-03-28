@@ -16,7 +16,7 @@ Using System.css project
 - Icons used from https://iconoir.com/
 
 ### Python
-- Run pip install for the following: numpy librosa flask waitress scipy sklearn
+- Run pip install for the following: numpy librosa flask waitress scipy sklearn ipython
 - The application uses a Python Flask server to run Python code
 - The Python code is for running the segmentatation algorithms from Librosa
 - The Python server should start up and stop automatically with the application. Sometimes, it may take a little while for to start up at the beginning
