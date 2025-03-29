@@ -48,9 +48,12 @@
                     <button class="btn" id="file-dropdown-button">File</button>
                     <div class="dropdown-content" id="file-dropdown-content">
                         <a href="#" id="open-workspace">Open Workspace</a>
+                        <a href="#" id="load-project">Load Project</a>
+                        <a href="#" id="save-project">Save Project</a>
+                        <a href="#" id="delete-project">Delete Project</a>
+                        <a href="#" id="chooseSong">Import Song</a>
                         <a href="#" id="load-track">Load Track</a>
                         <a href="#" id="delete-track">Delete Track</a>
-                        <a href="#" id="chooseSong">Import Song</a>
                         <a href="#" id="colorPreferences">Color Preferences</a>
                         <input type="file" id="fileInput" accept=".wav" style="display: none;">
                     </div>
@@ -158,7 +161,7 @@
 
     <dialog id="segment-details-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="close-dialog"></button>
+            <button aria-label="Close" class="coll" id="close-dialog"></button>
             <h1 class="title">Segment Details</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -182,7 +185,7 @@
 
     <dialog id="load-track-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="close-load-track-dialog"></button>
+            <button aria-label="Close" class="coll" id="close-load-track-dialog"></button>
             <h1 class="title">Choose Track to Load</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -196,7 +199,7 @@
 
     <dialog id="save-track-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="close-save-track-dialog"></button>
+            <button aria-label="Close" class="coll" id="close-save-track-dialog"></button>
             <h1 class="title">Choose Track to Save to</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -214,7 +217,7 @@
 
     <dialog id="delete-track-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="close-delete-track-dialog"></button>
+            <button aria-label="Close" class="coll" id="close-delete-track-dialog"></button>
             <h1 class="title">Choose Track to Delete</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -226,9 +229,55 @@
         </div>
     </dialog>
 
+    <dialog id="load-project-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="coll" id="close-load-project-dialog"></button>
+            <h1 class="title">Choose Project to Load</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="window-pane">
+            <div class="vbox files-div" id="load-project-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="save-project-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="coll" id="close-save-project-dialog"></button>
+            <h1 class="title">Choose Project to Save to</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="files-div">
+            <input type="checkbox" id="save-project-audio-checkbox" checked="true">
+            <label for="save-project-audio-checkbox">Save audio files</label>
+        </div>
+        <div class="window-pane">
+            <div class="vbox files-div" id="save-project-files"></div>
+        </div>
+    </dialog>
+
+    <dialog id="delete-project-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button aria-label="Close" class="coll" id="close-delete-project-dialog"></button>
+            <h1 class="title">Choose Project to Delete</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <!-- Little Line Separator -->
+        <div class="separator"></div>
+
+        <div class="window-pane">
+            <div class="vbox files-div" id="delete-project-files"></div>
+        </div>
+    </dialog>
+
     <dialog id="are-you-sure-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="close-are-you-sure-dialog"></button>
+            <button aria-label="Close" class="coll" id="close-are-you-sure-dialog"></button>
             <h1 class="title" id="are-you-sure-header">Are you Sure?</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -240,7 +289,7 @@
 
     <dialog id="error-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="close-error-dialog"></button>
+            <button aria-label="Close" class="coll" id="close-error-dialog"></button>
             <h1 class="title">Error!</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -255,7 +304,7 @@
 
     <dialog id="marker-dialog">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="marker-dialog-close"></button>
+            <button aria-label="Close" class="coll" id="marker-dialog-close"></button>
             <h1 class="title">Marker</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>

@@ -65,7 +65,7 @@ const htmlElements = {
     algorithm4Button: document.getElementById("segment-algorithm4"),
     algorithmAutoButton: document.getElementById("auto-segment"),
 
-    // load menu dialog
+    // load track menu dialog
     loadTrackMenuDialog: document.querySelector('#load-track-dialog'),
     loadTrackFiles: document.getElementById('load-track-files'),
     closeLoadTrackDialogButton: document.querySelector('#close-load-track-dialog'),
@@ -80,6 +80,22 @@ const htmlElements = {
     deleteTrackMenuDialog: document.querySelector('#delete-track-dialog'),
     deleteTrackFiles: document.getElementById('delete-track-files'),
     closeDeleteTrackDialogButton: document.querySelector('#close-delete-track-dialog'),
+
+    // load project menu dialog
+    loadProjectMenuDialog: document.querySelector('#load-project-dialog'),
+    loadProjectFiles: document.getElementById('load-project-files'),
+    closeLoadProjectDialogButton: document.querySelector('#close-load-project-dialog'),
+
+    // save track menu dialog
+    saveProjectMenuDialog: document.querySelector('#save-project-dialog'),
+    saveProjectFiles: document.getElementById('save-project-files'),
+    saveProjectAudioCheckbox: document.getElementById('save-project-audio-checkbox'),
+    closeSaveProjectDialogButton: document.querySelector('#close-save-project-dialog'),
+
+    // delete track menu dialog
+    deleteProjectMenuDialog: document.querySelector('#delete-project-dialog'),
+    deleteProjectFiles: document.getElementById('delete-project-files'),
+    closeDeleteProjectDialogButton: document.querySelector('#close-delete-project-dialog'),
 
     // are you sure dialog
     areYouSureDialog: document.querySelector('#are-you-sure-dialog'),
@@ -114,6 +130,9 @@ const htmlElements = {
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadTrackButton: document.getElementById('load-track'),
     deleteTrackButton: document.getElementById('delete-track'),
+    loadProjectButton: document.getElementById('load-project'),
+    saveProjectButton: document.getElementById('save-project'),
+    deleteProjectButton: document.getElementById('delete-project'),
 
     // drop down stuff
     fileDropdownContent: document.getElementById("file-dropdown-content"),
@@ -600,6 +619,7 @@ function createTrackTitle(waveformNum) {
         document.getElementById("waveform" + String(waveformNum)).remove();
         document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
         document.getElementById("track" + String(waveformNum)).remove();
+        window.trackNames[waveformNum] = null;
     })
 
     titleBar.appendChild(closeButton);

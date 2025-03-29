@@ -34,6 +34,18 @@ htmlElements.closeDeleteTrackDialogButton.onclick = () => {
     htmlElements.deleteTrackMenuDialog.close();
 }
 
+htmlElements.closeLoadProjectDialogButton.onclick = () => {
+    htmlElements.loadProjectMenuDialog.close();
+}
+
+htmlElements.closeSaveProjectDialogButton.onclick = () => {
+    htmlElements.saveProjectMenuDialog.close();
+}
+
+htmlElements.closeDeleteProjectDialogButton.onclick = () => {
+    htmlElements.deleteProjectMenuDialog.close();
+}
+
 htmlElements.closeAreYouSureDialogButton.onclick = () => {
     htmlElements.areYouSureDialog.close();
 }
