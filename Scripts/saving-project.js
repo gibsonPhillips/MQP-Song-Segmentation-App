@@ -309,7 +309,8 @@ async function openAreYouSureDialog(chosenTrack) {
     yesButton.textContent = 'yes'
     yesButton.addEventListener('click', async () => {
         htmlElements.areYouSureDialog.close();
-        deleteTheTrack(chosenTrack)
+        let trackPath = tracksWorkspace + '\\' + chosenTrack;
+        deleteTheTrack(trackPath)
     })
 
     // Create a button for no
@@ -327,10 +328,7 @@ async function openAreYouSureDialog(chosenTrack) {
 }
 
 // deletes the track
-async function deleteTheTrack(chosenTrack) {
-    console.log('Deleted: ' + chosenTrack)
-
-    let trackPath = tracksWorkspace + '\\' + chosenTrack;
+async function deleteTheTrack(trackPath) {
 
     await window.api.wipeDir(trackPath).then((result) => {
         console.log('Track Wiped')
@@ -553,6 +551,29 @@ async function saveTheProjectData(chosenProject, saveTrackAudioFile) {
 
 async function deleteTheProjectData(chosenProject) {
     console.log('Not defined: Deleting ' + chosenProject);
+
+    let projectPath = projectsWorkspace + '\\' + chosenProject;
+
+    // delete all the tracks
+    await window.api.getDirectoryContents(projectPath).then((files) => {
+        files.forEach(file => {
+            deleteTheTrack(projectPath + '\\' + file);
+        });
+        
+        //delete the project directory
+        window.api.deleteDir(projectPath).then((result) => {
+            console.log('Project Wiped');
+        }).catch((error) => {
+            // Throw error if there is an issue getting the files within the directory
+            console.error('Issue deleting directory:\n' + error);
+            presentErrorDialog('Issue deleting directory:\n' + error);
+        });
+
+    }).catch((error) => {
+        // Throw error if there is an issue getting the files within the directory
+        console.error('Issue getting the files within the directory:\n' + error);
+        presentErrorDialog('Issue getting the files within the directory:\n' + error);
+    });
 }
 
 // Helper Functions
