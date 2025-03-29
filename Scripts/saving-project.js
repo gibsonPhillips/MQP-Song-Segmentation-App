@@ -89,7 +89,8 @@ htmlElements.loadTrackButton.addEventListener('click', async () => {
                     chosenTrack = file
                     console.log(chosenTrack);
                     htmlElements.loadTrackMenuDialog.close();
-                    loadTheTrackData(chosenTrack)
+                    let trackPath = tracksWorkspace + '\\' + chosenTrack;
+                    loadOneTrackData(trackPath, chosenTrack);
                 })
                 vbox.appendChild(newButton)
             });
@@ -156,70 +157,6 @@ async function exportData(waveformNum) {
 
 
 // Functionality functions
-
-// loads the track data
-async function loadTheTrackData(chosenTrack) {
-    // the path to the track directory
-    let trackPath = tracksWorkspace + '\\' + chosenTrack;
-
-    // important file paths
-    let loadTrackSongFilePath = '';
-    let loadTrackMetadataFilePath = '';
-    let loadTrackSegmentDataFilePath = '';
-    let loadTrackMarkerNotesFilePath = '';
-
-    // look for the files
-    await window.api.getDirectoryContents(trackPath).then((files) => {
-        files.forEach(file => {
-            if (file.substring(file.length-4,file.length) == '.wav') {
-                loadTrackSongFilePath = trackPath + '\\' + file;
-            } else if (file.substring(file.length-13,file.length) == '-metadata.txt') {
-                loadTrackMetadataFilePath = trackPath + '\\' + file;
-            } else if (file.substring(file.length-16,file.length) == '-segmentdata.txt') {
-                loadTrackSegmentDataFilePath = trackPath + '\\' + file;
-            } else if (file.substring(file.length-15,file.length) == '-markerdata.txt') {
-                loadTrackMarkerNotesFilePath = trackPath + '\\' + file;
-            }
-        })
-    })
-
-    console.log('song: ' + loadTrackSongFilePath)
-    console.log('metadata: ' + loadTrackMetadataFilePath)
-    console.log('segment data: ' + loadTrackSegmentDataFilePath)
-    console.log('marker data: ' + loadTrackMarkerNotesFilePath)
-
-    // loads the track metadata
-
-    let metadata = await parseMetadataFile(loadTrackMetadataFilePath)
-    if (loadTrackSongFilePath == '') {
-        loadTrackSongFilePath = metadata[0]; // song file path
-    }
-
-    // loads the song
-
-    let waveformNum = await loadSong(loadTrackSongFilePath);
-    window.songFilePaths[waveformNum] = loadTrackSongFilePath
-    updateTrackName(chosenTrack, waveformNum);
-
-    // loads the track segment data
-    window.segmentData[waveformNum] = await parseSegmentDataFile(loadTrackSegmentDataFilePath);
-    if (window.segmentData[waveformNum].length === 0) {
-        console.log('No data loaded');
-        presentErrorDialog('No data loaded from ' + chosenTrack);
-    } else {
-        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
-        window.clusters[waveformNum] = determineNumClusters(waveformNum);
-    }
-
-    // loads the track marker notes data
-    globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadTrackMarkerNotesFilePath);
-    if (globalState.markerNotes[waveformNum].size === 0) {
-        console.log('No marker data loaded');
-    } else {
-        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
-        // window.clusters[waveformNum] = determineNumClusters(waveformNum);
-    }
-}
 
 function determineNumClusters(waveformNum) {
     let count = 0;
@@ -324,7 +261,7 @@ async function selectDeleteTrack() {
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
-    window.api.getDirectoryContents(tracksWorkspace).then((files) => {
+    await window.api.getDirectoryContents(tracksWorkspace).then((files) => {
         if (files.length != 0) {
         // Implement selecting the track
         //placeholders
@@ -517,8 +454,15 @@ htmlElements.deleteProjectButton.addEventListener('click', async () => {
     });
 });
 
-function loadTheProjectData(chosenProject) {
+async function loadTheProjectData(chosenProject) {
     console.log('loading ' + chosenProject);
+    let projectPath = projectsWorkspace + '\\' + chosenProject;
+    await window.api.getDirectoryContents(projectPath).then((files) => {
+        files.forEach(file => {
+            let trackPath = projectPath + '\\' + file;
+            loadOneTrackData(trackPath, file);
+        });
+    });
 }
 
 async function selectSaveProject() {
@@ -634,6 +578,66 @@ async function parseSegmentDataFile(segmentDataFilePath) {
         })
     }
     return rows;
+}
+
+async function loadOneTrackData(trackDirectory, trackName) {
+    // important file paths
+    let loadTrackSongFilePath = '';
+    let loadTrackMetadataFilePath = '';
+    let loadTrackSegmentDataFilePath = '';
+    let loadTrackMarkerNotesFilePath = '';
+
+    // look for the files
+    await window.api.getDirectoryContents(trackDirectory).then((files) => {
+        files.forEach(file => {
+            if (file.substring(file.length-4,file.length) == '.wav') {
+                loadTrackSongFilePath = trackDirectory + '\\' + file;
+            } else if (file.substring(file.length-13,file.length) == '-metadata.txt') {
+                loadTrackMetadataFilePath = trackDirectory + '\\' + file;
+            } else if (file.substring(file.length-16,file.length) == '-segmentdata.txt') {
+                loadTrackSegmentDataFilePath = trackDirectory + '\\' + file;
+            } else if (file.substring(file.length-15,file.length) == '-markerdata.txt') {
+                loadTrackMarkerNotesFilePath = trackDirectory + '\\' + file;
+            }
+        })
+    })
+
+    console.log('song: ' + loadTrackSongFilePath)
+    console.log('metadata: ' + loadTrackMetadataFilePath)
+    console.log('segment data: ' + loadTrackSegmentDataFilePath)
+    console.log('marker data: ' + loadTrackMarkerNotesFilePath)
+
+    // loads the track metadata
+
+    let metadata = await parseMetadataFile(loadTrackMetadataFilePath)
+    if (loadTrackSongFilePath == '') {
+        loadTrackSongFilePath = metadata[0]; // song file path
+    }
+
+    // loads the song
+
+    let waveformNum = await loadSong(loadTrackSongFilePath);
+    window.songFilePaths[waveformNum] = loadTrackSongFilePath
+    updateTrackName(trackName, waveformNum);
+
+    // loads the track segment data
+    window.segmentData[waveformNum] = await parseSegmentDataFile(loadTrackSegmentDataFilePath);
+    if (window.segmentData[waveformNum].length === 0) {
+        console.log('No data loaded');
+        presentErrorDialog('No data loaded from ' + chosenTrack);
+    } else {
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+        window.clusters[waveformNum] = determineNumClusters(waveformNum);
+    }
+
+    // loads the track marker notes data
+    globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadTrackMarkerNotesFilePath);
+    if (globalState.markerNotes[waveformNum].size === 0) {
+        console.log('No marker data loaded');
+    } else {
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+        // window.clusters[waveformNum] = determineNumClusters(waveformNum);
+    }
 }
 
 // helper function to save individual track
