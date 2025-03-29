@@ -3,7 +3,6 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
-
 window.trackNames = [];
 window.songFilePaths = [];
 window.segmentData = [];
