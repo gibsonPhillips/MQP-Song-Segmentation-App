@@ -15,6 +15,7 @@ window.clusters = [];
 
 let regionsPlugins = [];
 let currentlyEditing = false;
+let zoomTimeout;
 
 export let globalState = {
     // headers for segment data
@@ -207,7 +208,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
         if(!globalState.labelColors[waveformNum].has(element.label)) {
             globalState.labelColors[waveformNum].set(element.label, {label: element.label, color: getColor(globalState.labelColors[waveformNum].size)});
         }
-
 
         if(updateWaveform) {
             // Create new region
@@ -717,7 +717,12 @@ function createSegmentDetailsButton(waveformNum) {
             let tr = document.createElement('tr');
             for (let key in element) {
                 let td = document.createElement('td');
-                td.textContent = element[key]
+                console.log(key)
+                if (key == 'start' || key == 'end') {
+                    td.textContent = Math.round(Number(element[key]) * 100) / 100;
+                } else {
+                    td.textContent = element[key]
+                }
                 tr.appendChild(td)
             }
             tbody.appendChild(tr);
@@ -1042,8 +1047,9 @@ export function setupNextWaveform() {
     });
 
     // Update labels and timeline on zoom
-    globalState.wavesurferWaveforms[num].on("zoom", (newPxPerSec) => {
+    globalState.wavesurferWaveforms[num].on("zoom", async (newPxPerSec) => {
         if(currentlyEditing) return;
+        if(globalState.currentZoom === newPxPerSec) return;
         globalState.currentZoom = newPxPerSec;
 
         if(globalState.globalTimelineMode) {
@@ -1063,6 +1069,12 @@ export function setupNextWaveform() {
             updateSegmentAnnotationPositions(num);
             updateTimeline(num);
         }
+
+        // run update after no more zoom actions have been triggered in 1 second
+        clearTimeout(zoomTimeout);
+        zoomTimeout = setTimeout(() => {
+            updateSegmentElementsList(window.segmentData[num], true, num);
+        }, 1000);
     });
 
     // Handle region update for editing boundaries
