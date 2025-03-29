@@ -44,8 +44,11 @@ async function segment(algorithm, waveformNum) {
             return Object.fromEntries(row.map((value, index) => [globalState.headers[index], value]));
         });
 
+        console.log(window.segmentData[waveformNum])
+
         // Add in segment annotation
         window.segmentData[waveformNum].forEach(obj => {
+            obj.label = obj.label + 1;
             obj.annotation = "";
         });
 
