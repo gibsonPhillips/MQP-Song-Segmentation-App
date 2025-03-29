@@ -253,10 +253,14 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
 
                 if(globalState.groupEditingMode) {
                     updateGroupSegmentLabel(element, event.target.value, waveformNum);
+                    updateTrackColors(waveformNum);
                 } else {
                     updateOneSegmentLabel(element, event.target.value, waveformNum);
+                    updateTrackColors(waveformNum);
                 }
-                updateTrackColors(waveformNum);
+
+                // TODO front end connect for all track editing
+                // updateAllTrackGroupSegmentLabel(element, event.target.value);                
             }
 
             labelInput.addEventListener("blur", handleLabelInput);
@@ -439,6 +443,22 @@ function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
         }
     });
     updateSegmentElementsList(window.segmentData[waveformNum], false, waveformNum);
+}
+
+// Updates the specified segment elements label value for all those labels
+function updateAllTrackGroupSegmentLabel(segmentElement, value) {
+    let label = segmentElement.label;
+    let i = 0;
+    window.segmentData.forEach(track => {
+        track.forEach(element => {
+            if(element.label === label) {
+                element.label = value;
+            }
+        });
+        updateSegmentElementsList(track, false, i);
+        updateTrackColors(i);
+        i++;
+    });
 }
 
 // Gets the next color to be used for segment region
