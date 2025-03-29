@@ -3,6 +3,16 @@ import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
 
+let externalSaveColorPreferences = null;
+export function setExternalSaveColorPreferences(fn) {
+    externalSaveColorPreferences = fn;
+}
+
+let externalLoadColorPreferences = null;
+export function setExternalLoadColorPreferences2(fn) {
+    externalLoadColorPreferences = fn;
+}
+
 // Button click actions
 htmlElements.closeDialogButton.onclick = () => {
     htmlElements.segmentDetailsDialog.close();
@@ -66,10 +76,14 @@ htmlElements.colorLegendSave.addEventListener('click', () => {
         updateTrackColors(i);            
     }
 
+    // Save color preferences
+    externalSaveColorPreferences();
+
     htmlElements.colorLegendTextInput.value = '';
 });
 
-htmlElements.colorPreferencesButton.onclick = () => {
+htmlElements.colorPreferencesButton.onclick = async () => {
+    await externalLoadColorPreferences();
     htmlElements.colorLegend.textContent = '';
 
     // Set up color legend
@@ -97,6 +111,7 @@ htmlElements.colorPreferencesButton.onclick = () => {
         deleteBtn.addEventListener('click', () => {
             container.textContent = '';
             globalState.colorLegendMap.delete(key);
+            externalSaveColorPreferences();
         });
     }
 

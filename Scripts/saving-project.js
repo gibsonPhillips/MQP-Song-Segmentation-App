@@ -1,5 +1,6 @@
 import htmlElements from './globalData.js';
-import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData } from './globalData.js';
+import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences } from './globalData.js';
+import { setExternalSaveColorPreferences, setExternalLoadColorPreferences2 } from './buttons.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -527,13 +528,12 @@ async function parseSegmentDataFile(segmentDataFilePath) {
     if (result.content !== 'No data') {
         let rowsText = result.content.trim().split('\n');
         rowsText.forEach(textRow => {
-            console.log(textRow);
             let textTuple = textRow.split(',')
             let obj = {
                 number: parseInt(textTuple[0]),
                 start: parseFloat(textTuple[1]),
                 end: parseFloat(textTuple[2]),
-                label: parseInt(textTuple[3]),
+                label: textTuple[3],
                 annotation: textTuple[4]
             };
             rows.push(obj);
@@ -659,3 +659,61 @@ function createExportFileText(exportStats, waveformNum) {
 //        }
 //    });
 //}
+
+
+// loads the color preferences
+setExternalLoadColorPreferences(loadColorPreferences);
+setExternalLoadColorPreferences2(loadColorPreferences);
+async function loadColorPreferences() {
+    // important file paths
+    let loadColorPreferencesFilePath = '';
+
+    // look for color preference file
+    await window.api.getDirectoryContents(workspace).then((files) => {
+        files.forEach(file => {
+            if (file.substring(file.length-20,file.length) == 'colorPreferences.txt') {
+                loadColorPreferencesFilePath = workspace + '\\' + file;
+            }
+        });
+    });
+
+    console.log('color preferences: ' + loadColorPreferencesFilePath)
+
+    // loads the color preferences
+    globalState.colorLegendMap = await parseColorPreferencesFile(loadColorPreferencesFilePath)
+}
+
+//save the color preferences
+setExternalSaveColorPreferences(saveColorPreferences);
+async function saveColorPreferences() {
+    console.log('saveDirectoryPath: ' + workspace);
+
+    // Writing the segment data to the file
+    let colorPreferencesFilePath = workspace + '\\' + 'colorPreferences.txt';
+    let colorPreferencesText = createColorPreferencesFileText();
+    window.api.writeToFile(colorPreferencesFilePath, colorPreferencesText);
+}
+
+// creates file for color preferences
+function createColorPreferencesFileText() {
+    let text = '';
+    globalState.colorLegendMap.forEach(color => {
+        text = text + color.label + ';' + color.color + '\n'
+    });
+    return text;
+}
+
+// parses color data
+async function parseColorPreferencesFile(colorPreferencesFilePath) {
+    let colorPreferences = new Map();
+    let result = await window.api.getFile(colorPreferencesFilePath);
+
+    if (result.content !== 'No data') {
+        let rowsText = result.content.trim().split('\n');
+        rowsText.forEach(textRow => {
+            let textTuple = textRow.split(';')
+            colorPreferences.set(textTuple[0], {label: textTuple[0], color: textTuple[1]});
+        })
+    }
+    return colorPreferences;
+}

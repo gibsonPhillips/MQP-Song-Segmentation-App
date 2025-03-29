@@ -3,6 +3,10 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
+let externalLoadColorPreferences = null;
+export function setExternalLoadColorPreferences(fn) {
+    externalLoadColorPreferences = fn;
+}
 
 window.trackNames = [];
 window.songFilePaths = [];
@@ -914,6 +918,7 @@ function NewTrack(waveformNum) {
 export function setupNextWaveform() {
     // Create div elements for label, waveform, segment annotations
     // let num = window.songFilePaths.length;
+    externalLoadColorPreferences();
     let num = 0;
     if(globalState.waveformNums.length == 0) {
         globalState.waveformNums.push(0);
