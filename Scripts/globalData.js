@@ -229,16 +229,38 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             labelInput.className = "region-label-input" + String(waveformNum);
             labelInput.style.backgroundColor = globalState.labelColors[waveformNum].get(element.label).color;
 
-            labelInput.addEventListener("keydown", function(event) {
-                if (event.key === "Enter") {
-                    if(globalState.groupEditingMode) {
-                        updateGroupSegmentLabel(element, event.target.value, waveformNum);
-                    } else {
-                        updateOneSegmentLabel(element, event.target.value, waveformNum);
-                    } 
-                    updateTrackColors(waveformNum); 
+            let handledByKeydown = false;
+
+            function handleLabelInput(event) {
+                if (event.type === "keydown") {
+                    // Deal with escape
+                    if(event.key === "Escape") {
+                        event.target.value = element.label;
+                        labelInput.blur();
+                        return;
+                    }
+
+                    // Deal with enter
+                    if(event.key !== "Enter") return;
+                    handledByKeydown = true;
+                } 
+
+                // Deal with click out
+                if(event.type === "blur" && handledByKeydown) {
+                    handledByKeydown = false;
+                    return;
                 }
-            });
+
+                if(globalState.groupEditingMode) {
+                    updateGroupSegmentLabel(element, event.target.value, waveformNum);
+                } else {
+                    updateOneSegmentLabel(element, event.target.value, waveformNum);
+                }
+                updateTrackColors(waveformNum);
+            }
+
+            labelInput.addEventListener("blur", handleLabelInput);
+            labelInput.addEventListener("keydown", handleLabelInput);
             
             labelInput.addEventListener("input", function(event) {
                 this.value = this.value.replace(/,/g, "");
