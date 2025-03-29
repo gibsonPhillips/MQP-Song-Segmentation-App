@@ -717,7 +717,12 @@ function createSegmentDetailsButton(waveformNum) {
             let tr = document.createElement('tr');
             for (let key in element) {
                 let td = document.createElement('td');
-                td.textContent = element[key]
+                console.log(key)
+                if (key == 'start' || key == 'end') {
+                    td.textContent = Math.round(Number(element[key]) * 100) / 100;
+                } else {
+                    td.textContent = element[key]
+                }
                 tr.appendChild(td)
             }
             tbody.appendChild(tr);
