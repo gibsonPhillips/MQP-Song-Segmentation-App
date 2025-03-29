@@ -1,5 +1,6 @@
 import htmlElements from './globalData.js';
-import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData } from './globalData.js';
+import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences } from './globalData.js';
+import { setExternalSaveColorPreferences, setExternalLoadColorPreferences2 } from './buttons.js';
 
 // Sort out the save file system
 let workspace = ''
@@ -167,6 +168,7 @@ async function loadTheTrackData(chosenTrack) {
     let loadTrackMetadataFilePath = '';
     let loadTrackSegmentDataFilePath = '';
     let loadTrackMarkerNotesFilePath = '';
+    let loadTrackColorDataFilePath = '';
 
     // look for the files
     await window.api.getDirectoryContents(trackPath).then((files) => {
@@ -179,6 +181,8 @@ async function loadTheTrackData(chosenTrack) {
                 loadTrackSegmentDataFilePath = trackPath + '\\' + file;
             } else if (file.substring(file.length-15,file.length) == '-markerdata.txt') {
                 loadTrackMarkerNotesFilePath = trackPath + '\\' + file;
+            } else if (file.substring(file.length-14,file.length) == '-colordata.txt') {
+                loadTrackColorDataFilePath = trackPath + '\\' + file;
             }
         })
     })
@@ -187,6 +191,7 @@ async function loadTheTrackData(chosenTrack) {
     console.log('metadata: ' + loadTrackMetadataFilePath)
     console.log('segment data: ' + loadTrackSegmentDataFilePath)
     console.log('marker data: ' + loadTrackMarkerNotesFilePath)
+    console.log('color data: ' + loadTrackColorDataFilePath)
 
     // loads the track metadata
 
@@ -217,7 +222,14 @@ async function loadTheTrackData(chosenTrack) {
         console.log('No marker data loaded');
     } else {
         updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
-        // window.clusters[waveformNum] = determineNumClusters(waveformNum);
+    }
+
+    // loads the track color data
+    globalState.labelColors[waveformNum] = await parseColorDataFile(loadTrackColorDataFilePath);
+    if (globalState.labelColors[waveformNum].size === 0) {
+        console.log('No color data loaded');
+    } else {
+        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
     }
 }
 
@@ -326,6 +338,11 @@ async function saveTheTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
                 let markerNotesData = createMarkerNotesFileText(waveformNum);
                 window.api.writeToFile(saveTrackMarkerNotesFilePath, markerNotesData);
 
+                // Writing the color data
+                let saveTrackColorDataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-colordata.txt';
+                let colorData = createColorDataFileText(waveformNum);
+                window.api.writeToFile(saveTrackColorDataFilePath, colorData);
+
                 // Copy song the song (if set to true)
                 if (saveTrackAudioFile) {
                     let filePathEnd = window.songFilePaths[waveformNum].split("\\").pop();
@@ -355,6 +372,10 @@ async function saveTheTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
                 // Writing the marker notes
                 let saveTrackMarkerNotesFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-markerdata.txt';
                 window.api.writeToFile(saveTrackMarkerNotesFilePath, 'No data');
+
+                // Writing the color data
+                let saveTrackColorDataFilePath = saveTrackDirectoryPath + '\\' + chosenTrack + '-colordata.txt';
+                window.api.writeToFile(saveTrackColorDataFilePath, 'No data');
 
                 // Copy song the song (if set to true)
                 if (saveTrackAudioFile) {
@@ -507,13 +528,12 @@ async function parseSegmentDataFile(segmentDataFilePath) {
     if (result.content !== 'No data') {
         let rowsText = result.content.trim().split('\n');
         rowsText.forEach(textRow => {
-            console.log(textRow);
             let textTuple = textRow.split(',')
             let obj = {
                 number: parseInt(textTuple[0]),
                 start: parseFloat(textTuple[1]),
                 end: parseFloat(textTuple[2]),
-                label: parseInt(textTuple[3]),
+                label: textTuple[3],
                 annotation: textTuple[4]
             };
             rows.push(obj);
@@ -536,6 +556,22 @@ async function parseMarkerDataFile(markerDataFilePath) {
         })
     }
     return markerNotes;
+}
+
+// parses color data
+async function parseColorDataFile(colorDataFilePath) {
+    let colorData = new Map();
+    let result = await window.api.getFile(colorDataFilePath);
+
+    if (result.content !== 'No data') {
+
+        let rowsText = result.content.trim().split('\n');
+        rowsText.forEach(textRow => {
+            let textTuple = textRow.split(';')
+            colorData.set(textTuple[0], {label: textTuple[0], color: textTuple[1]});
+        })
+    }
+    return colorData;
 }
 
 // parses the metadata
@@ -567,6 +603,14 @@ function createMarkerNotesFileText(waveformNum) {
     let text = '';
     globalState.markerNotes[waveformNum].forEach(marker => {
         text = text + marker.start + ',' + marker.title + ',' + marker.note +'\n';
+    });
+    return text;
+}
+
+function createColorDataFileText(waveformNum) {
+    let text = '';
+    globalState.labelColors[waveformNum].forEach(color => {
+        text = text + color.label + ';' + color.color +'\n';
     });
     return text;
 }
@@ -615,3 +659,61 @@ function createExportFileText(exportStats, waveformNum) {
 //        }
 //    });
 //}
+
+
+// loads the color preferences
+setExternalLoadColorPreferences(loadColorPreferences);
+setExternalLoadColorPreferences2(loadColorPreferences);
+async function loadColorPreferences() {
+    // important file paths
+    let loadColorPreferencesFilePath = '';
+
+    // look for color preference file
+    await window.api.getDirectoryContents(workspace).then((files) => {
+        files.forEach(file => {
+            if (file.substring(file.length-20,file.length) == 'colorPreferences.txt') {
+                loadColorPreferencesFilePath = workspace + '\\' + file;
+            }
+        });
+    });
+
+    console.log('color preferences: ' + loadColorPreferencesFilePath)
+
+    // loads the color preferences
+    globalState.colorLegendMap = await parseColorPreferencesFile(loadColorPreferencesFilePath)
+}
+
+//save the color preferences
+setExternalSaveColorPreferences(saveColorPreferences);
+async function saveColorPreferences() {
+    console.log('saveDirectoryPath: ' + workspace);
+
+    // Writing the segment data to the file
+    let colorPreferencesFilePath = workspace + '\\' + 'colorPreferences.txt';
+    let colorPreferencesText = createColorPreferencesFileText();
+    window.api.writeToFile(colorPreferencesFilePath, colorPreferencesText);
+}
+
+// creates file for color preferences
+function createColorPreferencesFileText() {
+    let text = '';
+    globalState.colorLegendMap.forEach(color => {
+        text = text + color.label + ';' + color.color + '\n'
+    });
+    return text;
+}
+
+// parses color data
+async function parseColorPreferencesFile(colorPreferencesFilePath) {
+    let colorPreferences = new Map();
+    let result = await window.api.getFile(colorPreferencesFilePath);
+
+    if (result.content !== 'No data') {
+        let rowsText = result.content.trim().split('\n');
+        rowsText.forEach(textRow => {
+            let textTuple = textRow.split(';')
+            colorPreferences.set(textTuple[0], {label: textTuple[0], color: textTuple[1]});
+        })
+    }
+    return colorPreferences;
+}
