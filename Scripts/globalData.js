@@ -626,28 +626,28 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         const algorithm1 = document.createElement("a");
         algorithm1.href = "#";
         algorithm1.id = "segment-algorithm1";
-        algorithm1.textContent = "Algorithm 1: Human Percieved Frequencies";
+        algorithm1.textContent = "CQT Feature Extraction with Agglomerative Clustering";
         dropdownContent.appendChild(algorithm1);
         algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
 
         const algorithm2 = document.createElement("a");
         algorithm2.href = "#";
         algorithm2.id = "segment-algorithm2";
-        algorithm2.textContent = "Algorithm 2: Equal Distance Frequencies";
+        algorithm2.textContent = "Mel Spectrogram Feature Extraction and K-Means Clustering";
         dropdownContent.appendChild(algorithm2);
         algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
 
         const algorithm3 = document.createElement("a");
         algorithm3.href = "#";
         algorithm3.id = "segment-algorithm3";
-        algorithm3.textContent = "Algorithm 3: Human Percieved Frequencies";
+        algorithm3.textContent = "CQT Feature Extraction and Gaussian Mixture Model Clustering";
         dropdownContent.appendChild(algorithm3);
         algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
 
         const algorithm4 = document.createElement("a");
         algorithm4.href = "#";
         algorithm4.id = "segment-algorithm4";
-        algorithm4.textContent = "Algorithm 4: Multi-use";
+        algorithm4.textContent = "Chroma Short-Time Fourier Transform Feature Extraction and K-Means Clustering";
         dropdownContent.appendChild(algorithm4);
         algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
 
