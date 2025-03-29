@@ -770,6 +770,15 @@ function createPlayButton(waveformNum) {
     playButton.classList.add("btn");
     playButton.id = "play";
 
+    // add the sizing and positioning css
+    playButton.style.setProperty("border-left", 0);
+    playButton.style.setProperty("border-right", 0);
+    playButton.style.setProperty("height", "35px");
+    playButton.style.setProperty("margin", "0px");
+    
+
+
+
     const img = document.createElement("img");
     img.src = "resources/icons/play-solid.svg";
     img.alt = "Play Button";
@@ -795,6 +804,13 @@ function createForwardButton(waveformNum) {
     forwardButton.classList.add("btn");
     forwardButton.id = "forward";
 
+    // add styling
+    forwardButton.style.setProperty("margin", "0px");
+    forwardButton.style.setProperty("border-left", 0);
+    forwardButton.style.setProperty("height", "35px");
+
+
+
     const img = document.createElement("img");
     img.src = "resources/icons/forward15-seconds.svg";
     img.alt = "Play Button";
@@ -810,6 +826,11 @@ function createBackwardButton(waveformNum) {
     const backwardButton = document.createElement("button");
     backwardButton.classList.add("btn");
     backwardButton.id = "backward";
+
+    // add styling
+    backwardButton.style.setProperty("border-right", 0);
+    backwardButton.style.setProperty("margin", "0px");
+    backwardButton.style.setProperty("height", "35px");
 
     const img = document.createElement("img");
     img.src = "resources/icons/backward15-seconds.svg";
@@ -848,14 +869,20 @@ function NewTrack(waveformNum) {
     // Append the buttons to the div
     trackDiv.appendChild(titleBar);
     trackDiv.appendChild(titleBarSeparator);
-    trackDiv.appendChild(playButton);
+
+    // algorithm and boundary mod containter
     trackDiv.appendChild(algDropdown);
     trackDiv.appendChild(boundaryDropdown);
+
+    // save and details containter
     trackDiv.appendChild(saveTrackDropdown);
     trackDiv.appendChild(segmentDetailsButton);
     // trackDiv.appendChild(deleteTrackButton);
-    trackDiv.appendChild(forwardButton);
+
+    // transport container
     trackDiv.appendChild(backwardButton);
+    trackDiv.appendChild(playButton);
+    trackDiv.appendChild(forwardButton);
 
     // Append the div to the body (or any other container)
     document.getElementById("tracks").appendChild(trackDiv);
