@@ -3,6 +3,7 @@ import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
 
+// Set external functions
 let externalSaveColorPreferences = null;
 export function setExternalSaveColorPreferences(fn) {
     externalSaveColorPreferences = fn;
@@ -12,6 +13,7 @@ let externalLoadColorPreferences = null;
 export function setExternalLoadColorPreferences2(fn) {
     externalLoadColorPreferences = fn;
 }
+
 
 // Button click actions
 htmlElements.closeDialogButton.onclick = () => {
@@ -94,6 +96,7 @@ htmlElements.colorLegendSave.addEventListener('click', () => {
     htmlElements.colorLegendTextInput.value = '';
 });
 
+// Set up opening of the color preferences
 htmlElements.colorPreferencesButton.onclick = async () => {
     await externalLoadColorPreferences();
     htmlElements.colorLegend.textContent = '';
