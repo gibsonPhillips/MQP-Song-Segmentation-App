@@ -859,6 +859,45 @@ function createBackwardButton(waveformNum) {
     return backwardButton;
 }
 
+
+// helper function that creates and styles container that holds the track buttons for tranport control
+function createDropdownContainer(waveformNum) {
+    const dropdownsDiv = document.createElement("div");
+    dropdownsDiv.id = "dropdownContainer" + String(waveformNum);
+    dropdownsDiv.classList.add("dropdown-container");
+
+    dropdownsDiv.style.setProperty("display", "flex");
+    dropdownsDiv.style.setProperty("flex-direction", "row");
+
+    return dropdownsDiv;
+}
+
+
+// helper function that creates and styles container that holds the Save, Export, and Details buttons (SED)
+function createSEDContainer(waveformNum) {
+    const SEDDiv = document.createElement("div");
+    SEDDiv.id = "SEDContainer" + String(waveformNum);
+    SEDDiv.classList.add("SED-container");
+
+    SEDDiv.style.setProperty("display", "flex");
+    SEDDiv.style.setProperty("flex-direction", "row");
+
+    return SEDDiv;
+}
+
+
+// helper function that creates and styles container that holds the track buttons for tranport control
+function createTransportControlsContainer(waveformNum) {
+    const TransportControlDiv = document.createElement("div");
+    TransportControlDiv.id = "TransportControlContainer" + String(waveformNum);
+    TransportControlDiv.classList.add("transport-control-container");
+
+    TransportControlDiv.style.setProperty("display", "flex");
+    TransportControlDiv.style.setProperty("flex-direction", "row");
+
+    return TransportControlDiv;
+}
+
 // function that creates the next tracks as new waveforms are being added
 function NewTrack(waveformNum) {
 
@@ -883,24 +922,32 @@ function NewTrack(waveformNum) {
     let forwardButton = createForwardButton(waveformNum);
     let backwardButton = createBackwardButton(waveformNum);
 
-    // Append the buttons to the div
+    // make the containers for each row of buttons
+    let dropdownsCon = createDropdownContainer(waveformNum)
+    let saveExportDetailsCon = createSEDContainer(waveformNum)
+    let transportControlsCon = createTransportControlsContainer(waveformNum)
+
+    // add title bar
     trackDiv.appendChild(titleBar);
     trackDiv.appendChild(titleBarSeparator);
 
-    // algorithm and boundary mod containter
-    trackDiv.appendChild(algDropdown);
-    trackDiv.appendChild(boundaryDropdown);
+    // add alg and bound dropdowns
+    trackDiv.appendChild(dropdownsCon);
+    dropdownsCon.appendChild(algDropdown);
+    dropdownsCon.appendChild(boundaryDropdown);
 
-    // save and details containter
-    trackDiv.appendChild(saveTrackDropdown);
-    trackDiv.appendChild(exportTrackDropdown);
-    trackDiv.appendChild(segmentDetailsButton);
+    // add save, export, and details
+    trackDiv.appendChild(saveExportDetailsCon);
+    saveExportDetailsCon.appendChild(saveTrackDropdown);
+    saveExportDetailsCon.appendChild(exportTrackDropdown);
+    saveExportDetailsCon.appendChild(segmentDetailsButton);
     // trackDiv.appendChild(deleteTrackButton);
 
-    // transport container
-    trackDiv.appendChild(backwardButton);
-    trackDiv.appendChild(playButton);
-    trackDiv.appendChild(forwardButton);
+    // add transport controls
+    trackDiv.appendChild(transportControlsCon);
+    transportControlsCon.appendChild(backwardButton);
+    transportControlsCon.appendChild(playButton);
+    transportControlsCon.appendChild(forwardButton);
 
     // Append the div to the body (or any other container)
     document.getElementById("tracks").appendChild(trackDiv);
