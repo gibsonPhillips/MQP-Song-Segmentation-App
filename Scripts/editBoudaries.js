@@ -76,7 +76,7 @@ function addMarkerButtonAction(waveformNum) {
     const time = globalState.wavesurferWaveforms[waveformNum].getCurrentTime();
 
     // Add marker at time
-    const marker = htmlElements.regions[waveformNum].addRegion({
+    const marker = globalState.regions[waveformNum].addRegion({
         start: time,
         content: "",
         color: "rgba(255, 0, 0, 0.5)",

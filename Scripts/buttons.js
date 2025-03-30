@@ -187,8 +187,8 @@ htmlElements.modifyBoundariesButton.onclick = () => {
         htmlElements.modifyBoundariesButton.style.backgroundColor = "rgb(255,197,61)";
     }
 
-    for(let i = 0; i < htmlElements.regions.length; i++) {
-        htmlElements.regions[i].regions.forEach(element => {
+    for(let i = 0; i < globalState.regions.length; i++) {
+        globalState.regions[i].regions.forEach(element => {
             if(globalState.regionType[i].get(element) === 'segment') {
                 element.setOptions({
                     resize: globalState.editBoundaryMode
