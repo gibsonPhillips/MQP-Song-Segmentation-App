@@ -161,11 +161,10 @@
     border-width: 2px;
 
     /* controls the buttons within */
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 2px;
-    justify-content: left;
+    display: grid;
+    grid-template-rows: repeat(4, auto);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
 
 
 
@@ -197,8 +196,8 @@
     margin: 0px;
     padding-right: 4px;
     position: relative;
-    flex-grow: 4;
-    flex-direction: column;
+    /* flex-grow: 4;
+    flex-direction: column; */
     overflow-y: auto;
     /* max-height: 565px; */
     max-height: 90vh;
