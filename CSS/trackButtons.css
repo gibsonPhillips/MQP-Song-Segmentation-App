@@ -1,0 +1,42 @@
+.grid-container {
+    display: grid;
+    grid-template-rows: repeat(4, auto);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    /* Default gap for spacing */
+}
+
+/* Full-width item */
+.long-item {
+    grid-column: span 3;
+    background: lightblue;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Two medium buttons */
+.medium-item {
+    grid-column: span 1;
+    background: lightgreen;
+    text-align: center;
+    padding: 15px;
+}
+
+/* Three small buttons */
+.small-item {
+    background: lightcoral;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Three medium buttons (touching) */
+.medium-touching {
+    background: lightgray;
+    text-align: center;
+    padding: 15px;
+}
+
+/* Remove gap for the last row so the three buttons touch */
+.grid-container .medium-touching {
+    margin-right: -10px;
+}

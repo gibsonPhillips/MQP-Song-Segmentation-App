@@ -115,6 +115,8 @@ const htmlElements = {
 };
 export default htmlElements;
 
+const iconSize = "20px"
+
 let defaultColors = [
     `rgba(213, 133, 42, 0.5)`,
     `rgba(79, 120, 176, 0.5)`,
@@ -609,10 +611,17 @@ function createSegmentDetailsButton(waveformNum) {
     
     const button = document.createElement("button");
     button.id = "segment-details-" + waveformNum;
-    button.textContent = "Details";
+    // button.textContent = "Details";
     button.classList.add("btn");
     button.classList.add("track-button");
 
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/info.svg";
+    img.alt = "Play Button";
+    img.style.setProperty("height", iconSize)
+    img.style.setProperty("width", iconSize)
+    button.appendChild(img);
 
     // add event listener
     button.addEventListener("click", function() {
@@ -695,55 +704,62 @@ function createBoundaryDropdownButton(waveformNum) {
 }
 
 // helper function creates button for save system and adds event listener for each track
-function createSaveTrackDropdownButton(waveformNum) {
+function createSaveTrackButton(waveformNum) {
+    /* making saving and exporting two different buttons instead of dropdown
     // Create dropdown container
     const dropdown = document.createElement("div");
     dropdown.classList.add("dropdown");
     dropdown.id = "save-track-dropdown";
+    */
 
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
     button.id = "save-track-dropdown-button";
-    button.textContent = "Saving and Exporting";
+    // button.textContent = "Saving and Exporting";
 
-    // Create dropdown content container
-    const dropdownContent = document.createElement("div");
-    dropdownContent.classList.add("dropdown-content");
-    dropdownContent.id = "save-track-dropdown-content";
+    // style the button
+    button.style.setProperty("height", "29px")
+    button.style.setProperty("width", "29px")
+    button.style.setProperty("padding", "0px")
 
-    const link1 = document.createElement("a");
-    link1.href = "#";
-    link1.id = "save-track";
-    link1.textContent = "Save Track";
-    dropdownContent.appendChild(link1);
-    link1.addEventListener("click", () => {externalSaveTrack(waveformNum)});
 
-    const link2 = document.createElement("a");
-    link2.href = "#";
-    link2.id = "export";
-    link2.textContent = "Export Data";
-    dropdownContent.appendChild(link2);
-    link2.addEventListener("click", () => {externalExportData(waveformNum)});
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/save.svg";
+    img.alt = "Play Button";
+    img.style.setProperty("height", iconSize)
+    img.style.setProperty("width", iconSize)
+    button.appendChild(img);
 
-    // Append button and dropdown content to dropdown container
-    dropdown.appendChild(button);
-    dropdown.appendChild(dropdownContent);
+    button.addEventListener("click", () => {externalSaveTrack(waveformNum)});
 
-    // Toggle dropdown on button click
-    button.addEventListener("click", function () {
-        dropdownContent.classList.toggle("show");
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", function (event) {
-        if (!button.contains(event.target) && !dropdownContent.contains(event.target)) {
-            dropdownContent.classList.remove("show");
-        }
-    });
-
-    return dropdown;
+    return button;
 }
+
+
+// helper function creates button for export system and adds event listener for each track
+function createExportTrackButton(waveformNum) {
+
+    // Create button
+    const button = document.createElement("button");
+    button.classList.add("btn");
+    button.id = "save-track-dropdown-button";
+    // button.textContent = "Saving and Exporting";
+
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/export.svg";
+    img.alt = "Play Button";
+    img.style.setProperty("height", iconSize)
+    img.style.setProperty("width", iconSize)
+    button.appendChild(img);
+
+    button.addEventListener("click", () => {externalExportData(waveformNum)});
+
+    return button;
+}
+
 
 // Create delete track button for the track
 function createDeleteTrackButton(waveformNum) { //CURRENTLY UNUSED
@@ -859,7 +875,8 @@ function NewTrack(waveformNum) {
     // make the buttons
     let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
-    let saveTrackDropdown = createSaveTrackDropdownButton(waveformNum);
+    let saveTrackDropdown = createSaveTrackButton(waveformNum);
+    let exportTrackDropdown = createExportTrackButton(waveformNum);
     let segmentDetailsButton = createSegmentDetailsButton(waveformNum);
     // let deleteTrackButton = createDeleteTrackButton(waveformNum);
     let playButton = createPlayButton(waveformNum);
@@ -876,6 +893,7 @@ function NewTrack(waveformNum) {
 
     // save and details containter
     trackDiv.appendChild(saveTrackDropdown);
+    trackDiv.appendChild(exportTrackDropdown);
     trackDiv.appendChild(segmentDetailsButton);
     // trackDiv.appendChild(deleteTrackButton);
 
