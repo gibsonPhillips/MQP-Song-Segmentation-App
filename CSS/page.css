@@ -163,12 +163,8 @@
     /* controls the buttons within */
     display: grid;
     grid-template-rows: repeat(4, auto);
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1;
     gap: 10px;
-
-
-
-
 }
 
 /* controls button layout within the tracks */
@@ -178,6 +174,36 @@
 
     height: 29px;
 }
+
+/* controls layout of the 4 items within track section:  */
+/* title bar, segment and boundary dropdowns, save export and details buttons, and transport controls */
+/* ----------------------------------------------------------------------------------------------------- */
+
+.track-title-bar {
+    width: 100%;
+}
+
+.seg-bound-DDs-con {
+    display: grid;
+    grid-template-rows: 1;
+    grid-template-columns: 2;
+    gap: 5px;
+}
+
+.save-export-details-con {
+    display: grid;
+    grid-template-rows: 1;
+    grid-template-columns: 3;
+    gap: 5px;
+}
+
+.transport-controls-con {
+    display: grid;
+    grid-template-rows: 1;
+    grid-template-columns: 3;
+}
+
+/* ----------------------------------------------------------------------------------------------------- */
 
 /* delete me after demo */
 .testers {
