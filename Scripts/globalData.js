@@ -104,8 +104,8 @@ const htmlElements = {
     algorithmsDropdown: document.getElementById("algorithms-dropdown"),
     algorithmsDropdownButton: document.getElementById("algorithms-dropdown-button"),
     boundariesDropdownContent: document.getElementById("boundaries-dropdown-content"),
-    boundariesDropdown: document.getElementById("boundaries-dropdown"),
-    boundariesDropdownButton: document.getElementById("boundaries-dropdown-button"),
+    boundariesDropdown: document.getElementById("boundary-dropdown"),
+    boundariesDropdownButton: document.getElementById("boundary-dropdown-button"),
 
     groupEditingButton: document.getElementById("group-editing"),
     segmentAnnotationButton: document.getElementById("segment-annotations"),
@@ -486,7 +486,8 @@ slider.addEventListener("input", function () {
 
 
 // to count out id's sequentially
-let idCounter = 0
+let idCounter = 0 // replaced with waveformNum counter system
+
 
 // helper function to create the track title bar
 function createTrackTitle(waveformNum) {
@@ -531,8 +532,29 @@ function createTrackTitle(waveformNum) {
 
 }
 
+// helper function to create the segment button
+function createSegmentButton(waveformNum) {
+    const segmentButton = document.createElement("button");
+    segmentButton.classList.add("btn");
+    segmentButton.classList.add("segment-button");
+    segmentButton.id = "segment-button" + String(waveformNum);
+    // segmentButton.textContent = "Segment";
+
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/segment.svg";
+    img.alt = "Segment Button";
+    img.style.setProperty("height", iconSize)
+    img.style.setProperty("width", iconSize)
+    segmentButton.appendChild(img);
+
+    // !!! need event listener still
+
+    return segmentButton;
+}
+
 // helper function creates button and adds event listener for each track
-function CreateAlgorithmDropdownButton(waveformNum) {
+function createSegmentDropdownButton(waveformNum) {
     // Create dropdown container
         const dropdown = document.createElement("div");
         dropdown.classList.add("dropdown");
@@ -543,9 +565,17 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         const algoButton = document.createElement("button");
         algoButton.classList.add("btn");
         algoButton.classList.add("track-button")
-        algoButton.classList.add("segment-button")
-        algoButton.id = "algorithms-dropdown-button";
-        algoButton.textContent = "A";
+        algoButton.classList.add("segment-dropdown-button")
+        algoButton.id = "algorithms-dropdown-button" + String(waveformNum);
+        // algoButton.textContent = "Algorithms";
+
+        // set the icon inside
+        const img = document.createElement("img");
+        img.src = "resources/icons/TrackButtons/dropdownArrow.svg";
+        img.alt = "Segment Dropdown Button";
+        img.style.setProperty("height", iconSize)
+        img.style.setProperty("width", iconSize)
+        algoButton.appendChild(img);
 
         // Create dropdown content container
         const dropdownContent = document.createElement("div");
@@ -608,26 +638,55 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         return(dropdown);
 }
 
+// helper function to create the segment button
+function createBoundaryButton(waveformNum) {
+    const boundaryButton = document.createElement("button");
+    boundaryButton.classList.add("btn");
+    boundaryButton.classList.add("boundary-button");
+    boundaryButton.id = "boundary-button" + String(waveformNum);
+    // boundaryButton.textContent = "Boundary";
+
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/flagMarker.svg";
+    img.alt = "Boundary Button";
+    img.style.setProperty("height", iconSize)
+    img.style.setProperty("width", iconSize)
+    boundaryButton.appendChild(img);
+
+    // !!! need event listener still
+
+    return boundaryButton;
+}
 
 // helper function creates button and adds event listener for each track
 function createBoundaryDropdownButton(waveformNum) {
     // Create dropdown container
     const dropdown = document.createElement("div");
     dropdown.classList.add("dropdown");
-    dropdown.classList.add("bounderies-button-dropdown");
-    dropdown.id = "boundaries-dropdown" + String(waveformNum);
+    dropdown.classList.add("boundary-button-dropdown");
+    dropdown.id = "boundary-dropdown" + String(waveformNum);
 
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
     button.classList.add("track-button");
-    button.id = "boundaries-dropdown-button";
-    button.textContent = "B";
+    button.classList.add("boundary-dropdown-button");
+    button.id = "boundary-dropdown-button" + String(waveformNum);
+    // button.textContent = "Boundary";
+
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/dropdownArrow.svg";
+    img.alt = "Boundary dropdown Button";
+    img.style.setProperty("height", iconSize)
+    img.style.setProperty("width", iconSize)
+    button.appendChild(img);
 
     // Create dropdown content container
     const dropdownContent = document.createElement("div");
     dropdownContent.classList.add("dropdown-content");
-    dropdownContent.id = "boundaries-dropdown-content";
+    dropdownContent.id = "boundary-dropdown-content";
 
     const link1 = document.createElement("a");
     link1.href = "#";
@@ -857,39 +916,48 @@ function createBackwardButton(waveformNum) {
 function createDropdownsContainer(waveformNum) {
     const dropdownsDiv = document.createElement("div");
     dropdownsDiv.id = "dropdownContainer" + String(waveformNum);
-    dropdownsDiv.classList.add("dropdown-container");
-
-    dropdownsDiv.style.setProperty("display", "flex");
-    dropdownsDiv.style.setProperty("flex-direction", "row");
+    dropdownsDiv.classList.add("dropdown-con");
 
     return dropdownsDiv;
 }
 
-
 // helper function that creates and styles container that holds the Save, Export, and Details buttons (SED)
 function createSEDContainer(waveformNum) {
     const SEDDiv = document.createElement("div");
-    SEDDiv.id = "SEDContainer" + String(waveformNum);
-    SEDDiv.classList.add("SED-container");
-
-    SEDDiv.style.setProperty("display", "flex");
-    SEDDiv.style.setProperty("flex-direction", "row");
+    SEDDiv.classList.add("save-export-details-con");
+    SEDDiv.id = "save-export-details-container" + String(waveformNum);
 
     return SEDDiv;
 }
 
-
 // helper function that creates and styles container that holds the track buttons for tranport control
 function createTransportControlsContainer(waveformNum) {
     const TransportControlDiv = document.createElement("div");
-    TransportControlDiv.id = "TransportControlContainer" + String(waveformNum);
-    TransportControlDiv.classList.add("transport-control-container");
-
-    TransportControlDiv.style.setProperty("display", "flex");
-    TransportControlDiv.style.setProperty("flex-direction", "row");
+    TransportControlDiv.classList.add("transport-controls-con");
+    TransportControlDiv.id = "transportControlContainer" + String(waveformNum);
 
     return TransportControlDiv;
 }
+
+
+// helper function that creates and styles container that holds 
+// the segment and segment dropdown buttons together as 1
+function createSegmentComboContainer(waveformNum) {
+    const container = document.createElement("div");
+    container.classList.add("segment-combo-con");
+    container.id = "segmentComboContainer" + String(waveformNum);
+    return container
+}
+
+// helper function that creates and styles container that holds 
+// the boundary and boundary dropdown buttons together as 1
+function createBoundaryComboContainer(waveformNum) {
+    const container = document.createElement("div");
+    container.classList.add("boundary-combo-con");
+    container.id = "boundaryComboContainer" + String(waveformNum);
+    return container
+}
+
 
 // function that creates the next tracks as new waveforms are being added
 function NewTrack(waveformNum) {
@@ -905,7 +973,9 @@ function NewTrack(waveformNum) {
     titleBarSeparator.classList.add("separator");
 
     // make the buttons
-    let algDropdown = CreateAlgorithmDropdownButton(waveformNum);
+    let segment = createSegmentButton(waveformNum);
+    let algDropdown = createSegmentDropdownButton(waveformNum);
+    let boundary = createBoundaryButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
     let saveTrackDropdown = createSaveTrackButton(waveformNum);
     let exportTrackDropdown = createExportTrackButton(waveformNum);
@@ -920,14 +990,28 @@ function NewTrack(waveformNum) {
     let saveExportDetailsCon = createSEDContainer(waveformNum)
     let transportControlsCon = createTransportControlsContainer(waveformNum)
 
+    // make the containers for the dropdown combos
+    let segmentCombo = createSegmentComboContainer(waveformNum)
+    let boundaryCombo = createBoundaryComboContainer(waveformNum)
+
+    // // Make little line separators for the interior of conjoined buttons
+    // let interiorSeparator = document.createElement("div")
+    // interiorSeparator.classList.add("interior-separator")
+
     // add title bar
     trackDiv.appendChild(titleBar);
     trackDiv.appendChild(titleBarSeparator);
 
     // add alg and bound dropdowns
     trackDiv.appendChild(dropdownsCon);
-    dropdownsCon.appendChild(algDropdown);
-    dropdownsCon.appendChild(boundaryDropdown);
+    dropdownsCon.appendChild(segmentCombo);
+    segmentCombo.appendChild(segment);
+    segmentCombo.appendChild(algDropdown);
+
+    dropdownsCon.appendChild(boundaryCombo)
+    boundaryCombo.appendChild(boundary);
+    boundaryCombo.appendChild(boundaryDropdown);
+
 
     // add save, export, and details
     trackDiv.appendChild(saveExportDetailsCon);

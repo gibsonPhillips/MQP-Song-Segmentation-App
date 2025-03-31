@@ -28,7 +28,7 @@
 
     flex-grow: 1;
     display: grid;
-    grid-template-columns: 255px auto;
+    grid-template-columns: 215px auto;
     grid-template-rows: 100%;
 }
 
@@ -166,15 +166,12 @@
     display: grid;
     grid-template-rows: repeat(4, auto);
     grid-template-columns: 1;
-    gap: 10px;
+    gap: 5px;
 }
 
 /* controls button layout within the tracks */
 .track-button {
-    flex: 1 1 auto;
-    min-width: 10px;
-
-    height: 29px;
+    display: block;
 }
 
 /* controls layout of the 4 items within track section:  */
@@ -185,24 +182,43 @@
     width: 100%;
 }
 
-.seg-bound-DDs-con {
+.dropdown-con {
+    width: 210px;
+
     display: grid;
-    grid-template-rows: 1;
-    grid-template-columns: 44px, 44px, 44px;
-    gap: 5px;
+    /* grid-template-rows: 1; */
+    grid-template-columns: 80px 80px;
+    gap: 0px;
+    justify-content: space-evenly;
 }
 
 .save-export-details-con {
+    width: 210px;
+
     display: grid;
-    grid-template-rows: 59px;
-    grid-template-columns: 44px, 44px, 44px;
+    /* grid-template-rows: 59px; */
+    grid-template-columns: 55px 55px 55px;
     gap: 5px;
+    justify-content: center;
 }
 
 .transport-controls-con {
+    width: 208px;
+
     display: grid;
-    grid-template-rows: 1;
-    grid-template-columns: 3;
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+}
+
+/* adding these two for the two dropdown combo containers */
+.segment-combo-con {
+    display: grid;
+    grid-template-columns: 29px 29px;
+}
+
+.boundary-combo-con {
+    display: grid;
+    grid-template-columns: 29px 29px;
 }
 
 /* ----------------------------------------------------------------------------------------------------- */
@@ -210,58 +226,142 @@
 /* styling every individual track button as needed */
 
 .segment-button {
-    display: block;
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-right: 0;
 }
 
 .segment-button-dropdown {
-    display: block;
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-left: 0;
 }
 
-.bounderies-button {
-    display: block;
+.segment-dropdown-button {
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-left: 0;
 }
 
-.bounderies-button-dropdown {
-    display: block;
+.boundary-button {
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-right: 0;
+}
+
+.boundary-dropdown-button {
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    width: 34px;
+    height: 29px;
+
+    border-left: 0;
 }
 
 .save-track-button {
+    min-width: unset;
+
     height: 29px;
-    width: 29px;
+    width: 39px;
+
+    margin: 0px;
     padding: 0px;
+
+
 }
 
 .export-track-button {
-    width: 29px;
+    min-width: unset;
+
     height: 29px;
+    width: 39px;
+
     margin: 0px;
+    padding: 0px;
 }
 
 .segment-details-button {
-    display: block;
+    min-width: unset;
+
+    height: 29px;
+    width: 39px;
+
+    margin: 0px;
+    padding: 0px;
 }
 
 .play-button {
     border-left: 0;
     border-right: 0;
+
     height: 35px;
+
     margin: 0px;
+    padding: 0px;
 }
 
 .forward-button {
     margin: 0px;
+
     border-left: 0;
+
     height: 35px;
 }
 
 .backward-button {
     border-right: 0;
+
     margin: 0px;
+
     height: 35px;
 }
 
 
 /* ----------------------------------------------------------------------------------------------------- */
+
+.interior-separator {
+    border-width: 2.4px;
+    border-color: black;
+
+    height: 29px;
+    width: 49px;
+
+    margin: 0px;
+    padding: 0px;
+}
+
 
 
 /* delete me after demo */
