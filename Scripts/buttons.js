@@ -22,6 +22,14 @@ htmlElements.closeMarkerDialog.onclick = () => {
     htmlElements.markerDialog.close();
 }
 
+htmlElements.colorCloseDialog.onclick = () => {
+    htmlElements.colorDialog.close();
+}
+
+htmlElements.colorPreferenceCloseDialog.onclick = () => {
+    htmlElements.colorPreferenceDialog.close();
+}
+
 htmlElements.closeLoadTrackDialogButton.onclick = () => {
     htmlElements.loadTrackMenuDialog.close();
 }

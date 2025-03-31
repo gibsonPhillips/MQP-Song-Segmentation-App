@@ -125,6 +125,8 @@ const htmlElements = {
     colorLegendTextInput: document.getElementById('color-legend-text-input'),
     colorLegendColorInput: document.getElementById('color-legend-color-input'),
     colorLegendSave: document.getElementById('save-color'),
+    colorCloseDialog: document.getElementById('color-dialog-close'),
+    colorPreferenceCloseDialog: document.getElementById('color-preference-dialog-close'),
 
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),

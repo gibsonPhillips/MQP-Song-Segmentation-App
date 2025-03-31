@@ -951,6 +951,13 @@ async function loadColorPreferences() {
         });
     });
 
+    // If file doesn't already exist
+    if(loadColorPreferencesFilePath === '') {
+        loadColorPreferencesFilePath = workspace + '\\' + 'colorPreferences.txt';
+        let colorPreferencesText = '';
+        await window.api.writeToFile(loadColorPreferencesFilePath, colorPreferencesText);
+    }
+
     console.log('color preferences: ' + loadColorPreferencesFilePath)
 
     // loads the color preferences
