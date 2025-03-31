@@ -543,7 +543,7 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         algoButton.classList.add("btn");
         algoButton.classList.add("track-button")
         algoButton.id = "algorithms-dropdown-button";
-        algoButton.textContent = "Algorithms";
+        algoButton.textContent = "A";
 
         // Create dropdown content container
         const dropdownContent = document.createElement("div");
@@ -656,7 +656,7 @@ function createBoundaryDropdownButton(waveformNum) {
     button.classList.add("btn");
     button.classList.add("track-button");
     button.id = "boundaries-dropdown-button";
-    button.textContent = "Boundaries";
+    button.textContent = "B";
 
     // Create dropdown content container
     const dropdownContent = document.createElement("div");
@@ -715,13 +715,8 @@ function createSaveTrackButton(waveformNum) {
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
-    button.id = "save-track-dropdown-button";
+    button.id = "save-track-button";
     // button.textContent = "Saving and Exporting";
-
-    // style the button
-    button.style.setProperty("height", "29px")
-    button.style.setProperty("width", "29px")
-    button.style.setProperty("padding", "0px")
 
 
     // set the icon inside
@@ -744,7 +739,7 @@ function createExportTrackButton(waveformNum) {
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
-    button.id = "save-track-dropdown-button";
+    button.id = "export-track-button";
     // button.textContent = "Saving and Exporting";
 
     // set the icon inside
