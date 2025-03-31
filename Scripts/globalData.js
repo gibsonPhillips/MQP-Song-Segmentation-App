@@ -536,12 +536,14 @@ function CreateAlgorithmDropdownButton(waveformNum) {
     // Create dropdown container
         const dropdown = document.createElement("div");
         dropdown.classList.add("dropdown");
-        dropdown.id = "algorithms-dropdown";
+        dropdown.classList.add("segment-button-dropdown");
+        dropdown.id = "algorithms-dropdown" + String(waveformNum);
 
         // Create button
         const algoButton = document.createElement("button");
         algoButton.classList.add("btn");
         algoButton.classList.add("track-button")
+        algoButton.classList.add("segment-button")
         algoButton.id = "algorithms-dropdown-button";
         algoButton.textContent = "A";
 
@@ -606,50 +608,14 @@ function CreateAlgorithmDropdownButton(waveformNum) {
         return(dropdown);
 }
 
-// helper function creates button and adds event listener for each track
-function createSegmentDetailsButton(waveformNum) {
-    
-    const button = document.createElement("button");
-    button.id = "segment-details-" + waveformNum;
-    // button.textContent = "Details";
-    button.classList.add("btn");
-    button.classList.add("track-button");
-
-    // set the icon inside
-    const img = document.createElement("img");
-    img.src = "resources/icons/TrackButtons/info.svg";
-    img.alt = "Play Button";
-    img.style.setProperty("height", iconSize)
-    img.style.setProperty("width", iconSize)
-    button.appendChild(img);
-
-    // add event listener
-    button.addEventListener("click", function() {
-        const tbody = document.getElementById('segment-elements');
-        tbody.innerHTML = ''
-    
-        window.segmentData[waveformNum].forEach(element => {
-            let tr = document.createElement('tr');
-            for (let key in element) {
-                let td = document.createElement('td');
-                td.textContent = element[key]
-                tr.appendChild(td)
-            }
-            tbody.appendChild(tr);
-        });
-
-        htmlElements.segmentDetailsDialog.showModal();
-    })
-
-    return(button);
-}
 
 // helper function creates button and adds event listener for each track
 function createBoundaryDropdownButton(waveformNum) {
     // Create dropdown container
     const dropdown = document.createElement("div");
     dropdown.classList.add("dropdown");
-    dropdown.id = "boundaries-dropdown";
+    dropdown.classList.add("bounderies-button-dropdown");
+    dropdown.id = "boundaries-dropdown" + String(waveformNum);
 
     // Create button
     const button = document.createElement("button");
@@ -715,7 +681,8 @@ function createSaveTrackButton(waveformNum) {
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
-    button.id = "save-track-button";
+    button.classList.add("save-track-button");
+    button.id = "save-track-button" + String(waveformNum);
     // button.textContent = "Saving and Exporting";
 
 
@@ -739,7 +706,8 @@ function createExportTrackButton(waveformNum) {
     // Create button
     const button = document.createElement("button");
     button.classList.add("btn");
-    button.id = "export-track-button";
+    button.classList.add("export-track-button");
+    button.id = "export-track-button" + String(waveformNum);
     // button.textContent = "Saving and Exporting";
 
     // set the icon inside
@@ -756,13 +724,55 @@ function createExportTrackButton(waveformNum) {
 }
 
 
+// helper function creates button and adds event listener for each track
+function createSegmentDetailsButton(waveformNum) {
+    
+    const button = document.createElement("button");
+    // button.textContent = "Details";
+    button.classList.add("btn");
+    button.classList.add("track-button");
+    button.classList.add("segment-details-button");
+    button.id = "segment-details-button" + String(waveformNum);
+
+
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/info.svg";
+    img.alt = "Play Button";
+    img.style.setProperty("height", iconSize)
+    img.style.setProperty("width", iconSize)
+    button.appendChild(img);
+
+    // add event listener
+    button.addEventListener("click", function() {
+        const tbody = document.getElementById('segment-elements');
+        tbody.innerHTML = ''
+    
+        window.segmentData[waveformNum].forEach(element => {
+            let tr = document.createElement('tr');
+            for (let key in element) {
+                let td = document.createElement('td');
+                td.textContent = element[key]
+                tr.appendChild(td)
+            }
+            tbody.appendChild(tr);
+        });
+
+        htmlElements.segmentDetailsDialog.showModal();
+    })
+
+    return(button);
+}
+
+
 // Create delete track button for the track
 function createDeleteTrackButton(waveformNum) { //CURRENTLY UNUSED
     const button = document.createElement("button");
-    button.id = "delete-track";
+    button.id = "delete-track" + String(waveformNum);
     button.textContent = "Delete Track";
     button.classList.add("btn");
     button.classList.add("track-button");
+    button.classList.add("detele-track-button")
 
     // add event listener
     button.addEventListener("click", function() {
@@ -779,21 +789,15 @@ function createDeleteTrackButton(waveformNum) { //CURRENTLY UNUSED
 function createPlayButton(waveformNum) {
     const playButton = document.createElement("button");
     playButton.classList.add("btn");
-    playButton.id = "play";
-
-    // add the sizing and positioning css
-    playButton.style.setProperty("border-left", 0);
-    playButton.style.setProperty("border-right", 0);
-    playButton.style.setProperty("height", "35px");
-    playButton.style.setProperty("margin", "0px");
+    playButton.classList.add("play-button");
+    playButton.id = "play" + String(waveformNum);
     
-
-
-
+    // import the play icon
     const img = document.createElement("img");
     img.src = "resources/icons/play-solid.svg";
     img.alt = "Play Button";
 
+    // swap the play and pause icon accordingly
     playButton.appendChild(img);
     playButton.onclick = () => {
         if(globalState.wavesurferWaveforms[waveformNum].getDuration() > 0) {
@@ -807,21 +811,17 @@ function createPlayButton(waveformNum) {
             }
         }
     }
+
     return playButton;
 }
 
 function createForwardButton(waveformNum) {
     const forwardButton = document.createElement("button");
     forwardButton.classList.add("btn");
-    forwardButton.id = "forward";
+    forwardButton.classList.add("forward-button");
+    forwardButton.id = "forward" +String(waveformNum);
 
-    // add styling
-    forwardButton.style.setProperty("margin", "0px");
-    forwardButton.style.setProperty("border-left", 0);
-    forwardButton.style.setProperty("height", "35px");
-
-
-
+    // import icon
     const img = document.createElement("img");
     img.src = "resources/icons/forward15-seconds.svg";
     img.alt = "Play Button";
@@ -836,12 +836,10 @@ function createForwardButton(waveformNum) {
 function createBackwardButton(waveformNum) {
     const backwardButton = document.createElement("button");
     backwardButton.classList.add("btn");
-    backwardButton.id = "backward";
+    backwardButton.classList.add("backward-button");
+    backwardButton.id = "backward-button" + String(waveformNum);
 
-    // add styling
-    backwardButton.style.setProperty("border-right", 0);
-    backwardButton.style.setProperty("margin", "0px");
-    backwardButton.style.setProperty("height", "35px");
+
 
     const img = document.createElement("img");
     img.src = "resources/icons/backward15-seconds.svg";
@@ -856,7 +854,7 @@ function createBackwardButton(waveformNum) {
 
 
 // helper function that creates and styles container that holds the track buttons for tranport control
-function createDropdownContainer(waveformNum) {
+function createDropdownsContainer(waveformNum) {
     const dropdownsDiv = document.createElement("div");
     dropdownsDiv.id = "dropdownContainer" + String(waveformNum);
     dropdownsDiv.classList.add("dropdown-container");
@@ -918,7 +916,7 @@ function NewTrack(waveformNum) {
     let backwardButton = createBackwardButton(waveformNum);
 
     // make the containers for each row of buttons
-    let dropdownsCon = createDropdownContainer(waveformNum)
+    let dropdownsCon = createDropdownsContainer(waveformNum)
     let saveExportDetailsCon = createSEDContainer(waveformNum)
     let transportControlsCon = createTransportControlsContainer(waveformNum)
 

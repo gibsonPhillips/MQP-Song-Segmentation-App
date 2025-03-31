@@ -209,20 +209,60 @@
 
 /* styling every individual track button as needed */
 
-#save-track-button {
+.segment-button {
+    display: block;
+}
+
+.segment-button-dropdown {
+    display: block;
+}
+
+.bounderies-button {
+    display: block;
+}
+
+.bounderies-button-dropdown {
+    display: block;
+}
+
+.save-track-button {
     height: 29px;
     width: 29px;
     padding: 0px;
 }
 
-#export-track-button {
+.export-track-button {
     width: 29px;
     height: 29px;
     margin: 0px;
 }
 
+.segment-details-button {
+    display: block;
+}
+
+/* add transport controls styling here if needed */
+.play-button {
+    border-left: 0;
+    border-right: 0;
+    height: 35px;
+    margin: 0px;
+}
+
+.forward-button {
+    margin: 0px;
+    border-left: 0;
+    height: 35px;
+}
+
+.backward-button {
+    border-right: 0;
+    margin: 0px;
+    height: 35px;
+}
 
 
+/* ----------------------------------------------------------------------------------------------------- */
 
 
 /* delete me after demo */
