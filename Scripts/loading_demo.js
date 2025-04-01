@@ -9,7 +9,7 @@ Lbutton.addEventListener('click', function () {
 // initiate loading state of button
 export function LoadingState(id, button = Lbutton) {
     console.log(`here 1`)
-// call all children elements of our button
+    // call all children elements of our button
     // const button = document.getElementById(id);
     const childNodes = button.childNodes;
     console.log(childNodes)

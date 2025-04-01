@@ -132,6 +132,76 @@ let defaultColors = [
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
 
+
+// ---------------------------------------------
+// makes the segment button have a loading state
+// ---------------------------------------------
+
+// outdated from the demo but still here for reference
+/*
+const Lbutton = document.getElementById("loading-button")
+Lbutton.addEventListener('click', function () {
+    LoadingState(Lbutton.id)
+});
+*/
+
+// initiate loading state of button
+export function LoadingState(button) {
+
+// call all children elements of our button
+    // const button = document.getElementById(id);
+    console.log(`button2? ${button}`)
+    const childNodes = button.childNodes;
+    console.log(childNodes)
+    
+    // assign each child to a variable
+    // current convention is the first element (<i>) will be the loading symbol, 
+    // and the second element (<span>) will be the button content
+    const Licon = childNodes[1]
+    const Bicon = childNodes[0];
+
+    // actually set the content to loading state
+    Licon.style.display = "grid";
+    Bicon.style.display = "none";
+    console.log(`button haha ${button}`)
+
+    
+// !! replace with real function calls instead of arbitrary timer
+    setTimeout(function() {
+        ResetButtonContent(button)
+    }, 5000);
+}
+
+
+// this function resets any button from loading state back to static and ready
+export function ResetButtonContent(button) {
+
+    // call all children elements of our button
+    // const button = document.getElementById(id);
+    const childNodes = button.childNodes;
+    
+    // assign each child to a variable
+    // current convention is the first element (<i>) will be the loading symbol, 
+    // and the second element (<span>) will be the button content
+    // I have no clue why there's empty elements at index 1,3,and 5, so proceed with caution here. 
+    const Licon = childNodes[1];
+    const Bicon = childNodes[0];
+
+    // actually reset the content
+    Licon.style.display = "none";
+    Bicon.style.display = "grid";
+    console.log(`reset, button: ${button}, Licon: ${Licon}, text: {text}`);
+}
+
+// ---------------------------------------------
+// end of loading shinanigans
+// ---------------------------------------------
+
+
+
+
+
+
 // Sets external function for openMarkerNote in editBoundaries.js
 let externalOpenMarker = null;
 export function setExternalOpenMarker(fn) {
@@ -540,7 +610,7 @@ function createSegmentButton(waveformNum) {
     segmentButton.id = "segment-button" + String(waveformNum);
     // segmentButton.textContent = "Segment";
 
-    // set the icon inside
+    // set the segment icon inside
     const img = document.createElement("img");
     img.src = "resources/icons/TrackButtons/segment.svg";
     img.alt = "Segment Button";
@@ -548,7 +618,22 @@ function createSegmentButton(waveformNum) {
     img.style.setProperty("width", iconSize)
     segmentButton.appendChild(img);
 
+
+    /* <i style="display: none" class="fa fa-circle-o-notch fa-spin"></i> */
+
+    // add the loading icon
+    let loadingIcon = document.createElement("i");
+    loadingIcon.classList.add("fa-circle-o-notch");
+    loadingIcon.classList.add("fa");
+    loadingIcon.classList.add("fa-spin");
+    loadingIcon.style.setProperty("display", "none");
+    segmentButton.appendChild(loadingIcon);
+
     // !!! need event listener still
+    segmentButton.addEventListener('click', function() {
+        console.log(segmentButton);
+        LoadingState(segmentButton);
+    })
 
     return segmentButton;
 }
