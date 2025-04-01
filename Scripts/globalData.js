@@ -3,6 +3,10 @@ import RegionsPlugin from '../resources/wavesurfer/regions.esm.js';
 import ZoomPlugin from '../resources/wavesurfer/zoom.esm.js';
 import TimelinePlugin from '../resources/wavesurfer/timeline.esm.js';
 
+let externalLoadColorPreferences = null;
+export function setExternalLoadColorPreferences(fn) {
+    externalLoadColorPreferences = fn;
+}
 
 window.trackNames = [];
 window.songFilePaths = [];
@@ -11,14 +15,11 @@ window.clusters = [];
 
 let regionsPlugins = [];
 let currentlyEditing = false;
+let zoomTimeout;
 
 export let globalState = {
-    // stores label color map
-    colorMap: new Map(),
     // headers for segment data
     headers: ["number", "start", "end", "label"],
-    // stores the wavesurfer regions for segments
-    segmentRegions: [],
     currentZoom: 10,
     timelines: [],
     groupEditingMode: false,
@@ -27,7 +28,20 @@ export let globalState = {
     regionType: [],
     globalTimelineMode: false,
     editBoundaryMode: false,
-    waveformNums: []
+    waveformNums: [],
+    labelColors: [],
+    colorLegendMap: new Map(),
+    defaultColors: [
+        `rgba(213, 133, 42, 0.5)`,
+        `rgba(79, 120, 176, 0.5)`,
+        `rgba(132, 192, 63, 0.5)`,
+        `rgba(142, 87, 168, 0.5)`,
+        `rgba(169, 86, 88, 0.5)`,
+        `rgba(180, 205, 50, 0.5)`,
+        `rgba(62, 66, 193, 0.5)`,
+        `rgba(186, 69, 144, 0.5)`,
+        `rgba(88, 167, 109, 0.5)`    
+    ]
 };
 
 const htmlElements = {
@@ -42,12 +56,7 @@ const htmlElements = {
     importButton: document.getElementById('chooseSong'),
 
     // Segment buttons
-    // segmentDetailsButton: document.querySelector('#segment-details'),
     closeDialogButton: document.querySelector('#close-dialog'),
-    // addBoundaryButton: document.querySelector('#add-boundary'),
-    // removeBoundaryButton: document.querySelector('#remove-boundary'),
-    // changeBoundaryButton: document.querySelector('#change-boundary'),
-    // addMarkerButton: document.querySelector("#add-marker"),
 
     // algorithm buttons
     algorithm1Button: document.getElementById("segment-algorithm1"),
@@ -56,7 +65,7 @@ const htmlElements = {
     algorithm4Button: document.getElementById("segment-algorithm4"),
     algorithmAutoButton: document.getElementById("auto-segment"),
 
-    // load menu dialog
+    // load track menu dialog
     loadTrackMenuDialog: document.querySelector('#load-track-dialog'),
     loadTrackFiles: document.getElementById('load-track-files'),
     closeLoadTrackDialogButton: document.querySelector('#close-load-track-dialog'),
@@ -71,6 +80,22 @@ const htmlElements = {
     deleteTrackMenuDialog: document.querySelector('#delete-track-dialog'),
     deleteTrackFiles: document.getElementById('delete-track-files'),
     closeDeleteTrackDialogButton: document.querySelector('#close-delete-track-dialog'),
+
+    // load project menu dialog
+    loadProjectMenuDialog: document.querySelector('#load-project-dialog'),
+    loadProjectFiles: document.getElementById('load-project-files'),
+    closeLoadProjectDialogButton: document.querySelector('#close-load-project-dialog'),
+
+    // save track menu dialog
+    saveProjectMenuDialog: document.querySelector('#save-project-dialog'),
+    saveProjectFiles: document.getElementById('save-project-files'),
+    saveProjectAudioCheckbox: document.getElementById('save-project-audio-checkbox'),
+    closeSaveProjectDialogButton: document.querySelector('#close-save-project-dialog'),
+
+    // delete track menu dialog
+    deleteProjectMenuDialog: document.querySelector('#delete-project-dialog'),
+    deleteProjectFiles: document.getElementById('delete-project-files'),
+    closeDeleteProjectDialogButton: document.querySelector('#close-delete-project-dialog'),
 
     // are you sure dialog
     areYouSureDialog: document.querySelector('#are-you-sure-dialog'),
@@ -91,10 +116,25 @@ const htmlElements = {
     markerTitle: document.getElementById('marker-dialog-title'),
     markerNote: document.getElementById('marker-dialog-note'),
 
+    // context menu
+    colorDialog: document.getElementById('color-dialog'),
+    colorPreferenceDialog: document.getElementById('color-preference-dialog'),
+    colorContainer: document.getElementById('color-container'),
+    colorPreferencesButton: document.getElementById('colorPreferences'),
+    colorLegend: document.getElementById('color-legend'),
+    colorLegendTextInput: document.getElementById('color-legend-text-input'),
+    colorLegendColorInput: document.getElementById('color-legend-color-input'),
+    colorLegendSave: document.getElementById('save-color'),
+    colorCloseDialog: document.getElementById('color-dialog-close'),
+    colorPreferenceCloseDialog: document.getElementById('color-preference-dialog-close'),
+
     // project buttons
     openWorkspaceButton: document.getElementById('open-workspace'),
     loadTrackButton: document.getElementById('load-track'),
     deleteTrackButton: document.getElementById('delete-track'),
+    loadProjectButton: document.getElementById('load-project'),
+    saveProjectButton: document.getElementById('save-project'),
+    deleteProjectButton: document.getElementById('delete-project'),
 
     // drop down stuff
     fileDropdownContent: document.getElementById("file-dropdown-content"),
@@ -128,6 +168,7 @@ let defaultColors = [
     `rgba(186, 69, 144, 0.5)`,
     `rgba(88, 167, 109, 0.5)`    
 ]
+
 // Give regions a random color when there are no more default colors
 const random = (min, max) => Math.random() * (max - min) + min
 const randomColor = () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`
@@ -250,9 +291,63 @@ export function setExternalExportData(fn) {
 
 // updates the trackname of the given waveform
 export function updateTrackName(name, waveformNum) {
-    window.trackNames[waveformNum] = name;
+    
+    // Check to make sure the name is available
+    let uniqueTitle = false;
+    let currentTitle = name;
+    
+    while (!uniqueTitle) {
+        
+        uniqueTitle = true;
+        //Run for loop to check if the initial title is taken
+        for (var i = 0; i < window.trackNames.length; i++) {
+            if (i != waveformNum && window.trackNames[i] == currentTitle) {
+                uniqueTitle = false;
+            };
+        };
+
+        if (!uniqueTitle) {
+            currentTitle = getNextUniqueTitle(currentTitle)
+        }
+    }
+
+    //Make the updates
+    window.trackNames[waveformNum] = currentTitle;
     let title = document.getElementById('track-' + waveformNum + '-header');
-    title.textContent = name;
+    title.textContent = currentTitle;
+
+    return currentTitle;
+
+}
+
+// Helper function for updateTrackName that creates the next name
+function getNextUniqueTitle(currentTitle) {
+    let newTitle = '';
+    if (currentTitle.substring(currentTitle.length - 1) == ')') {
+        let doneState = 0;
+        let currentIndex = currentTitle.length - 2;
+        while (doneState == 0) {
+            currentIndex--;
+            if (currentIndex <= 0) {
+                doneState = -1;
+            } else if (currentTitle.substring(currentIndex, currentIndex + 1) == '(') {
+                doneState = 1;
+            }
+        }
+
+        if (doneState == 1 && !isNaN(currentTitle.substring(currentIndex + 1, currentTitle.length - 1))) {
+            newTitle = currentTitle.substring(0, currentIndex + 1) + (Number(currentTitle.substring(currentIndex + 1, currentTitle.length - 1)) + 1) + ')';
+        } else {
+            newTitle = currentTitle + ' (1)';
+        }
+
+
+    } else {
+        newTitle = currentTitle + ' (1)';
+    }
+
+    return newTitle;
+
 }
 
 // Updates the segment elements and display in table
@@ -264,23 +359,21 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
     if(updateWaveform) {
         regionsPlugins[waveformNum].clearRegions()
         globalState.regionType[waveformNum].clear();
-        globalState.colorMap.clear();
         document.getElementById(labelsContainerStr).textContent = "";
         document.getElementById(annotationContainerStr).textContent = "";
     }
 
     elements.forEach(element => {
-        if(!globalState.colorMap.has(element.label)) {
-            globalState.colorMap.set(element.label, getColor(globalState.colorMap.size));
+        if(!globalState.labelColors[waveformNum].has(element.label)) {
+            globalState.labelColors[waveformNum].set(element.label, {label: element.label, color: getColor(globalState.labelColors[waveformNum].size)});
         }
-
 
         if(updateWaveform) {
             // Create new region
             let region = regionsPlugins[waveformNum].addRegion({
                 start: element.start,
                 end: element.end,
-                color: globalState.colorMap.get(element.label),
+                color: globalState.labelColors[waveformNum].get(element.label).color,
                 drag: false,
                 resize: false,
                 // height: waveformsHeight
@@ -293,25 +386,44 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             labelInput.type = "text";
             labelInput.value = element.label;
             labelInput.className = "region-label-input" + String(waveformNum);
-            labelInput.style.backgroundColor = globalState.colorMap.get(element.label);
+            labelInput.style.backgroundColor = globalState.labelColors[waveformNum].get(element.label).color;
 
-            labelInput.addEventListener("keydown", function(event) {
-                if (event.key === "Enter") {
-                    if(globalState.groupEditingMode) {
-                        updateGroupSegmentLabel(element, event.target.value, waveformNum);
-                    } else {
-                        updateOneSegmentLabel(element, event.target.value, waveformNum);
-                    }  
+            let handledByKeydown = false;
+
+            function handleLabelInput(event) {
+                if (event.type === "keydown") {
+                    // Deal with escape
+                    if(event.key === "Escape") {
+                        event.target.value = element.label;
+                        labelInput.blur();
+                        return;
+                    }
+
+                    // Deal with enter
+                    if(event.key !== "Enter") return;
+                    handledByKeydown = true;
+                } 
+
+                // Deal with click out
+                if(event.type === "blur" && handledByKeydown) {
+                    handledByKeydown = false;
+                    return;
                 }
-            });
 
-            // labelInput.addEventListener("blur", (event) => {
-            //     if(globalState.groupEditingMode) {
-            //         updateGroupSegmentLabel(element, event.target.value, waveformNum);
-            //     } else {
-            //         updateOneSegmentLabel(element, event.target.value, waveformNum);
-            //     }                
-            // });
+                if(globalState.groupEditingMode) {
+                    updateGroupSegmentLabel(element, event.target.value, waveformNum);
+                    updateTrackColors(waveformNum);
+                } else {
+                    updateOneSegmentLabel(element, event.target.value, waveformNum);
+                    updateTrackColors(waveformNum);
+                }
+
+                // TODO front end connect for all track editing
+                // updateAllTrackGroupSegmentLabel(element, event.target.value);                
+            }
+
+            labelInput.addEventListener("blur", handleLabelInput);
+            labelInput.addEventListener("keydown", handleLabelInput);
             
             labelInput.addEventListener("input", function(event) {
                 this.value = this.value.replace(/,/g, "");
@@ -335,6 +447,59 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 this.value = this.value.replace(/,/g, "");
             });
             document.getElementById(annotationContainerStr).appendChild(annotationInput);
+
+            // Listen for right-click (contextmenu event)
+            region.element.addEventListener('contextmenu', (e) => {
+                e.preventDefault(); // Prevent default browser menu
+    
+                let selectedBox = null;
+                let selectedColor = region.color;
+                let selectedLabel = element.label;
+                let labels = document.getElementById(labelsContainerStr).children;
+
+                // Add in color boxes
+                htmlElements.colorContainer.textContent = '';
+                globalState.defaultColors.forEach(color => {
+                    const box = document.createElement('div');
+                    box.classList.add('color-box');
+                    box.style.backgroundColor = color;
+    
+                    // set current selection to current color
+                    if(color === selectedColor) {
+                        box.classList.add('selected');
+                        selectedBox = box;
+                    }
+            
+                    // update color when new color box is clicked
+                    box.addEventListener('click', () => {
+                        if (selectedBox) {
+                            selectedBox.classList.remove('selected');
+                        }
+                        box.classList.add('selected');
+                        selectedBox = box;
+                        selectedColor = box.style.backgroundColor;
+
+                        globalState.labelColors[waveformNum].set(element.label, {label: element.label, color: selectedColor});
+
+                        // update all segments with the selected label
+                        for(let i = 0; i < elements.length; i++) {
+                            let tempElement = elements[i];
+                            let tempRegion = htmlElements.regions[waveformNum].regions[i];
+                            let tempLabel = labels[i];
+                            if(tempElement.label === selectedLabel) {
+                                tempRegion.color = selectedColor;
+                                tempRegion.element.style.backgroundColor = selectedColor;
+                                tempLabel.style.backgroundColor = selectedColor;
+                            }
+                        }
+                        updateTrackColors(waveformNum); 
+                    });
+            
+                    htmlElements.colorContainer.appendChild(box);
+                });
+    
+                htmlElements.colorDialog.showModal();
+            });
 
             // Update position when region is moved/resized
             region.on("update-end", () => updateLabelPositions(waveformNum));
@@ -425,7 +590,7 @@ export function updateSegmentAnnotationPositions(waveformNum) {
 // Updates the specified segment elements label value
 function updateOneSegmentLabel(segmentElement, value, waveformNum) {
     segmentElement.label = value;
-    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+    updateSegmentElementsList(window.segmentData[waveformNum], false, waveformNum);
 }
 
 // Updates the specified segment elements label value for all those labels
@@ -436,7 +601,23 @@ function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
             element.label = value;
         }
     });
-    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
+    updateSegmentElementsList(window.segmentData[waveformNum], false, waveformNum);
+}
+
+// Updates the specified segment elements label value for all those labels
+function updateAllTrackGroupSegmentLabel(segmentElement, value) {
+    let label = segmentElement.label;
+    let i = 0;
+    window.segmentData.forEach(track => {
+        track.forEach(element => {
+            if(element.label === label) {
+                element.label = value;
+            }
+        });
+        updateSegmentElementsList(track, false, i);
+        updateTrackColors(i);
+        i++;
+    });
 }
 
 // Gets the next color to be used for segment region
@@ -444,7 +625,7 @@ function getColor(length) {
     if(length > 10) {
         return randomColor();
     } else {
-        return defaultColors[length];
+        return globalState.defaultColors[length];
     }
 }
 
@@ -579,6 +760,7 @@ function createTrackTitle(waveformNum) {
         document.getElementById("waveform" + String(waveformNum)).remove();
         document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
         document.getElementById("track" + String(waveformNum)).remove();
+        window.trackNames[waveformNum] = null;
     })
 
     titleBar.appendChild(closeButton);
@@ -671,28 +853,28 @@ function createSegmentDropdownButton(waveformNum) {
         const algorithm1 = document.createElement("a");
         algorithm1.href = "#";
         algorithm1.id = "segment-algorithm1";
-        algorithm1.textContent = "Algorithm 1: Human Percieved Frequencies";
+        algorithm1.textContent = "CQT Feature Extraction with Agglomerative Clustering";
         dropdownContent.appendChild(algorithm1);
         algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
 
         const algorithm2 = document.createElement("a");
         algorithm2.href = "#";
         algorithm2.id = "segment-algorithm2";
-        algorithm2.textContent = "Algorithm 2: Equal Distance Frequencies";
+        algorithm2.textContent = "Mel Spectrogram Feature Extraction and K-Means Clustering";
         dropdownContent.appendChild(algorithm2);
         algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
 
         const algorithm3 = document.createElement("a");
         algorithm3.href = "#";
         algorithm3.id = "segment-algorithm3";
-        algorithm3.textContent = "Algorithm 3: Human Percieved Frequencies";
+        algorithm3.textContent = "CQT Feature Extraction and Gaussian Mixture Model Clustering";
         dropdownContent.appendChild(algorithm3);
         algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
 
         const algorithm4 = document.createElement("a");
         algorithm4.href = "#";
         algorithm4.id = "segment-algorithm4";
-        algorithm4.textContent = "Algorithm 4: Multi-use";
+        algorithm4.textContent = "Chroma Short-Time Fourier Transform Feature Extraction and K-Means Clustering";
         dropdownContent.appendChild(algorithm4);
         algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
 
@@ -1120,6 +1302,7 @@ function NewTrack(waveformNum) {
 export function setupNextWaveform() {
     // Create div elements for label, waveform, segment annotations
     // let num = window.songFilePaths.length;
+    externalLoadColorPreferences();
     let num = 0;
     if(globalState.waveformNums.length == 0) {
         globalState.waveformNums.push(0);
@@ -1152,7 +1335,6 @@ export function setupNextWaveform() {
     window.segmentData.push([]);
     window.clusters.push(0);
     regionsPlugins.push(RegionsPlugin.create());
-    globalState.segmentRegions.push([]);
     globalState.timelines.push(null);
     globalState.wavesurferWaveforms.push(WaveSurfer.create({
         container: "#waveform" + String(num),
@@ -1164,6 +1346,7 @@ export function setupNextWaveform() {
     }));
     globalState.markerNotes.push(new Map());
     globalState.regionType.push(new Map());
+    globalState.labelColors.push(new Map());
 
     // Reset edit mode
     globalState.editBoundaryMode = false;
@@ -1201,8 +1384,9 @@ export function setupNextWaveform() {
     });
 
     // Update labels and timeline on zoom
-    globalState.wavesurferWaveforms[num].on("zoom", (newPxPerSec) => {
+    globalState.wavesurferWaveforms[num].on("zoom", async (newPxPerSec) => {
         if(currentlyEditing) return;
+        if(globalState.currentZoom === newPxPerSec) return;
         globalState.currentZoom = newPxPerSec;
 
         if(globalState.globalTimelineMode) {
@@ -1222,6 +1406,21 @@ export function setupNextWaveform() {
             updateSegmentAnnotationPositions(num);
             updateTimeline(num);
         }
+
+        // run update after no more zoom actions have been triggered in 1 second
+        clearTimeout(zoomTimeout);
+        zoomTimeout = setTimeout(() => {
+            if(globalState.globalTimelineMode) {
+                let i = 0;
+                window.segmentData.forEach(segmentData => {
+                    updateSegmentElementsList(segmentData, true, i);  
+                    i++;                  
+                });
+            } else {
+                updateSegmentElementsList(window.segmentData[num], true, num);
+            }
+            
+        }, 1000);
     });
 
     // Handle region update for editing boundaries
@@ -1297,4 +1496,14 @@ function getNextRegion(waveformNum, index) {
     }
     if(index > htmlElements.regions[waveformNum].regions.length-1) return null;
     return region;
+}
+
+// Updates the specified track colors based on color preferences metadata
+export function updateTrackColors(waveformNum) {
+    globalState.labelColors[waveformNum].forEach(entry => {
+        if(globalState.colorLegendMap.has(entry.label)) {
+            globalState.labelColors[waveformNum].set(entry.label, globalState.colorLegendMap.get(entry.label));
+        }
+    });
+    updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
