@@ -155,19 +155,7 @@ const htmlElements = {
 };
 export default htmlElements;
 
-const iconSize = "20px"
-
-let defaultColors = [
-    `rgba(213, 133, 42, 0.5)`,
-    `rgba(79, 120, 176, 0.5)`,
-    `rgba(132, 192, 63, 0.5)`,
-    `rgba(142, 87, 168, 0.5)`,
-    `rgba(169, 86, 88, 0.5)`,
-    `rgba(180, 205, 50, 0.5)`,
-    `rgba(62, 66, 193, 0.5)`,
-    `rgba(186, 69, 144, 0.5)`,
-    `rgba(88, 167, 109, 0.5)`    
-]
+const iconSize = "20px";
 
 // Give regions a random color when there are no more default colors
 const random = (min, max) => Math.random() * (max - min) + min
@@ -1078,7 +1066,11 @@ function createSegmentDetailsButton(waveformNum) {
             let tr = document.createElement('tr');
             for (let key in element) {
                 let td = document.createElement('td');
-                td.textContent = element[key]
+                if (key == 'start' || key == 'end') {
+                    td.textContent = Math.round(Number(element[key]) * 100) / 100;
+                } else {
+                    td.textContent = element[key]
+                }
                 tr.appendChild(td)
             }
             tbody.appendChild(tr);
