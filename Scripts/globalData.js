@@ -1149,7 +1149,16 @@ export function setupNextWaveform() {
         // run update after no more zoom actions have been triggered in 1 second
         clearTimeout(zoomTimeout);
         zoomTimeout = setTimeout(() => {
-            updateSegmentElementsList(window.segmentData[num], true, num);
+            if(globalState.globalTimelineMode) {
+                let i = 0;
+                window.segmentData.forEach(segmentData => {
+                    updateSegmentElementsList(segmentData, true, i);  
+                    i++;                  
+                });
+            } else {
+                updateSegmentElementsList(window.segmentData[num], true, num);
+            }
+            
         }, 1000);
     });
 
