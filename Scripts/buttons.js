@@ -1,7 +1,17 @@
-import { updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
+import { updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
+
+let externalSaveColorPreferences = null;
+export function setExternalSaveColorPreferences(fn) {
+    externalSaveColorPreferences = fn;
+}
+
+let externalLoadColorPreferences = null;
+export function setExternalLoadColorPreferences2(fn) {
+    externalLoadColorPreferences = fn;
+}
 
 // Button click actions
 htmlElements.closeDialogButton.onclick = () => {
@@ -10,6 +20,14 @@ htmlElements.closeDialogButton.onclick = () => {
 
 htmlElements.closeMarkerDialog.onclick = () => {
     htmlElements.markerDialog.close();
+}
+
+htmlElements.colorCloseDialog.onclick = () => {
+    htmlElements.colorDialog.close();
+}
+
+htmlElements.colorPreferenceCloseDialog.onclick = () => {
+    htmlElements.colorPreferenceDialog.close();
 }
 
 htmlElements.closeLoadTrackDialogButton.onclick = () => {
@@ -42,6 +60,82 @@ htmlElements.closeAreYouSureDialogButton.onclick = () => {
 
 htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
+}
+
+// Set up saving of new color legends
+htmlElements.colorLegendSave.addEventListener('click', () => {
+    globalState.colorLegendMap.set(htmlElements.colorLegendTextInput.value, {label: htmlElements.colorLegendTextInput.value, color: htmlElements.colorLegendColorInput.value + "50"});
+
+    const container = document.createElement('div');
+    container.classList.add('color-input-picker');
+
+    const text = document.createElement('span');
+    text.textContent = htmlElements.colorLegendTextInput.value;
+
+    const colorBox = document.createElement('div');
+    colorBox.classList.add('color-box');
+    colorBox.style.backgroundColor = htmlElements.colorLegendColorInput.value + "50";
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.classList.add('btn');
+    deleteBtn.textContent = "Delete";
+    
+    container.appendChild(text);
+    container.appendChild(colorBox);
+    container.appendChild(deleteBtn);
+    htmlElements.colorLegend.appendChild(container);
+
+    // Deleting label
+    deleteBtn.addEventListener('click', () => {
+        container.textContent = '';
+        globalState.colorLegendMap.delete(htmlElements.colorLegendTextInput.value);
+    });
+
+    // Update existing tracks
+    for (let i = 0; i < globalState.labelColors.length; i++) {
+        updateTrackColors(i);            
+    }
+
+    // Save color preferences
+    externalSaveColorPreferences();
+
+    htmlElements.colorLegendTextInput.value = '';
+});
+
+htmlElements.colorPreferencesButton.onclick = async () => {
+    await externalLoadColorPreferences();
+    htmlElements.colorLegend.textContent = '';
+
+    // Set up color legend
+    for (const [key, value] of globalState.colorLegendMap) {
+        const container = document.createElement('div');
+        container.classList.add('color-input-picker');
+
+        const text = document.createElement('span');
+        text.textContent = key;
+
+        const colorBox = document.createElement('div');
+        colorBox.classList.add('color-box');
+        colorBox.style.backgroundColor = value.color;    
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('btn');
+        deleteBtn.textContent = "Delete";
+        
+        container.appendChild(text);
+        container.appendChild(colorBox);
+        container.appendChild(deleteBtn);
+        htmlElements.colorLegend.appendChild(container);
+
+        // Deleting label
+        deleteBtn.addEventListener('click', () => {
+            container.textContent = '';
+            globalState.colorLegendMap.delete(key);
+            externalSaveColorPreferences();
+        });
+    }
+
+    htmlElements.colorPreferenceDialog.showModal();
 }
 
 htmlElements.groupEditingButton.onclick = () => {
