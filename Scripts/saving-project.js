@@ -719,6 +719,8 @@ function saveOneTrackData(directory, trackName, waveformNum, saveTrackAudioFile)
                 window.api.copySongFile(window.songFilePaths[waveformNum], directory + '\\' + filePathEnd);
             }
 
+            updateTrackName(trackName, waveformNum);
+
         } catch (error) {
             console.error('Error in writing to file:\n', error);
             presentErrorDialog('Error in writing to file:\n' + error)

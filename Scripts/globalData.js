@@ -196,9 +196,63 @@ export function setExternalExportData(fn) {
 
 // updates the trackname of the given waveform
 export function updateTrackName(name, waveformNum) {
-    window.trackNames[waveformNum] = name;
+    
+    // Check to make sure the name is available
+    let uniqueTitle = false;
+    let currentTitle = name;
+    
+    while (!uniqueTitle) {
+        
+        uniqueTitle = true;
+        //Run for loop to check if the initial title is taken
+        for (var i = 0; i < window.trackNames.length; i++) {
+            if (i != waveformNum && window.trackNames[i] == currentTitle) {
+                uniqueTitle = false;
+            };
+        };
+
+        if (!uniqueTitle) {
+            currentTitle = getNextUniqueTitle(currentTitle)
+        }
+    }
+
+    //Make the updates
+    window.trackNames[waveformNum] = currentTitle;
     let title = document.getElementById('track-' + waveformNum + '-header');
-    title.textContent = name;
+    title.textContent = currentTitle;
+
+    return currentTitle;
+
+}
+
+// Helper function for updateTrackName that creates the next name
+function getNextUniqueTitle(currentTitle) {
+    let newTitle = '';
+    if (currentTitle.substring(currentTitle.length - 1) == ')') {
+        let doneState = 0;
+        let currentIndex = currentTitle.length - 2;
+        while (doneState == 0) {
+            currentIndex--;
+            if (currentIndex <= 0) {
+                doneState = -1;
+            } else if (currentTitle.substring(currentIndex, currentIndex + 1) == '(') {
+                doneState = 1;
+            }
+        }
+
+        if (doneState == 1 && !isNaN(currentTitle.substring(currentIndex + 1, currentTitle.length - 1))) {
+            newTitle = currentTitle.substring(0, currentIndex + 1) + (Number(currentTitle.substring(currentIndex + 1, currentTitle.length - 1)) + 1) + ')';
+        } else {
+            newTitle = currentTitle + ' (1)';
+        }
+
+
+    } else {
+        newTitle = currentTitle + ' (1)';
+    }
+
+    return newTitle;
+
 }
 
 // Updates the segment elements and display in table
