@@ -436,7 +436,7 @@ htmlElements.deleteProjectButton.addEventListener('click', async () => {
                     chosenProject = file
                     console.log(chosenProject);
                     htmlElements.deleteProjectMenuDialog.close();
-                    deleteTheProjectData(chosenProject)
+                    await deleteTheProjectData(chosenProject)
                 })
                 vbox.appendChild(newButton)
             });
@@ -554,26 +554,24 @@ async function deleteTheProjectData(chosenProject) {
 
     let projectPath = projectsWorkspace + '\\' + chosenProject;
 
-    // delete all the tracks
-    await window.api.getDirectoryContents(projectPath).then((files) => {
-        files.forEach(file => {
-            deleteTheTrack(projectPath + '\\' + file);
-        });
-        
-        //delete the project directory
-        window.api.deleteDir(projectPath).then((result) => {
-            console.log('Project Wiped');
-        }).catch((error) => {
-            // Throw error if there is an issue getting the files within the directory
-            console.error('Issue deleting directory:\n' + error);
-            presentErrorDialog('Issue deleting directory:\n' + error);
-        });
+    console.log("DELETING PROJECT BEGIN");
 
-    }).catch((error) => {
-        // Throw error if there is an issue getting the files within the directory
-        console.error('Issue getting the files within the directory:\n' + error);
-        presentErrorDialog('Issue getting the files within the directory:\n' + error);
-    });
+    try {
+        let files = await window.api.getDirectoryContents(projectPath);
+
+        for (const file of files) {
+            await deleteTheTrack(projectPath + '\\' + file);
+            console.log("FILE WIPED");
+        }
+
+        await window.api.deleteDir(projectPath);
+        console.log('PROJECT WIPED');
+    } catch (error) {
+        console.error('Issue deleting files or directory:\n' + error);
+        presentErrorDialog('Issue deleting files or directory:\n' + error);
+    }
+
+    console.log("DELETING PROJECT END");
 }
 
 // Helper Functions
