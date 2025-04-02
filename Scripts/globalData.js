@@ -582,21 +582,6 @@ function setWaveformHeights(divHeight) {
     });
 }
 
-// determines  the height for all the waveforms
-let slider = document.getElementById('trackHeight')
-let root = document.documentElement; // Selects :root
-let waveformsHeight = parseInt(slider.value);    // gets value from the slider. Default value set there. 
-
-slider.addEventListener("input", function () {
-    let divHeight = parseInt(slider.value);
-
-    // dynamically call the helpers to set trackheights and waveformheights
-    setTrackHeights(divHeight)
-    setWaveformHeights(divHeight)
-    
-})
-
-
 // to count out id's sequentially
 let idCounter = 0
 
