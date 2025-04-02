@@ -317,15 +317,6 @@
 
     </dialog>
 
-    <dialog id="color-dialog">
-        <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="color-dialog-close"></button>
-            <h1 class="title">Color</h1>
-            <button aria-label="Resize" disabled class="hidden"></button>
-        </div>
-        <div id="color-container"></div>
-    </dialog>
-
     <dialog id="color-preference-dialog">
         <div class="title-bar">
             <button aria-label="Close" class="collapsible coll" id="color-preference-dialog-close"></button>
@@ -333,9 +324,10 @@
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <div id="color-input-picker">
+            <div>Color will be slightly different so it is transparent</div>
             <input type="text" placeholder="Label Name" id="color-legend-text-input">
             <input type="color" id="color-legend-color-input">
-            <button class="btn" id="save-color">Save</button>
+            <button class="btn" id="save-color">Add</button>
         </div>
         <div id="color-legend"></div>
     </dialog>

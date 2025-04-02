@@ -117,7 +117,6 @@ const htmlElements = {
     markerNote: document.getElementById('marker-dialog-note'),
 
     // context menu
-    colorDialog: document.getElementById('color-dialog'),
     colorPreferenceDialog: document.getElementById('color-preference-dialog'),
     colorContainer: document.getElementById('color-container'),
     colorPreferencesButton: document.getElementById('colorPreferences'),
@@ -125,7 +124,6 @@ const htmlElements = {
     colorLegendTextInput: document.getElementById('color-legend-text-input'),
     colorLegendColorInput: document.getElementById('color-legend-color-input'),
     colorLegendSave: document.getElementById('save-color'),
-    colorCloseDialog: document.getElementById('color-dialog-close'),
     colorPreferenceCloseDialog: document.getElementById('color-preference-dialog-close'),
 
     // project buttons
@@ -363,59 +361,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                 this.value = this.value.replace(/,/g, "");
             });
             document.getElementById(annotationContainerStr).appendChild(annotationInput);
-
-            // Listen for right-click (contextmenu event)
-            region.element.addEventListener('contextmenu', (e) => {
-                e.preventDefault(); // Prevent default browser menu
-    
-                let selectedBox = null;
-                let selectedColor = region.color;
-                let selectedLabel = element.label;
-                let labels = document.getElementById(labelsContainerStr).children;
-
-                // Add in color boxes
-                htmlElements.colorContainer.textContent = '';
-                globalState.defaultColors.forEach(color => {
-                    const box = document.createElement('div');
-                    box.classList.add('color-box');
-                    box.style.backgroundColor = color;
-    
-                    // set current selection to current color
-                    if(color === selectedColor) {
-                        box.classList.add('selected');
-                        selectedBox = box;
-                    }
-            
-                    // update color when new color box is clicked
-                    box.addEventListener('click', () => {
-                        if (selectedBox) {
-                            selectedBox.classList.remove('selected');
-                        }
-                        box.classList.add('selected');
-                        selectedBox = box;
-                        selectedColor = box.style.backgroundColor;
-
-                        globalState.labelColors[waveformNum].set(element.label, {label: element.label, color: selectedColor});
-
-                        // update all segments with the selected label
-                        for(let i = 0; i < elements.length; i++) {
-                            let tempElement = elements[i];
-                            let tempRegion = htmlElements.regions[waveformNum].regions[i];
-                            let tempLabel = labels[i];
-                            if(tempElement.label === selectedLabel) {
-                                tempRegion.color = selectedColor;
-                                tempRegion.element.style.backgroundColor = selectedColor;
-                                tempLabel.style.backgroundColor = selectedColor;
-                            }
-                        }
-                        updateTrackColors(waveformNum); 
-                    });
-            
-                    htmlElements.colorContainer.appendChild(box);
-                });
-    
-                htmlElements.colorDialog.showModal();
-            });
 
             // Update position when region is moved/resized
             region.on("update-end", () => updateLabelPositions(waveformNum));

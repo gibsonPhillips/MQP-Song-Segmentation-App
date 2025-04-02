@@ -22,10 +22,6 @@ htmlElements.closeMarkerDialog.onclick = () => {
     htmlElements.markerDialog.close();
 }
 
-htmlElements.colorCloseDialog.onclick = () => {
-    htmlElements.colorDialog.close();
-}
-
 htmlElements.colorPreferenceCloseDialog.onclick = () => {
     htmlElements.colorPreferenceDialog.close();
 }
@@ -108,31 +104,33 @@ htmlElements.colorPreferencesButton.onclick = async () => {
 
     // Set up color legend
     for (const [key, value] of globalState.colorLegendMap) {
-        const container = document.createElement('div');
-        container.classList.add('color-input-picker');
-
-        const text = document.createElement('span');
-        text.textContent = key;
-
-        const colorBox = document.createElement('div');
-        colorBox.classList.add('color-box');
-        colorBox.style.backgroundColor = value.color;    
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.classList.add('btn');
-        deleteBtn.textContent = "Delete";
-        
-        container.appendChild(text);
-        container.appendChild(colorBox);
-        container.appendChild(deleteBtn);
-        htmlElements.colorLegend.appendChild(container);
-
-        // Deleting label
-        deleteBtn.addEventListener('click', () => {
-            container.textContent = '';
-            globalState.colorLegendMap.delete(key);
-            externalSaveColorPreferences();
-        });
+        if(key !== '' && value !== 'undefined') {
+            const container = document.createElement('div');
+            container.classList.add('color-input-picker');
+    
+            const text = document.createElement('span');
+            text.textContent = key;
+    
+            const colorBox = document.createElement('div');
+            colorBox.classList.add('color-box');
+            colorBox.style.backgroundColor = value.color;    
+    
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('btn');
+            deleteBtn.textContent = "Delete";
+            
+            container.appendChild(text);
+            container.appendChild(colorBox);
+            container.appendChild(deleteBtn);
+            htmlElements.colorLegend.appendChild(container);
+    
+            // Deleting label
+            deleteBtn.addEventListener('click', () => {
+                container.textContent = '';
+                globalState.colorLegendMap.delete(key);
+                externalSaveColorPreferences();
+            });
+        }
     }
 
     htmlElements.colorPreferenceDialog.showModal();
