@@ -1011,7 +1011,6 @@ export function setupNextWaveform() {
         progressColor: 'rgb(5, 5, 5)',
         minPxPerSec: 100,
         plugins: [regionsPlugins[num], ZoomPlugin.create({scale:0.1})],
-        height: waveformsHeight,
     }));
     globalState.markerNotes.push(new Map());
     globalState.regionType.push(new Map());
