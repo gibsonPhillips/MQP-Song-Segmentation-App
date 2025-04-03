@@ -682,6 +682,10 @@ function createTrackTitle(waveformNum) {
     title.setAttribute('id', 'track-' + waveformNum + '-header');
     title.textContent = 'Track ' + waveformNum;
 
+    title.addEventListener("click", function() {
+        console.log('clicked!')
+    })
+
     titleBar.appendChild(title);
 
     let resizeButton = document.createElement('button');
