@@ -594,9 +594,13 @@ function createTrackTitle(waveformNum) {
 
     // Create the close button
     let closeButton = document.createElement('button');
-    closeButton.setAttribute('aria-label', 'Close');
-    closeButton.classList.add('collapsible', 'coll');
+    closeButton.classList.add('close-button');
     closeButton.setAttribute('id', 'close-track-' + waveformNum);
+    //create the x icon
+    let closeImage = document.createElement('img');
+    closeImage.setAttribute('src', 'resources/icons/xmark.svg');
+    closeImage.classList.add('icon');
+    closeButton.appendChild(closeImage);
 
     // add event listener
     closeButton.addEventListener("click", function() {
