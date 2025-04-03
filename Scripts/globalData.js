@@ -175,11 +175,8 @@ Lbutton.addEventListener('click', function () {
 // initiate loading state of button
 export function LoadingState(button) {
 
-// call all children elements of our button
-    // const button = document.getElementById(id);
-    console.log(`button2? ${button}`)
+    // call all children elements of our button
     const childNodes = button.childNodes;
-    console.log(childNodes)
     
     // assign each child to a variable
     // current convention is the first element (<i>) will be the loading symbol, 
@@ -190,13 +187,6 @@ export function LoadingState(button) {
     // actually set the content to loading state
     Licon.style.display = "grid";
     Bicon.style.display = "none";
-    console.log(`button haha ${button}`)
-
-    
-// !! replace with real function calls instead of arbitrary timer
-    setTimeout(function() {
-        ResetButtonContent(button)
-    }, 5000);
 }
 
 
@@ -217,7 +207,6 @@ export function ResetButtonContent(button) {
     // actually reset the content
     Licon.style.display = "none";
     Bicon.style.display = "grid";
-    console.log(`reset, button: ${button}, Licon: ${Licon}, text: {text}`);
 }
 
 // ---------------------------------------------
@@ -729,17 +718,11 @@ function createSegmentButton(waveformNum) {
     loadingIcon.style.setProperty("display", "none");
     segmentButton.appendChild(loadingIcon);
 
-    // !!! need event listener still
-    segmentButton.addEventListener('click', function() {
-        console.log(segmentButton);
-        LoadingState(segmentButton);
-    })
-
     return segmentButton;
 }
 
 // helper function creates button and adds event listener for each track
-function createSegmentDropdownButton(waveformNum) {
+function createSegmentDropdownButton(waveformNum, segmentButton) {
     // Create dropdown container
         const dropdown = document.createElement("div");
         dropdown.classList.add("dropdown");
@@ -773,35 +756,55 @@ function createSegmentDropdownButton(waveformNum) {
         algorithm1.id = "segment-algorithm1";
         algorithm1.textContent = "CQT Feat. Ext. and Agglomerative Cluster";
         dropdownContent.appendChild(algorithm1);
-        algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
+        algorithm1.addEventListener("click", async () => {
+            LoadingState(segmentButton);
+            await externalSegment(1, waveformNum);
+            ResetButtonContent(segmentButton);
+        });
 
         const algorithm2 = document.createElement("a");
         algorithm2.href = "#";
         algorithm2.id = "segment-algorithm2";
         algorithm2.textContent = "Mel Spectrogram Feat. Ext. and K-Means Cluster";
         dropdownContent.appendChild(algorithm2);
-        algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
+        algorithm2.addEventListener("click", async () => {
+            LoadingState(segmentButton);
+            await externalSegment(2, waveformNum);
+            ResetButtonContent(segmentButton);
+        });
 
         const algorithm3 = document.createElement("a");
         algorithm3.href = "#";
         algorithm3.id = "segment-algorithm3";
         algorithm3.textContent = "CQT Feat. Ext. and GMM Cluster";
         dropdownContent.appendChild(algorithm3);
-        algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
+        algorithm3.addEventListener("click", async () => {
+            LoadingState(segmentButton);
+            await externalSegment(3, waveformNum);
+            ResetButtonContent(segmentButton);
+        });
 
         const algorithm4 = document.createElement("a");
         algorithm4.href = "#";
         algorithm4.id = "segment-algorithm4";
         algorithm4.textContent = "Chroma STFT Feat. Ext. and K-Means Cluster";
         dropdownContent.appendChild(algorithm4);
-        algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
+        algorithm4.addEventListener("click", async () => {
+            LoadingState(segmentButton);
+            await externalSegment(4, waveformNum);
+            ResetButtonContent(segmentButton);
+        });
 
         const algorithmAuto = document.createElement("a");
         algorithmAuto.href = "#";
         algorithmAuto.id = "auto-segment";
         algorithmAuto.textContent = "Auto Segment";
         dropdownContent.appendChild(algorithmAuto);
-        algorithmAuto.addEventListener("click", () => {externalAutoSegment(4, 4, 0, false, waveformNum)});
+        algorithmAuto.addEventListener("click", () => {
+            LoadingState(segmentButton);
+            externalAutoSegment(4, 4, 0, false, waveformNum);
+            ResetButtonContent(segmentButton);
+        });
 
         // Append button and dropdown content to dropdown container
         dropdown.appendChild(algoButton);
@@ -1163,7 +1166,7 @@ function NewTrack(waveformNum) {
 
     // make the buttons
     let segment = createSegmentButton(waveformNum);
-    let algDropdown = createSegmentDropdownButton(waveformNum);
+    let algDropdown = createSegmentDropdownButton(waveformNum, segment);
     let boundary = createBoundaryButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
     let saveTrackDropdown = createSaveTrackButton(waveformNum);
@@ -1264,6 +1267,7 @@ export function setupNextWaveform() {
         progressColor: 'rgb(5, 5, 5)',
         minPxPerSec: 100,
         plugins: [regionsPlugins[num], ZoomPlugin.create({scale:0.1})],
+        height: 161.3,
     }));
     globalState.markerNotes.push(new Map());
     globalState.regionType.push(new Map());

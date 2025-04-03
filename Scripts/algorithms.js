@@ -60,10 +60,13 @@ async function segment(algorithm, waveformNum) {
 
 // Determines the variability to be used for an algorithm
 function determineVariability() {
-    const target = document.getElementById('variability-slider');
-    let num = parseInt(Number(target.value)/100) + 2
-    console.log(num)
-    return num
+    //TODO fix with new slider
+    // const target = document.getElementById('variability-slider');
+    // let num = parseInt(Number(target.value)/100) + 2
+    // console.log(num)
+    // return num
+
+    return 4;
 }
 
 // Set the function in global.js
