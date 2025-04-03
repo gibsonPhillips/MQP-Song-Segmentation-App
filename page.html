@@ -325,7 +325,7 @@
 
     <dialog id="marker-dialog">
         <div class="title-bar">
-            <button class="vlose-button" id="marker-dialog-close">
+            <button class="close-button" id="marker-dialog-close">
                 <img src="resources\icons\xmark.svg" class="icon">
             </button>
             <h1 class="title">Marker</h1>
@@ -336,6 +336,21 @@
             <textarea id="marker-dialog-note">Placeholder</textarea>
             <button class="btn" id="delete-marker">Delete</button>
             <button class="btn" id="save-marker">Save</button>
+        </div>
+
+    </dialog>
+
+    <dialog id="title-change-dialog">
+        <div class="title-bar">
+            <button class="close-button" id="title-change-dialog-close">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
+            <h1 class="title">Change Track Title</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+        <div id="title-change-dialog-container">
+            <input type="text" value="New Title" id="new-title-input">
+            <button class="btn" id="title-change-save">Save</button>
         </div>
 
     </dialog>

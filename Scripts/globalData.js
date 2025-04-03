@@ -12,6 +12,7 @@ window.trackNames = [];
 window.songFilePaths = [];
 window.segmentData = [];
 window.clusters = [];
+window.currentWaveformNum;
 
 let regionsPlugins = [];
 let currentlyEditing = false;
@@ -115,6 +116,12 @@ const htmlElements = {
     saveMarker: document.getElementById('save-marker'),
     markerTitle: document.getElementById('marker-dialog-title'),
     markerNote: document.getElementById('marker-dialog-note'),
+
+    // Title Change dialog
+    titleChangeDialog: document.getElementById('title-change-dialog'),
+    closeTitleChangeDialog: document.getElementById('title-change-dialog-close'),
+    titleChangeSave: document.getElementById('title-change-save'),
+    titleChangeInput: document.getElementById('new-title-input'),
 
     // context menu
     colorPreferenceDialog: document.getElementById('color-preference-dialog'),
@@ -683,7 +690,9 @@ function createTrackTitle(waveformNum) {
     title.textContent = 'Track ' + waveformNum;
 
     title.addEventListener("click", function() {
-        console.log('clicked!')
+        window.currentWaveformNum = waveformNum;
+        htmlElements.titleChangeInput.value = window.trackNames[waveformNum];
+        htmlElements.titleChangeDialog.showModal();
     })
 
     titleBar.appendChild(title);
