@@ -1,5 +1,5 @@
 import htmlElements from './globalData.js';
-import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences } from './globalData.js';
+import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences, updateTrackColors } from './globalData.js';
 import { setExternalSaveColorPreferences, setExternalLoadColorPreferences2 } from './buttons.js';
 
 // Sort out the save file system
@@ -646,29 +646,15 @@ async function loadOneTrackData(trackDirectory, trackName) {
 
     // loads the track segment data
     window.segmentData[waveformNum] = await parseSegmentDataFile(loadTrackSegmentDataFilePath);
-    if (window.segmentData[waveformNum].length === 0) {
-        console.log('No data loaded');
-        presentErrorDialog('No data loaded from ' + chosenTrack);
-    } else {
-        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
-        window.clusters[waveformNum] = determineNumClusters(waveformNum);
-    }
 
     // loads the track marker notes data
     globalState.markerNotes[waveformNum] = await parseMarkerDataFile(loadTrackMarkerNotesFilePath);
-    if (globalState.markerNotes[waveformNum].size === 0) {
-        console.log('No marker data loaded');
-    } else {
-        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
-    }
 
     // loads the track color data
     globalState.labelColors[waveformNum] = await parseColorDataFile(loadTrackColorDataFilePath);
-    if (globalState.labelColors[waveformNum].size === 0) {
-        console.log('No color data loaded');
-    } else {
-        updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
-    }
+
+    // updates track colors and runs update segment elements
+    updateTrackColors(waveformNum);
 }
 
 // helper function to save individual track
@@ -844,7 +830,7 @@ async function parseColorDataFile(colorDataFilePath) {
         let rowsText = result.content.trim().split('\n');
         rowsText.forEach(textRow => {
             let textTuple = textRow.split(';')
-            colorData.set(textTuple[0], {label: textTuple[0], color: textTuple[1]});
+            colorData.set(String(textTuple[0]), {label: String(textTuple[0]), color: String(textTuple[1])});
         })
     }
     return colorData;

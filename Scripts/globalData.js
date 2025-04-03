@@ -117,7 +117,6 @@ const htmlElements = {
     markerNote: document.getElementById('marker-dialog-note'),
 
     // context menu
-    colorDialog: document.getElementById('color-dialog'),
     colorPreferenceDialog: document.getElementById('color-preference-dialog'),
     colorContainer: document.getElementById('color-container'),
     colorPreferencesButton: document.getElementById('colorPreferences'),
@@ -125,7 +124,6 @@ const htmlElements = {
     colorLegendTextInput: document.getElementById('color-legend-text-input'),
     colorLegendColorInput: document.getElementById('color-legend-color-input'),
     colorLegendSave: document.getElementById('save-color'),
-    colorCloseDialog: document.getElementById('color-dialog-close'),
     colorPreferenceCloseDialog: document.getElementById('color-preference-dialog-close'),
 
     // project buttons
@@ -436,59 +434,6 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
             });
             document.getElementById(annotationContainerStr).appendChild(annotationInput);
 
-            // Listen for right-click (contextmenu event)
-            region.element.addEventListener('contextmenu', (e) => {
-                e.preventDefault(); // Prevent default browser menu
-    
-                let selectedBox = null;
-                let selectedColor = region.color;
-                let selectedLabel = element.label;
-                let labels = document.getElementById(labelsContainerStr).children;
-
-                // Add in color boxes
-                htmlElements.colorContainer.textContent = '';
-                globalState.defaultColors.forEach(color => {
-                    const box = document.createElement('div');
-                    box.classList.add('color-box');
-                    box.style.backgroundColor = color;
-    
-                    // set current selection to current color
-                    if(color === selectedColor) {
-                        box.classList.add('selected');
-                        selectedBox = box;
-                    }
-            
-                    // update color when new color box is clicked
-                    box.addEventListener('click', () => {
-                        if (selectedBox) {
-                            selectedBox.classList.remove('selected');
-                        }
-                        box.classList.add('selected');
-                        selectedBox = box;
-                        selectedColor = box.style.backgroundColor;
-
-                        globalState.labelColors[waveformNum].set(element.label, {label: element.label, color: selectedColor});
-
-                        // update all segments with the selected label
-                        for(let i = 0; i < elements.length; i++) {
-                            let tempElement = elements[i];
-                            let tempRegion = htmlElements.regions[waveformNum].regions[i];
-                            let tempLabel = labels[i];
-                            if(tempElement.label === selectedLabel) {
-                                tempRegion.color = selectedColor;
-                                tempRegion.element.style.backgroundColor = selectedColor;
-                                tempLabel.style.backgroundColor = selectedColor;
-                            }
-                        }
-                        updateTrackColors(waveformNum); 
-                    });
-            
-                    htmlElements.colorContainer.appendChild(box);
-                });
-    
-                htmlElements.colorDialog.showModal();
-            });
-
             // Update position when region is moved/resized
             region.on("update-end", () => updateLabelPositions(waveformNum));
             region.on("update-end", () => updateSegmentAnnotationPositions(waveformNum));
@@ -709,21 +654,6 @@ function setWaveformHeights(divHeight) {
     });
 }
 
-// determines  the height for all the waveforms
-let slider = document.getElementById('trackHeight')
-let root = document.documentElement; // Selects :root
-let waveformsHeight = parseInt(slider.value);    // gets value from the slider. Default value set there. 
-
-slider.addEventListener("input", function () {
-    let divHeight = parseInt(slider.value);
-
-    // dynamically call the helpers to set trackheights and waveformheights
-    setTrackHeights(divHeight)
-    setWaveformHeights(divHeight)
-    
-})
-
-
 // to count out id's sequentially
 let idCounter = 0 // replaced with waveformNum counter system
 
@@ -841,28 +771,28 @@ function createSegmentDropdownButton(waveformNum) {
         const algorithm1 = document.createElement("a");
         algorithm1.href = "#";
         algorithm1.id = "segment-algorithm1";
-        algorithm1.textContent = "CQT Feature Extraction with Agglomerative Clustering";
+        algorithm1.textContent = "CQT Feat. Ext. and Agglomerative Cluster";
         dropdownContent.appendChild(algorithm1);
         algorithm1.addEventListener("click", () => {externalSegment(1, waveformNum)});
 
         const algorithm2 = document.createElement("a");
         algorithm2.href = "#";
         algorithm2.id = "segment-algorithm2";
-        algorithm2.textContent = "Mel Spectrogram Feature Extraction and K-Means Clustering";
+        algorithm2.textContent = "Mel Spectrogram Feat. Ext. and K-Means Cluster";
         dropdownContent.appendChild(algorithm2);
         algorithm2.addEventListener("click", () => {externalSegment(2, waveformNum)});
 
         const algorithm3 = document.createElement("a");
         algorithm3.href = "#";
         algorithm3.id = "segment-algorithm3";
-        algorithm3.textContent = "CQT Feature Extraction and Gaussian Mixture Model Clustering";
+        algorithm3.textContent = "CQT Feat. Ext. and GMM Cluster";
         dropdownContent.appendChild(algorithm3);
         algorithm3.addEventListener("click", () => {externalSegment(3, waveformNum)});
 
         const algorithm4 = document.createElement("a");
         algorithm4.href = "#";
         algorithm4.id = "segment-algorithm4";
-        algorithm4.textContent = "Chroma Short-Time Fourier Transform Feature Extraction and K-Means Clustering";
+        algorithm4.textContent = "Chroma STFT Feat. Ext. and K-Means Cluster";
         dropdownContent.appendChild(algorithm4);
         algorithm4.addEventListener("click", () => {externalSegment(4, waveformNum)});
 
@@ -1334,7 +1264,6 @@ export function setupNextWaveform() {
         progressColor: 'rgb(5, 5, 5)',
         minPxPerSec: 100,
         plugins: [regionsPlugins[num], ZoomPlugin.create({scale:0.1})],
-        height: waveformsHeight,
     }));
     globalState.markerNotes.push(new Map());
     globalState.regionType.push(new Map());

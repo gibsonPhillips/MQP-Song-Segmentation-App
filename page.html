@@ -44,7 +44,10 @@
 
             <div class="window-pane" id="main-buttons">
                 <div class="dropdown" id="file-dropdown">
-                    <button class="btn" id="file-dropdown-button">File</button>
+                    <button class="btn top-bar-btn" id="file-dropdown-button">
+                        <img src="resources/icons/topBar/menu.svg" class="top-bar-icon" alt="File">
+                        <span class="top-bar-btn-text">File</span>
+                    </button>
                     <div class="dropdown-content" id="file-dropdown-content">
                         <a href="#" id="open-workspace">Open Workspace</a>
                         <a href="#" id="load-project">Load Project</a>
@@ -57,22 +60,22 @@
                         <input type="file" id="fileInput" accept=".wav" style="display: none;">
                     </div>
                 </div>
-                <button class="btn" id="loading-button">
-                    <i style="display: none" class="fa fa-circle-o-notch fa-spin"></i>
-                    <span id="loading-btn-txt">Loading button</span>
+                <button class="btn top-bar-btn" id="group-editing">
+                    <img src="resources/icons/topBar/label.svg" class="top-bar-icon" alt="Change Segment Labels">
+                    <span class="top-bar-btn-text">Change Segment Labels</span>
                 </button>
-                <button class="btn" id="group-editing">Segment Labels</button>
-                <button class="btn" id="segment-annotations">Segment Annotations</button>
-                <button class="btn" id="global-timeline">Global Timeline</button>
-                <button class="btn" id="modify-boundaries">Modify Boundaries</button>
-
-                <div class="modeless-dialog vbox">
-                    <input id="trackHeight" type="range" min="0" max="800" value="163" />
-                </div>
-
-                <div class="modeless-dialog vbox">
-                    <input id="variability-slider" type="range" min="0" max="800" value="400" />
-                </div>
+                <button class="btn top-bar-btn" id="segment-annotations">
+                    <img src="resources/icons/topBar/message-text.svg" class="top-bar-icon" alt="Segment Annotations">
+                    <span class="top-bar-btn-text">Segment Annotations</span>
+                </button>
+                <button class="btn top-bar-btn" id="global-timeline">
+                    <img src="resources/icons/topBar/globe.svg" class="top-bar-icon" alt="Global Timeline">
+                    <span class="top-bar-btn-text">Global Timeline</span>
+                </button>
+                <button class="btn top-bar-btn" id="modify-boundaries">
+                    <img src="resources/icons/topBar/transition-right.svg" class="top-bar-icon" alt="Modify Boundaries">
+                    <span class="top-bar-btn-text">Modify Boundaries</span>
+                </button>
             </div>
         </div>
 
@@ -316,15 +319,6 @@
 
     </dialog>
 
-    <dialog id="color-dialog">
-        <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="color-dialog-close"></button>
-            <h1 class="title">Color</h1>
-            <button aria-label="Resize" disabled class="hidden"></button>
-        </div>
-        <div id="color-container"></div>
-    </dialog>
-
     <dialog id="color-preference-dialog">
         <div class="title-bar">
             <button aria-label="Close" class="collapsible coll" id="color-preference-dialog-close"></button>
@@ -332,9 +326,10 @@
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <div id="color-input-picker">
+            <div>Color will be slightly different so it is transparent</div>
             <input type="text" placeholder="Label Name" id="color-legend-text-input">
             <input type="color" id="color-legend-color-input">
-            <button class="btn" id="save-color">Save</button>
+            <button class="btn" id="save-color">Add</button>
         </div>
         <div id="color-legend"></div>
     </dialog>

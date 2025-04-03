@@ -446,6 +446,54 @@ input[type="color"] {
     cursor: pointer;
 }
 
+.window-pane {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 2rem;
+    font-size: 18px;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+}
+
+.top-bar-btn {
+    flex-shrink: 1;
+    padding: 0rem 0.5rem;   
+    transition: all 0.3s ease;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: center;
+    max-height: 44px;
+}
+
+/* Style the SVG icons */
+.top-bar-btn .top-bar-icon {
+    width: 0px;
+    height: 0px;
+    visibility: hidden;
+}
+
+/* Hide text and show icons at smaller screen widths */
+@media (max-width: 800px) {
+    .top-bar-btn-text {
+        display: none;
+    }
+
+    .top-bar-btn {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+    }
+
+    .top-bar-btn .top-bar-icon {
+        width: 28px;
+        height: 28px;
+        visibility: visible;
+    }
+}
+
 /* this makes the waveforms height adjustment work */
 /* #shadow-root.scroll {
     height: 500px;
