@@ -317,13 +317,13 @@
         <div class="files-div" id="error-message"></div>
     </dialog>
 
-    <dialog id="remove-boundary-dialog">
+    <dialog id="remove-boundary-dialog" class="dialog-class">
         <h2>Choose Remove Option</h2>
         <button class="btn" id="combine-previous">Combine with Previous</button>
         <button class="btn" id="combine-next">Combine with Next</button>
     </dialog>
 
-    <dialog id="marker-dialog">
+    <dialog id="marker-dialog" class="dialog-class">
         <div class="title-bar">
             <button class="close-button" id="marker-dialog-close">
                 <img src="resources\icons\xmark.svg" class="icon">
@@ -331,6 +331,10 @@
             <h1 class="title">Marker</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
         <div id="marker-dialog-container">
             <input type="text" value="Placeholder" id="marker-dialog-title">
             <textarea id="marker-dialog-note">Placeholder</textarea>
@@ -340,7 +344,7 @@
 
     </dialog>
 
-    <dialog id="title-change-dialog">
+    <dialog id="title-change-dialog" class="dialog-class">
         <div class="title-bar">
             <button class="close-button" id="title-change-dialog-close">
                 <img src="resources\icons\xmark.svg" class="icon">
@@ -348,14 +352,18 @@
             <h1 class="title">Change Track Title</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
-        <div id="title-change-dialog-container">
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
+        <div id="title-change-dialog-container" class="window-pane">
             <input type="text" value="New Title" id="new-title-input">
             <button class="btn" id="title-change-save">Save</button>
         </div>
 
     </dialog>
 
-    <dialog id="color-preference-dialog">
+    <dialog id="color-preference-dialog" class="dialog-class">
         <div class="title-bar">
             <button class="close-button" id="color-preference-dialog-close">
                 <img src="resources\icons\xmark.svg" class="icon">
@@ -363,6 +371,10 @@
             <h1 class="title">Color</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
         <div id="color-input-picker">
             <div>Color will be slightly different so it is transparent</div>
             <input type="text" placeholder="Label Name" id="color-legend-text-input">
