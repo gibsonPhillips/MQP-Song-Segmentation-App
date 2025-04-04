@@ -1,5 +1,5 @@
 import htmlElements from './globalData.js';
-import { updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences, updateTrackColors } from './globalData.js';
+import { getNextUniqueTitle, updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences, updateTrackColors } from './globalData.js';
 import { setExternalSaveColorPreferences, setExternalLoadColorPreferences2 } from './buttons.js';
 
 // Sort out the save file system
@@ -203,7 +203,9 @@ async function selectSaveTrack(waveformNum) {
                 newButton.addEventListener('click', async () => {
                     chosenTrack = file
                     htmlElements.saveTrackMenuDialog.close();
-                    saveTrackData(chosenTrack, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                    await deleteTheTrack(tracksWorkspace + '\\' + chosenTrack);
+                    
+                    checkToSaveTrack(htmlElements.saveTrackInput.value, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
                 })
                 vbox.appendChild(newButton);
             });
@@ -221,8 +223,38 @@ async function selectSaveTrack(waveformNum) {
 htmlElements.createNewTrackButton.addEventListener('click', async () => {
     let chosenTrack = htmlElements.saveTrackInput.value;
     htmlElements.saveTrackMenuDialog.close();
-    saveTrackData(chosenTrack, window.currentWaveformNum, htmlElements.saveTrackAudioCheckbox.checked);
+    console.log('html savetrackinp7ut' + htmlElements.saveTrackInput.value)
+    checkToSaveTrack(chosenTrack, window.currentWaveformNum, htmlElements.saveTrackAudioCheckbox.checked);
 })
+
+async function checkToSaveTrack(chosenTrack, waveformNum, saveTrackAudioFile) {
+
+    let uniqueTitle = false;
+    let currentTitle = chosenTrack;
+
+    // get a unique title
+    while (!uniqueTitle) {
+        
+        uniqueTitle = true;
+        //Run for loop to check if the initial title is taken
+        let tracks = await window.api.getDirectoryContents(tracksWorkspace);
+        for (const track of tracks) {
+            if (track == currentTitle) {
+                uniqueTitle = false;
+            };
+        };
+
+        if (!uniqueTitle) {
+            currentTitle = getNextUniqueTitle(currentTitle)
+        }
+    }
+    try {
+        await window.api.createDirectory(tracksWorkspace + '\\' + currentTitle);
+    } catch(error) {
+        console.error('Issue creating files or directory:\n' + error);
+    }
+    saveTrackData(currentTitle, waveformNum, saveTrackAudioFile);
+}
 
 //save the track data
 async function saveTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {

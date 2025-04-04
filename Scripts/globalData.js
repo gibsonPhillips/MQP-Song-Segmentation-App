@@ -305,7 +305,7 @@ export function updateTrackName(name, waveformNum) {
 }
 
 // Helper function for updateTrackName that creates the next name
-function getNextUniqueTitle(currentTitle) {
+export function getNextUniqueTitle(currentTitle) {
     let newTitle = '';
     if (currentTitle.substring(currentTitle.length - 1) == ')') {
         let doneState = 0;
