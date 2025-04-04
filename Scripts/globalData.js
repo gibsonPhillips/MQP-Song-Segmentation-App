@@ -74,6 +74,8 @@ const htmlElements = {
     // save track menu dialog
     saveTrackMenuDialog: document.querySelector('#save-track-dialog'),
     saveTrackFiles: document.getElementById('save-track-files'),
+    saveTrackInput: document.getElementById('save-track-input'),
+    createNewTrackButton: document.getElementById('create-new-track-button'),
     saveTrackAudioCheckbox: document.getElementById('save-track-audio-checkbox'),
     closeSaveTrackDialogButton: document.querySelector('#close-save-track-dialog'),
 

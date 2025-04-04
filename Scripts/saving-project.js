@@ -175,10 +175,20 @@ function determineNumClusters(waveformNum) {
 async function selectSaveTrack(waveformNum) {
     // Get the save track files
     let chosenTrack = ''
+    window.currentWaveformNum = waveformNum;
     let vbox = htmlElements.saveTrackFiles;
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
+
+    //Set the default value for the input at the top
+    htmlElements.saveTrackInput.value = window.trackNames[waveformNum];
+
+    //create the header for the pre-existing tracks
+    let vboxHeader = document.createElement('h1');
+    vboxHeader.textContent = 'Replace Existing Track';
+    vbox.appendChild(vboxHeader);
+    
     window.api.getDirectoryContents(tracksWorkspace).then((files) => {
         if (files.length != 0) {
         // Implement selecting the track
@@ -198,34 +208,6 @@ async function selectSaveTrack(waveformNum) {
                 vbox.appendChild(newButton);
             });
         }
-        // New Track button
-        let hbox = document.createElement('div');
-        hbox.class = 'hbox';
-        let newButton = document.createElement('button');
-        newButton.className='btn';
-        newButton.textContent = 'Create New Track'
-        let newInput = document.createElement('input');
-        newInput.value = window.trackNames[waveformNum];
-        newButton.addEventListener('click', async () => {
-            // Place holder for new track textbox
-            chosenTrack = newInput.value
-            htmlElements.saveTrackMenuDialog.close();
-
-            await window.api.createDirectory(tracksWorkspace + '\\' + chosenTrack).then((result) => {
-                console.log('Directory creation handled successfully.');
-                saveTrackData(chosenTrack, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
-            }).catch((error) => {
-                // Throw error if there is an issue creating the directory
-                console.error('Issue creating directory:\n' + error);
-                presentErrorDialog('Issue creating directory:\n' + error);
-
-            });
-        })
-
-        hbox.appendChild(newInput);
-        hbox.appendChild(newButton);
-
-        vbox.appendChild(hbox);
 
         //Show the dialog
         htmlElements.saveTrackMenuDialog.showModal();
@@ -235,6 +217,12 @@ async function selectSaveTrack(waveformNum) {
         presentErrorDialog('Issue getting the files within the directory:\n' + error);
     });
 }
+
+htmlElements.createNewTrackButton.addEventListener('click', async () => {
+    let chosenTrack = htmlElements.saveTrackInput.value;
+    htmlElements.saveTrackMenuDialog.close();
+    saveTrackData(chosenTrack, window.currentWaveformNum, htmlElements.saveTrackAudioCheckbox.checked);
+})
 
 //save the track data
 async function saveTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
