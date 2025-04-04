@@ -3,6 +3,8 @@
     overflow-y: hidden;
     resize: vertical;
     font-family: Chicago_12;
+    justify-content: center;
+    align-content: center;
 }
 
 .files-div {
@@ -10,5 +12,6 @@
     display: flex;
     gap: 4px;
     justify-content: center;
-    padding: 5px;
+    align-content: center;
+    padding: 10px;
 }

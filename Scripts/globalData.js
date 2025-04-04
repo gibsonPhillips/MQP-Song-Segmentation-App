@@ -12,6 +12,7 @@ window.trackNames = [];
 window.songFilePaths = [];
 window.segmentData = [];
 window.clusters = [];
+window.currentWaveformNum;
 
 let regionsPlugins = [];
 let currentlyEditing = false;
@@ -73,6 +74,8 @@ const htmlElements = {
     // save track menu dialog
     saveTrackMenuDialog: document.querySelector('#save-track-dialog'),
     saveTrackFiles: document.getElementById('save-track-files'),
+    saveTrackInput: document.getElementById('save-track-input'),
+    createNewTrackButton: document.getElementById('create-new-track-button'),
     saveTrackAudioCheckbox: document.getElementById('save-track-audio-checkbox'),
     closeSaveTrackDialogButton: document.querySelector('#close-save-track-dialog'),
 
@@ -86,13 +89,15 @@ const htmlElements = {
     loadProjectFiles: document.getElementById('load-project-files'),
     closeLoadProjectDialogButton: document.querySelector('#close-load-project-dialog'),
 
-    // save track menu dialog
+    // save project menu dialog
     saveProjectMenuDialog: document.querySelector('#save-project-dialog'),
+    saveProjectInput: document.getElementById('save-project-input'),
     saveProjectFiles: document.getElementById('save-project-files'),
+    createNewProjectButton: document.getElementById('create-new-project-button'),
     saveProjectAudioCheckbox: document.getElementById('save-project-audio-checkbox'),
     closeSaveProjectDialogButton: document.querySelector('#close-save-project-dialog'),
 
-    // delete track menu dialog
+    // delete project menu dialog
     deleteProjectMenuDialog: document.querySelector('#delete-project-dialog'),
     deleteProjectFiles: document.getElementById('delete-project-files'),
     closeDeleteProjectDialogButton: document.querySelector('#close-delete-project-dialog'),
@@ -115,6 +120,12 @@ const htmlElements = {
     saveMarker: document.getElementById('save-marker'),
     markerTitle: document.getElementById('marker-dialog-title'),
     markerNote: document.getElementById('marker-dialog-note'),
+
+    // Title Change dialog
+    titleChangeDialog: document.getElementById('title-change-dialog'),
+    closeTitleChangeDialog: document.getElementById('title-change-dialog-close'),
+    titleChangeSave: document.getElementById('title-change-save'),
+    titleChangeInput: document.getElementById('new-title-input'),
 
     // context menu
     colorPreferenceDialog: document.getElementById('color-preference-dialog'),
@@ -296,7 +307,7 @@ export function updateTrackName(name, waveformNum) {
 }
 
 // Helper function for updateTrackName that creates the next name
-function getNextUniqueTitle(currentTitle) {
+export function getNextUniqueTitle(currentTitle) {
     let newTitle = '';
     if (currentTitle.substring(currentTitle.length - 1) == ')') {
         let doneState = 0;
@@ -681,6 +692,12 @@ function createTrackTitle(waveformNum) {
     title.classList.add('title');
     title.setAttribute('id', 'track-' + waveformNum + '-header');
     title.textContent = 'Track ' + waveformNum;
+
+    title.addEventListener("click", function() {
+        window.currentWaveformNum = waveformNum;
+        htmlElements.titleChangeInput.value = window.trackNames[waveformNum];
+        htmlElements.titleChangeDialog.showModal();
+    })
 
     titleBar.appendChild(title);
 

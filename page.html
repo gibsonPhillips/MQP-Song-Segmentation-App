@@ -26,6 +26,7 @@
     }
 
     button {
+        margin-left: 5px;
         margin-right: 5px;
     }
 </style>
@@ -198,8 +199,7 @@
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="load-track-files"></div>
         </div>
     </dialog>
@@ -215,11 +215,17 @@
         <!-- Little Line Separator -->
         <div class="separator"></div>
 
-        <div class="files-div">
-            <input type="checkbox" id="save-track-audio-checkbox" checked="true">
-            <label for="save-track-audio-checkbox">Save audio file</label>
-        </div>
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
+            <div class="vbox files-div">
+                <input id="save-track-input">
+                <label for="save-track-input">Track Title</label>
+                <input type="checkbox" id="save-track-audio-checkbox" checked="true">
+                <label for="save-track-audio-checkbox">Save audio file</label>
+            </div>
+            <div class="vbox files-div">
+                <h1>Create New Track</h1>
+                <button class="btn" id="create-new-track-button">Create</button>
+            </div>
             <div class="vbox files-div" id="save-track-files"></div>
         </div>
     </dialog>
@@ -234,8 +240,7 @@
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="delete-track-files"></div>
         </div>
     </dialog>
@@ -250,8 +255,8 @@
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="load-project-files"></div>
         </div>
     </dialog>
@@ -267,11 +272,17 @@
         <!-- Little Line Separator -->
         <div class="separator"></div>
 
-        <div class="files-div">
-            <input type="checkbox" id="save-project-audio-checkbox" checked="true">
-            <label for="save-project-audio-checkbox">Save audio files</label>
-        </div>
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
+            <div class="vbox files-div">
+                <input id="save-project-input">
+                <label for="save-project-input">Track Title</label>
+                <input type="checkbox" id="save-project-audio-checkbox" checked="true">
+                <label for="save-project-audio-checkbox">Save audio file</label>
+            </div>
+            <div class="vbox files-div">
+                <h1>Create New Track</h1>
+                <button class="btn" id="create-new-project-button">Create</button>
+            </div>
             <div class="vbox files-div" id="save-project-files"></div>
         </div>
     </dialog>
@@ -286,8 +297,7 @@
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="delete-project-files"></div>
         </div>
     </dialog>
@@ -317,20 +327,24 @@
         <div class="files-div" id="error-message"></div>
     </dialog>
 
-    <dialog id="remove-boundary-dialog">
+    <dialog id="remove-boundary-dialog" class="dialog-class">
         <h2>Choose Remove Option</h2>
         <button class="btn" id="combine-previous">Combine with Previous</button>
         <button class="btn" id="combine-next">Combine with Next</button>
     </dialog>
 
-    <dialog id="marker-dialog">
+    <dialog id="marker-dialog" class="dialog-class">
         <div class="title-bar">
-            <button class="vlose-button" id="marker-dialog-close">
+            <button class="close-button" id="marker-dialog-close">
                 <img src="resources\icons\xmark.svg" class="icon">
             </button>
             <h1 class="title">Marker</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
         <div id="marker-dialog-container">
             <input type="text" value="Placeholder" id="marker-dialog-title">
             <textarea id="marker-dialog-note">Placeholder</textarea>
@@ -340,7 +354,26 @@
 
     </dialog>
 
-    <dialog id="color-preference-dialog">
+    <dialog id="title-change-dialog" class="dialog-class">
+        <div class="title-bar">
+            <button class="close-button" id="title-change-dialog-close">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
+            <h1 class="title">Change Track Title</h1>
+            <button aria-label="Resize" disabled class="hidden"></button>
+        </div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
+        <div id="title-change-dialog-container" class="window-pane">
+            <input type="text" value="New Title" id="new-title-input">
+            <button class="btn" id="title-change-save">Save</button>
+        </div>
+
+    </dialog>
+
+    <dialog id="color-preference-dialog" class="dialog-class">
         <div class="title-bar">
             <button class="close-button" id="color-preference-dialog-close">
                 <img src="resources\icons\xmark.svg" class="icon">
@@ -348,6 +381,10 @@
             <h1 class="title">Color</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
         <div id="color-input-picker">
             <div>Color will be slightly different so it is transparent</div>
             <input type="text" placeholder="Label Name" id="color-legend-text-input">

@@ -1,4 +1,4 @@
-import { updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
+import { updateTrackName, updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
@@ -20,6 +20,10 @@ htmlElements.closeDialogButton.onclick = () => {
 
 htmlElements.closeMarkerDialog.onclick = () => {
     htmlElements.markerDialog.close();
+}
+
+htmlElements.closeTitleChangeDialog.onclick = () => {
+    htmlElements.titleChangeDialog.close();
 }
 
 htmlElements.colorPreferenceCloseDialog.onclick = () => {
@@ -293,3 +297,8 @@ document.addEventListener("DOMContentLoaded", function () {
         menu.addEventListener("mouseenter", showDropdown);
     });
 });
+
+htmlElements.titleChangeSave.onclick = () => {
+    updateTrackName(htmlElements.titleChangeInput.value, window.currentWaveformNum);
+    htmlElements.titleChangeDialog.close();
+}

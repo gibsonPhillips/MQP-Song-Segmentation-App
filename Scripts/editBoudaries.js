@@ -2,7 +2,6 @@ import { globalState, updateSegmentElementsList, setExternalOpenMarker, setExter
 import htmlElements from './globalData.js';
 
 let currentMarker;
-let currentWaveformNum;
 
 
 setExternalAdd(addBoundaryButtonAction);
@@ -118,7 +117,7 @@ function addMarkerButtonAction(waveformNum) {
     });
 
     currentMarker = marker;
-    currentWaveformNum = waveformNum;
+    window.currentWaveformNum = waveformNum;
 
     htmlElements.markerTitle.value = "";
     htmlElements.markerNote.value = "";
@@ -128,14 +127,14 @@ function addMarkerButtonAction(waveformNum) {
 
 // Saving marker note
 htmlElements.saveMarker.onclick = () => {
-    globalState.markerNotes[currentWaveformNum].set(currentMarker.start, {start: currentMarker.start, title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
+    globalState.markerNotes[window.currentWaveformNum].set(currentMarker.start, {start: currentMarker.start, title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
     htmlElements.markerDialog.close();
 }
 
 // Deleting marker note
 htmlElements.deleteMarker.onclick = () => {
-    globalState.markerNotes[currentWaveformNum].delete(currentMarker.start);
-    updateSegmentElementsList(window.segmentData[currentWaveformNum], true, currentWaveformNum);
+    globalState.markerNotes[window.currentWaveformNum].delete(currentMarker.start);
+    updateSegmentElementsList(window.segmentData[window.currentWaveformNum], true, window.currentWaveformNum);
     htmlElements.markerDialog.close();
 }
 
@@ -144,7 +143,7 @@ setExternalOpenMarker(openMarkerNote);
 
 function openMarkerNote(marker, markerNotesMap, waveformNum) {
     currentMarker = marker;
-    currentWaveformNum = waveformNum;
+    window.currentWaveformNum = waveformNum;
     const currentMarkerMap = markerNotesMap.get(marker.start)
 
     htmlElements.markerTitle.value = currentMarkerMap.title;
