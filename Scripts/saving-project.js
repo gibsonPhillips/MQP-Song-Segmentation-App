@@ -329,14 +329,30 @@ async function openAreYouSureDialog(chosenTrack) {
 
 // deletes the track
 async function deleteTheTrack(trackPath) {
+    try {
+        let files = await window.api.getDirectoryContents(trackPath);
 
-    await window.api.wipeDir(trackPath).then((result) => {
-        console.log('Track Wiped')
-    }).catch((error) => {
-        // Throw error if there is an issue getting the files within the directory
-        console.error('Issue wiping directory:\n' + error);
-        presentErrorDialog('Issue wiping directory:\n' + error);
-    });
+        for (const file of files) {
+            await window.api.deleteFile(trackPath + '\\' + file);
+            console.log("FILE WIPED");
+        }
+
+        await window.api.deleteDir(trackPath);
+        console.log('TRACK WIPED');
+    } catch (error) {
+        console.error('Issue deleting files or directory:\n' + error);
+        presentErrorDialog('Issue deleting files or directory:\n' + error);
+    }
+
+    console.log("DELETING TRACK END");
+
+    // await window.api.wipeDir(trackPath).then((result) => {
+    //     console.log('Track Wiped')
+    // }).catch((error) => {
+    //     // Throw error if there is an issue getting the files within the directory
+    //     console.error('Issue wiping directory:\n' + error);
+    //     presentErrorDialog('Issue wiping directory:\n' + error);
+    // });
 
 //    let deleteTrackFilePromises = []
 //
