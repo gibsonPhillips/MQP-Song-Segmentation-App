@@ -506,6 +506,12 @@ async function selectSaveProject() {
     while (vbox.firstChild) {
         vbox.removeChild(vbox.firstChild);
     }
+
+    //create the header for the pre-existing tracks
+    let vboxHeader = document.createElement('h1');
+    vboxHeader.textContent = 'Replace Existing Project';
+    vbox.appendChild(vboxHeader);
+
     window.api.getDirectoryContents(projectsWorkspace).then((files) => {
         if (files.length != 0) {
         // Implement selecting the track
@@ -520,40 +526,14 @@ async function selectSaveProject() {
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
                     htmlElements.saveProjectMenuDialog.close();
-                    saveTheProjectData(chosenProject, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                    await deleteTheProject(projectsWorkspace + '\\' + chosenProject);
+
+                    checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
                 })
                 vbox.appendChild(newButton);
             });
         }
-        // New Track button
-        let hbox = document.createElement('div');
-        hbox.class = 'hbox';
-        let newButton = document.createElement('button');
-        newButton.className='btn';
-        newButton.textContent = 'Create New Project'
-        let newInput = document.createElement('input');
-        newInput.value = 'New Project';
-        newButton.addEventListener('click', async () => {
-            // Place holder for new track textbox
-            chosenProject = newInput.value
-            htmlElements.saveProjectMenuDialog.close();
-
-            await window.api.createDirectory(projectsWorkspace + '\\' + chosenProject).then((result) => {
-                console.log('Directory creation handled successfully.');
-                saveTheProjectData(chosenProject, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
-            }).catch((error) => {
-                // Throw error if there is an issue creating the directory
-                console.error('Issue creating directory:\n' + error);
-                presentErrorDialog('Issue creating directory:\n' + error);
-
-            });
-        })
-
-        hbox.appendChild(newInput);
-        hbox.appendChild(newButton);
-
-        vbox.appendChild(hbox);
-
+        
         //Show the dialog
         htmlElements.saveProjectMenuDialog.showModal();
     }).catch((error) => {
@@ -563,8 +543,44 @@ async function selectSaveProject() {
     });
 }
 
-async function saveTheProjectData(chosenProject, saveTrackAudioFile) {
-    console.log('Chosen Project ' + chosenProject + ' ' + saveTrackAudioFile)
+htmlElements.createNewProjectButton.addEventListener('click', async () => {
+    let chosenProject = htmlElements.saveProjectInput.value;
+    htmlElements.saveProjectMenuDialog.close();
+    console.log('html saveprojectinp7ut' + htmlElements.saveProjectInput.value)
+    checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked);
+});
+
+async function checkToSaveProject(chosenProject, saveProjectAudioFile) {
+
+    let uniqueTitle = false;
+    let currentTitle = chosenProject;
+
+    // get a unique title
+    while (!uniqueTitle) {
+        
+        uniqueTitle = true;
+        //Run for loop to check if the initial title is taken
+        let projects = await window.api.getDirectoryContents(projectsWorkspace);
+        for (const project of projects) {
+            if (project == currentTitle) {
+                uniqueTitle = false;
+            };
+        };
+
+        if (!uniqueTitle) {
+            currentTitle = getNextUniqueTitle(currentTitle)
+        }
+    }
+    try {
+        await window.api.createDirectory(projectsWorkspace + '\\' + currentTitle);
+    } catch(error) {
+        console.error('Issue creating files or directory:\n' + error);
+    }
+    saveTheProjectData(currentTitle, saveProjectAudioFile);
+}
+
+async function saveTheProjectData(chosenProject, saveProjectAudioFile) {
+    console.log('Chosen Project ' + chosenProject + ' ' + saveProjectAudioFile)
     let projectDirectory = projectsWorkspace + '\\' + chosenProject;
     
     globalState.waveformNums.forEach(waveformNum => {

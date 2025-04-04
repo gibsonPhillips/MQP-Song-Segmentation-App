@@ -273,9 +273,15 @@
         <div class="separator"></div>
 
         <div class="vbox window-pane" style="align-items: normal;">
-            <div class="files-div">
+            <div class="vbox files-div">
+                <input id="save-project-input">
+                <label for="save-project-input">Track Title</label>
                 <input type="checkbox" id="save-project-audio-checkbox" checked="true">
-                <label for="save-project-audio-checkbox">Save audio files</label>
+                <label for="save-project-audio-checkbox">Save audio file</label>
+            </div>
+            <div class="vbox files-div">
+                <h1>Create New Track</h1>
+                <button class="btn" id="create-new-project-button">Create</button>
             </div>
             <div class="vbox files-div" id="save-project-files"></div>
         </div>

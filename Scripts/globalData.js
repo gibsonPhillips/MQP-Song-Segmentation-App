@@ -89,13 +89,15 @@ const htmlElements = {
     loadProjectFiles: document.getElementById('load-project-files'),
     closeLoadProjectDialogButton: document.querySelector('#close-load-project-dialog'),
 
-    // save track menu dialog
+    // save project menu dialog
     saveProjectMenuDialog: document.querySelector('#save-project-dialog'),
+    saveProjectInput: document.getElementById('save-project-input'),
     saveProjectFiles: document.getElementById('save-project-files'),
+    createNewProjectButton: document.getElementById('create-new-project-button'),
     saveProjectAudioCheckbox: document.getElementById('save-project-audio-checkbox'),
     closeSaveProjectDialogButton: document.querySelector('#close-save-project-dialog'),
 
-    // delete track menu dialog
+    // delete project menu dialog
     deleteProjectMenuDialog: document.querySelector('#delete-project-dialog'),
     deleteProjectFiles: document.getElementById('delete-project-files'),
     closeDeleteProjectDialogButton: document.querySelector('#close-delete-project-dialog'),
