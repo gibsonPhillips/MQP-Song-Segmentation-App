@@ -62,6 +62,30 @@ htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
 }
 
+htmlElements.trackExpandButton.onclick = () => {
+    if(htmlElements.tracksWindow.style.display === "none") {
+        htmlElements.tracksWindow.style.display = "block";
+        htmlElements.trackUnexpandButton.style.display = "none";
+        htmlElements.trackTime.style.gridTemplateColumns = "215px auto";
+    } else {
+        htmlElements.tracksWindow.style.display = "none";
+        htmlElements.trackUnexpandButton.style.display = "block";
+        htmlElements.trackTime.style.gridTemplateColumns = "auto";
+    }
+}
+
+htmlElements.trackUnexpandButton.onclick = () => {
+    if(htmlElements.tracksWindow.style.display === "none") {
+        htmlElements.tracksWindow.style.display = "block";
+        htmlElements.trackUnexpandButton.style.display = "none";
+        htmlElements.trackTime.style.gridTemplateColumns = "215px auto";
+    } else {
+        htmlElements.tracksWindow.style.display = "none";
+        htmlElements.trackUnexpandButton.style.display = "block";
+        htmlElements.trackTime.style.gridTemplateColumns = "auto";
+    }
+}
+
 // Set up saving of new color legends
 htmlElements.colorLegendSave.addEventListener('click', () => {
     globalState.colorLegendMap.set(htmlElements.colorLegendTextInput.value, {label: htmlElements.colorLegendTextInput.value, color: htmlElements.colorLegendColorInput.value + "50"});
@@ -207,62 +231,6 @@ htmlElements.modifyBoundariesButton.onclick = () => {
         });
     }
 }
-
-// collapsing functions
-// toggles every time the x button is clicked
-document.getElementById("mod").addEventListener("click", function() {
-
-    // cull
-    document.querySelectorAll(".cull").forEach(item => {
-        item.style.display = "none"
-    });
-
-    // resizes the whole mod window
-    document.querySelectorAll("#modifiers").forEach(item => {
-        item.style.width = item.style.width === "50px" ? "15%" : "50px";
-    });
-
-    // swaps out buttons for collapsing and expanding
-    // also cull other items in mod window
-    document.getElementById("expand").style.display = "flex"
-    document.getElementById("expand-button").style.display = "flex"
-    document.getElementsByClassName("cull")[0].style.setProperty("display","none")
-
-    // failed experiment
-    // document.querySelectorAll("#modifiers").forEach(item => {
-    //     item.style.display = item.style.display === "none" ? "flex" : "none";
-
-    // gets rid of the extra stuff in the way
-    // document.querySelectorAll(".cull").forEach(item => {
-    //     item.style.display = item.style.display === "none" ? "flex" : "none";
-    // });
-
-    // resizes the button so it doesn't get squashed
-    // document.getElementById("mod").style.setProperty("max-width","unset")
-
-    // document.getElementById("mod").style.setProperty("width","30px")
-
-});
-
-
-document.getElementById("expand").addEventListener("click", function() {
-        
-    // uncull
-    document.querySelectorAll(".cull").forEach(item => {
-        item.style.display = "flex"
-    });
-
-    // reset the window size
-    document.querySelectorAll("#modifiers").forEach(item => {
-        item.style.width = "15%";
-    });
-
-    // swap out the expand button for the collapse button
-    document.getElementById("expand").style.display = "none"
-    document.getElementById("expand-button").style.display = "none"
-    document.getElementsByClassName("cull")[0].style.setProperty("display","flex")
-
-});
 
 // Setup dropdown buttons
 document.addEventListener("DOMContentLoaded", function () {

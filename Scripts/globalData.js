@@ -48,6 +48,7 @@ export let globalState = {
 const htmlElements = {
     // Larger elements
     timeline: document.getElementById("waveforms"),
+    tracksWindow: document.getElementById('tracks-window'),
 
     // Constants for HTML elements
     segmentDetailsDialog: document.querySelector('#segment-details-dialog'),
@@ -160,6 +161,9 @@ const htmlElements = {
     segmentAnnotationButton: document.getElementById("segment-annotations"),
     globalTimelineButton: document.getElementById("global-timeline"),
     modifyBoundariesButton: document.getElementById("modify-boundaries"),
+    trackExpandButton: document.getElementById("expand-button"),
+    trackUnexpandButton: document.getElementById("unexpand-button"),
+    trackTime: document.getElementById("track-time"),
     regions: regionsPlugins,
 };
 export default htmlElements;

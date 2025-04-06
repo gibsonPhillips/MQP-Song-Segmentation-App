@@ -36,7 +36,6 @@
     <div class="vbox" id="biggest">
         <div class="window" id="button-bar" style="width: (100vw - 24px);">
             <div class="title-bar">
-                <button aria-label="Close" class="collapsible coll" id="but"></button>
                 <h1 class="title">Song Slicer</h1>
                 <button aria-label="Resize" disabled class="hidden"></button>
             </div>
@@ -83,17 +82,8 @@
 
         <div id="track-time">
             <div class="window" id="tracks-window">
-                <div id="expanders">
-                    <div class="title-bar" id="expand" style="display:none">
-                        <button aria-label="Close" class="collapsible coll" id="expand-button" style="display:none">
-                            <div style="width:40px"></div>
-                        </button>
-                    </div>
-                </div>
-
                 <div class="title-bar cull">
-                    <button aria-label="Close" class="collapsible coll" id="mod">
-                        <!-- this keeps the button from collapsing width :*) -->
+                    <button aria-label="Close" class="collapsible coll" id="expand-button">
                         <div style="width:20px"></div>
                     </button>
                     <h1 class="title">Tracks</h1>
@@ -112,6 +102,9 @@
 
             <div id="timeline">
                 <div class="title-bar" style="padding-top: 4.8px">
+                    <button aria-label="Close" class="collapsible coll" id="unexpand-button" style="display:none">
+                        <div style="width:20px"></div>
+                    </button>
                     <h1 class="title">Waveforms</h1>
                     <button aria-label="Resize" disabled class="hidden"></button>
                 </div>
