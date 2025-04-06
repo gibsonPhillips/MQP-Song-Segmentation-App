@@ -221,6 +221,11 @@
     grid-template-columns: 29px 29px;
 }
 
+.file-combo-con {
+    display: grid;
+    grid-template-columns: 29px 29px;
+}
+
 /* ----------------------------------------------------------------------------------------------------- */
 
 /* styling every individual track button as needed */
