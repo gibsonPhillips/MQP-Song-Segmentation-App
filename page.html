@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="CSS/collapse.css" />
     <link rel="stylesheet" href="CSS/loading.css" />
     <link rel="stylesheet" href="CSS/dialogs.css" />
-
+    <link rel="stylesheet" href="CSS/close-button.css" />
+    <link rel="stylesheet" href="CSS/tracks.css" />
 
 
 </head>
@@ -26,6 +27,7 @@
     }
 
     button {
+        margin-left: 5px;
         margin-right: 5px;
     }
 </style>
@@ -35,7 +37,6 @@
     <div class="vbox" id="biggest">
         <div class="window" id="button-bar" style="width: (100vw - 24px);">
             <div class="title-bar">
-                <button aria-label="Close" class="collapsible coll" id="but"></button>
                 <h1 class="title">Song Slicer</h1>
                 <button aria-label="Resize" disabled class="hidden"></button>
             </div>
@@ -44,52 +45,51 @@
             <div class="separator"></div>
 
             <div class="window-pane" id="main-buttons">
-                <div class="dropdown" id="file-dropdown">
-                    <button class="btn" id="file-dropdown-button">File</button>
-                    <div class="dropdown-content" id="file-dropdown-content">
-                        <a href="#" id="open-workspace">Open Workspace</a>
-                        <a href="#" id="load-project">Load Project</a>
-                        <a href="#" id="save-project">Save Project</a>
-                        <a href="#" id="delete-project">Delete Project</a>
-                        <a href="#" id="chooseSong">Import Song</a>
-                        <a href="#" id="load-track">Load Track</a>
-                        <a href="#" id="delete-track">Delete Track</a>
-                        <a href="#" id="colorPreferences">Color Preferences</a>
-                        <input type="file" id="fileInput" accept=".wav" style="display: none;">
+                <div class="file-combo-con" id="fleComboContainer">
+                    <button class="btn segment-button" id="segment-button0">
+                        <img src="resources/icons/topBar/menu.svg" class="top-bar-icon" alt="File">
+                        <span class="top-bar-btn-text">File</span>
+                    </button>
+                    <div class="dropdown segment-button-dropdown" id="algorithms-dropdown0">
+                        <button class="btn track-button segment-dropdown-button" id="file-dropdown-button">
+                            <img src="resources/icons/TrackButtons/dropdownArrow.svg" alt="File Dropdown Button" style="height: 20px; width: 20px;">
+                        </button>
+                        <div class="dropdown-content" id="file-dropdown-content">
+                            <a href="#" id="open-workspace">Open Workspace</a>
+                            <a href="#" id="load-project">Load Project</a>
+                            <a href="#" id="save-project">Save Project</a>
+                            <a href="#" id="delete-project">Delete Project</a>
+                            <a href="#" id="chooseSong">Import Song</a>
+                            <a href="#" id="load-track">Load Track</a>
+                            <a href="#" id="delete-track">Delete Track</a>
+                            <a href="#" id="colorPreferences">Color Preferences</a>
+                            <input type="file" id="fileInput" accept=".wav" style="display: none;">
+                        </div>
                     </div>
                 </div>
-                <button class="btn" id="loading-button">
-                    <i style="display: none" class="fa fa-circle-o-notch fa-spin"></i>
-                    <span id="loading-btn-txt">Loading button</span>
+                <button class="btn top-bar-btn" id="group-editing">
+                    <img src="resources/icons/topBar/label.svg" class="top-bar-icon" alt="Change Segment Labels">
+                    <span class="top-bar-btn-text">Change Segment Labels</span>
                 </button>
-                <button class="btn" id="group-editing">Segment Labels</button>
-                <button class="btn" id="segment-annotations">Segment Annotations</button>
-                <button class="btn" id="global-timeline">Global Timeline</button>
-                <button class="btn" id="modify-boundaries">Modify Boundaries</button>
-
-                <div class="modeless-dialog vbox">
-                    <input id="trackHeight" type="range" min="0" max="800" value="163" />
-                </div>
-
-                <div class="modeless-dialog vbox">
-                    <input id="variability-slider" type="range" min="0" max="800" value="400" />
-                </div>
+                <button class="btn top-bar-btn" id="segment-annotations">
+                    <img src="resources/icons/topBar/message-text.svg" class="top-bar-icon" alt="Segment Annotations">
+                    <span class="top-bar-btn-text">Segment Annotations</span>
+                </button>
+                <button class="btn top-bar-btn" id="global-timeline">
+                    <img src="resources/icons/topBar/globe.svg" class="top-bar-icon" alt="Global Timeline">
+                    <span class="top-bar-btn-text">Global Timeline</span>
+                </button>
+                <button class="btn top-bar-btn" id="modify-boundaries">
+                    <img src="resources/icons/topBar/transition-right.svg" class="top-bar-icon" alt="Modify Boundaries">
+                    <span class="top-bar-btn-text">Modify Boundaries</span>
+                </button>
             </div>
         </div>
 
         <div id="track-time">
             <div class="window" id="tracks-window">
-                <div id="expanders">
-                    <div class="title-bar" id="expand" style="display:none">
-                        <button aria-label="Close" class="collapsible coll" id="expand-button" style="display:none">
-                            <div style="width:40px"></div>
-                        </button>
-                    </div>
-                </div>
-
                 <div class="title-bar cull">
-                    <button aria-label="Close" class="collapsible coll" id="mod">
-                        <!-- this keeps the button from collapsing width :*) -->
+                    <button aria-label="Close" class="collapsible coll" id="expand-button">
                         <div style="width:20px"></div>
                     </button>
                     <h1 class="title">Tracks</h1>
@@ -107,7 +107,10 @@
             </div>
 
             <div id="timeline">
-                <div class="title-bar">
+                <div class="title-bar" style="padding-top: 4.8px">
+                    <button aria-label="Close" class="collapsible coll" id="unexpand-button" style="display:none">
+                        <div style="width:20px"></div>
+                    </button>
                     <h1 class="title">Waveforms</h1>
                     <button aria-label="Resize" disabled class="hidden"></button>
                 </div>
@@ -161,7 +164,9 @@
 
     <dialog id="segment-details-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-dialog"></button>
+            <button class="close-button" id="close-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Segment Details</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -185,99 +190,122 @@
 
     <dialog id="load-track-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-load-track-dialog"></button>
+            <button class="close-button" id="close-load-track-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Choose Track to Load</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="load-track-files"></div>
         </div>
     </dialog>
 
     <dialog id="save-track-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-save-track-dialog"></button>
+            <button class="close-button" id="close-save-track-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Choose Track to Save to</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
 
-        <div class="files-div">
-            <input type="checkbox" id="save-track-audio-checkbox" checked="true">
-            <label for="save-track-audio-checkbox">Save audio file</label>
-        </div>
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
+            <div class="vbox files-div">
+                <input id="save-track-input">
+                <label for="save-track-input">Track Title</label>
+                <input type="checkbox" id="save-track-audio-checkbox" checked="true">
+                <label for="save-track-audio-checkbox">Save audio file</label>
+            </div>
+            <div class="vbox files-div">
+                <h1>Create New Track</h1>
+                <button class="btn" id="create-new-track-button">Create</button>
+            </div>
             <div class="vbox files-div" id="save-track-files"></div>
         </div>
     </dialog>
 
     <dialog id="delete-track-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-delete-track-dialog"></button>
+            <button class="close-button" id="close-delete-track-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Choose Track to Delete</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="delete-track-files"></div>
         </div>
     </dialog>
 
     <dialog id="load-project-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-load-project-dialog"></button>
+            <button class="close-button" id="close-load-project-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Choose Project to Load</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="load-project-files"></div>
         </div>
     </dialog>
 
     <dialog id="save-project-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-save-project-dialog"></button>
+            <button class="close-button" id="close-save-project-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Choose Project to Save to</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
 
-        <div class="files-div">
-            <input type="checkbox" id="save-project-audio-checkbox" checked="true">
-            <label for="save-project-audio-checkbox">Save audio files</label>
-        </div>
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
+            <div class="vbox files-div">
+                <input id="save-project-input">
+                <label for="save-project-input">Track Title</label>
+                <input type="checkbox" id="save-project-audio-checkbox" checked="true">
+                <label for="save-project-audio-checkbox">Save audio file</label>
+            </div>
+            <div class="vbox files-div">
+                <h1>Create New Track</h1>
+                <button class="btn" id="create-new-project-button">Create</button>
+            </div>
             <div class="vbox files-div" id="save-project-files"></div>
         </div>
     </dialog>
 
     <dialog id="delete-project-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-delete-project-dialog"></button>
+            <button class="close-button" id="close-delete-project-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Choose Project to Delete</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <!-- Little Line Separator -->
         <div class="separator"></div>
-
-        <div class="window-pane">
+        <div class="vbox window-pane" style="align-items: normal;">
             <div class="vbox files-div" id="delete-project-files"></div>
         </div>
     </dialog>
 
     <dialog id="are-you-sure-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-are-you-sure-dialog"></button>
+            <button class="close-button" id="close-are-you-sure-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title" id="are-you-sure-header">Are you Sure?</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
@@ -289,25 +317,33 @@
 
     <dialog id="error-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="close-error-dialog"></button>
+            <button class="close-button" id="close-error-dialog">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Error!</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
         <div class="files-div" id="error-message"></div>
     </dialog>
 
-    <dialog id="remove-boundary-dialog">
+    <dialog id="remove-boundary-dialog" class="dialog-class">
         <h2>Choose Remove Option</h2>
         <button class="btn" id="combine-previous">Combine with Previous</button>
         <button class="btn" id="combine-next">Combine with Next</button>
     </dialog>
 
-    <dialog id="marker-dialog">
+    <dialog id="marker-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="coll" id="marker-dialog-close"></button>
+            <button class="close-button" id="marker-dialog-close">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Marker</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
         <div id="marker-dialog-container">
             <input type="text" value="Placeholder" id="marker-dialog-title">
             <textarea id="marker-dialog-note">Placeholder</textarea>
@@ -317,25 +353,42 @@
 
     </dialog>
 
-    <dialog id="color-dialog">
+    <dialog id="title-change-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="marker-dialog-close"></button>
-            <h1 class="title">Color</h1>
+            <button class="close-button" id="title-change-dialog-close">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
+            <h1 class="title">Change Track Title</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
-        <div id="color-container"></div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
+        <div id="title-change-dialog-container" class="window-pane">
+            <input type="text" value="New Title" id="new-title-input">
+            <button class="btn" id="title-change-save">Save</button>
+        </div>
+
     </dialog>
 
-    <dialog id="color-preference-dialog">
+    <dialog id="color-preference-dialog" class="dialog-class">
         <div class="title-bar">
-            <button aria-label="Close" class="collapsible coll" id="marker-dialog-close"></button>
+            <button class="close-button" id="color-preference-dialog-close">
+                <img src="resources\icons\xmark.svg" class="icon">
+            </button>
             <h1 class="title">Color</h1>
             <button aria-label="Resize" disabled class="hidden"></button>
         </div>
+
+        <!-- Little line separator -->
+        <div class="separator"></div>
+
         <div id="color-input-picker">
-            <input type="text" id="color-legend-text-input">
+            <div>Color will be slightly different so it is transparent</div>
+            <input type="text" placeholder="Label Name" id="color-legend-text-input">
             <input type="color" id="color-legend-color-input">
-            <button class="btn" id="save-color">Save</button>
+            <button class="btn" id="save-color">Add</button>
         </div>
         <div id="color-legend"></div>
     </dialog>

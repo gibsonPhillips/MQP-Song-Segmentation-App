@@ -1,4 +1,4 @@
-import { updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
+import { updateTrackName, updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
@@ -22,6 +22,14 @@ htmlElements.closeDialogButton.onclick = () => {
 
 htmlElements.closeMarkerDialog.onclick = () => {
     htmlElements.markerDialog.close();
+}
+
+htmlElements.closeTitleChangeDialog.onclick = () => {
+    htmlElements.titleChangeDialog.close();
+}
+
+htmlElements.colorPreferenceCloseDialog.onclick = () => {
+    htmlElements.colorPreferenceDialog.close();
 }
 
 htmlElements.closeLoadTrackDialogButton.onclick = () => {
@@ -54,6 +62,30 @@ htmlElements.closeAreYouSureDialogButton.onclick = () => {
 
 htmlElements.closeErrorDialogButton.onclick = () => {
     htmlElements.errorDialog.close();
+}
+
+htmlElements.trackExpandButton.onclick = () => {
+    if(htmlElements.tracksWindow.style.display === "none") {
+        htmlElements.tracksWindow.style.display = "block";
+        htmlElements.trackUnexpandButton.style.display = "none";
+        htmlElements.trackTime.style.gridTemplateColumns = "215px auto";
+    } else {
+        htmlElements.tracksWindow.style.display = "none";
+        htmlElements.trackUnexpandButton.style.display = "block";
+        htmlElements.trackTime.style.gridTemplateColumns = "auto";
+    }
+}
+
+htmlElements.trackUnexpandButton.onclick = () => {
+    if(htmlElements.tracksWindow.style.display === "none") {
+        htmlElements.tracksWindow.style.display = "block";
+        htmlElements.trackUnexpandButton.style.display = "none";
+        htmlElements.trackTime.style.gridTemplateColumns = "215px auto";
+    } else {
+        htmlElements.tracksWindow.style.display = "none";
+        htmlElements.trackUnexpandButton.style.display = "block";
+        htmlElements.trackTime.style.gridTemplateColumns = "auto";
+    }
 }
 
 // Set up saving of new color legends
@@ -103,41 +135,49 @@ htmlElements.colorPreferencesButton.onclick = async () => {
 
     // Set up color legend
     for (const [key, value] of globalState.colorLegendMap) {
-        const container = document.createElement('div');
-        container.classList.add('color-input-picker');
-
-        const text = document.createElement('span');
-        text.textContent = key;
-
-        const colorBox = document.createElement('div');
-        colorBox.classList.add('color-box');
-        colorBox.style.backgroundColor = value.color;    
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.classList.add('btn');
-        deleteBtn.textContent = "Delete";
-        
-        container.appendChild(text);
-        container.appendChild(colorBox);
-        container.appendChild(deleteBtn);
-        htmlElements.colorLegend.appendChild(container);
-
-        // Deleting label
-        deleteBtn.addEventListener('click', () => {
-            container.textContent = '';
-            globalState.colorLegendMap.delete(key);
-            externalSaveColorPreferences();
-        });
+        if(key !== '' && value !== 'undefined') {
+            const container = document.createElement('div');
+            container.classList.add('color-input-picker');
+    
+            const text = document.createElement('span');
+            text.textContent = key;
+    
+            const colorBox = document.createElement('div');
+            colorBox.classList.add('color-box');
+            colorBox.style.backgroundColor = value.color;    
+    
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('btn');
+            deleteBtn.textContent = "Delete";
+            
+            container.appendChild(text);
+            container.appendChild(colorBox);
+            container.appendChild(deleteBtn);
+            htmlElements.colorLegend.appendChild(container);
+    
+            // Deleting label
+            deleteBtn.addEventListener('click', () => {
+                container.textContent = '';
+                globalState.colorLegendMap.delete(key);
+                externalSaveColorPreferences();
+            });
+        }
     }
 
     htmlElements.colorPreferenceDialog.showModal();
 }
 
 htmlElements.groupEditingButton.onclick = () => {
-    globalState.groupEditingMode = !globalState.groupEditingMode;
+    if(globalState.groupEditingMode === 2) {
+        globalState.groupEditingMode = 0;
+    } else {
+        globalState.groupEditingMode++;
+    }
 
-    if (!globalState.groupEditingMode) {
+    if (globalState.groupEditingMode === 0) {
         htmlElements.groupEditingButton.style.backgroundColor = "white";
+    } else if (globalState.groupEditingMode === 1) {
+        htmlElements.groupEditingButton.style.backgroundColor = "rgb(230, 203, 140)";
     } else {
         htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
     }
@@ -201,66 +241,10 @@ htmlElements.modifyBoundariesButton.onclick = () => {
     }
 }
 
-// collapsing functions
-// toggles every time the x button is clicked
-document.getElementById("mod").addEventListener("click", function() {
-
-    // cull
-    document.querySelectorAll(".cull").forEach(item => {
-        item.style.display = "none"
-    });
-
-    // resizes the whole mod window
-    document.querySelectorAll("#modifiers").forEach(item => {
-        item.style.width = item.style.width === "50px" ? "15%" : "50px";
-    });
-
-    // swaps out buttons for collapsing and expanding
-    // also cull other items in mod window
-    document.getElementById("expand").style.display = "flex"
-    document.getElementById("expand-button").style.display = "flex"
-    document.getElementsByClassName("cull")[0].style.setProperty("display","none")
-
-    // failed experiment
-    // document.querySelectorAll("#modifiers").forEach(item => {
-    //     item.style.display = item.style.display === "none" ? "flex" : "none";
-
-    // gets rid of the extra stuff in the way
-    // document.querySelectorAll(".cull").forEach(item => {
-    //     item.style.display = item.style.display === "none" ? "flex" : "none";
-    // });
-
-    // resizes the button so it doesn't get squashed
-    // document.getElementById("mod").style.setProperty("max-width","unset")
-
-    // document.getElementById("mod").style.setProperty("width","30px")
-
-});
-
-
-document.getElementById("expand").addEventListener("click", function() {
-        
-    // uncull
-    document.querySelectorAll(".cull").forEach(item => {
-        item.style.display = "flex"
-    });
-
-    // reset the window size
-    document.querySelectorAll("#modifiers").forEach(item => {
-        item.style.width = "15%";
-    });
-
-    // swap out the expand button for the collapse button
-    document.getElementById("expand").style.display = "none"
-    document.getElementById("expand-button").style.display = "none"
-    document.getElementsByClassName("cull")[0].style.setProperty("display","flex")
-
-});
-
 // Setup dropdown buttons
 document.addEventListener("DOMContentLoaded", function () {
     const dropdowns = [
-        { button: htmlElements.fileDropdown, menu: htmlElements.fileDropdownContent },
+        { button: htmlElements.fileDropdownButton, menu: htmlElements.fileDropdownContent },
         // { button: htmlElements.algorithmsDropdown, menu: htmlElements.algorithmsDropdownContent },
         // { button: htmlElements.boundariesDropdown, menu: htmlElements.boundariesDropdownContent }
     ];
@@ -290,3 +274,8 @@ document.addEventListener("DOMContentLoaded", function () {
         menu.addEventListener("mouseenter", showDropdown);
     });
 });
+
+htmlElements.titleChangeSave.onclick = () => {
+    updateTrackName(htmlElements.titleChangeInput.value, window.currentWaveformNum);
+    htmlElements.titleChangeDialog.close();
+}

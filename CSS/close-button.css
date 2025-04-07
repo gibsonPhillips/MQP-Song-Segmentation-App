@@ -1,0 +1,23 @@
+/* Close buttons */
+
+.close-button {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    justify-content: center;
+    padding: 0;
+    align-items: center;
+    overflow: hidden;
+    display: flex;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active,
+.close-button:hover {
+    background-color: #ccc;
+}
+
+.close-button .icon {
+    width: 100%;
+    height: 100%;
+}

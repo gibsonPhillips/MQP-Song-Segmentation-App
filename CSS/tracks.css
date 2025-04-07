@@ -1,0 +1,11 @@
+.trackers .title-bar {
+    height: 1rem;
+}
+
+.trackers .track-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 7rem;
+    font-size: 1.2rem;
+}
