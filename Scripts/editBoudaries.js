@@ -3,9 +3,8 @@ import htmlElements from './globalData.js';
 
 let currentMarker;
 
-
+// Adds a boundary onto the specified track at the marker time
 setExternalAdd(addBoundaryButtonAction);
-// TODO hanlde mulitple waveforms
 function addBoundaryButtonAction(waveformNum) {
     // Reset edit mode
     globalState.editBoundaryMode = false;
@@ -37,8 +36,8 @@ function addBoundaryButtonAction(waveformNum) {
     updateSegmentElementsList(window.segmentData[waveformNum], true, waveformNum);
 }
 
+// Removes the closest boundary to the marker on the specified track
 setExternalRemove(removeBoundaryButtonAction);
-// TODO hanlde mulitple waveforms
 function removeBoundaryButtonAction(waveformNum) {
     // Reset edit mode
     globalState.editBoundaryMode = false;
@@ -68,14 +67,14 @@ function removeBoundaryButtonAction(waveformNum) {
     }
 }
 
+// Adds a marker on the specified track at the time marker
 setExternalAddMarker(addMarkerButtonAction);
-// Add marker to waveform
 function addMarkerButtonAction(waveformNum) {
     // Get click time (relative to waveform duration)
     const time = globalState.wavesurferWaveforms[waveformNum].getCurrentTime();
 
     // Add marker at time
-    const marker = htmlElements.regions[waveformNum].addRegion({
+    const marker = globalState.regions[waveformNum].addRegion({
         start: time,
         content: "",
         color: "rgba(255, 0, 0, 0.5)",
@@ -138,9 +137,8 @@ htmlElements.deleteMarker.onclick = () => {
     htmlElements.markerDialog.close();
 }
 
-// Set the function in global.js
+// Opens the specified marker
 setExternalOpenMarker(openMarkerNote);
-
 function openMarkerNote(marker, markerNotesMap, waveformNum) {
     currentMarker = marker;
     window.currentWaveformNum = waveformNum;

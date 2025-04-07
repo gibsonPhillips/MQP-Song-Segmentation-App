@@ -3,6 +3,7 @@ import htmlElements from './globalData.js';
 
 let segmentAnnotationsPresent = false;
 
+// Set external functions
 let externalSaveColorPreferences = null;
 export function setExternalSaveColorPreferences(fn) {
     externalSaveColorPreferences = fn;
@@ -12,6 +13,7 @@ let externalLoadColorPreferences = null;
 export function setExternalLoadColorPreferences2(fn) {
     externalLoadColorPreferences = fn;
 }
+
 
 // Button click actions
 htmlElements.closeDialogButton.onclick = () => {
@@ -126,6 +128,7 @@ htmlElements.colorLegendSave.addEventListener('click', () => {
     htmlElements.colorLegendTextInput.value = '';
 });
 
+// Set up opening of the color preferences
 htmlElements.colorPreferencesButton.onclick = async () => {
     await externalLoadColorPreferences();
     htmlElements.colorLegend.textContent = '';
@@ -227,8 +230,8 @@ htmlElements.modifyBoundariesButton.onclick = () => {
         htmlElements.modifyBoundariesButton.style.backgroundColor = "rgb(255,197,61)";
     }
 
-    for(let i = 0; i < htmlElements.regions.length; i++) {
-        htmlElements.regions[i].regions.forEach(element => {
+    for(let i = 0; i < globalState.regions.length; i++) {
+        globalState.regions[i].regions.forEach(element => {
             if(globalState.regionType[i].get(element) === 'segment') {
                 element.setOptions({
                     resize: globalState.editBoundaryMode
