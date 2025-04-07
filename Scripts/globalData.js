@@ -697,6 +697,7 @@ function createTrackTitle(waveformNum) {
 
     // Create the header
     let title = document.createElement('h1');
+    title.classList.add('track-title');
     title.classList.add('title');
     title.setAttribute('id', 'track-' + waveformNum + '-header');
     title.textContent = 'Track ' + waveformNum;
