@@ -165,10 +165,16 @@ htmlElements.colorPreferencesButton.onclick = async () => {
 }
 
 htmlElements.groupEditingButton.onclick = () => {
-    globalState.groupEditingMode = !globalState.groupEditingMode;
+    if(globalState.groupEditingMode === 2) {
+        globalState.groupEditingMode = 0;
+    } else {
+        globalState.groupEditingMode++;
+    }
 
-    if (!globalState.groupEditingMode) {
+    if (globalState.groupEditingMode === 0) {
         htmlElements.groupEditingButton.style.backgroundColor = "white";
+    } else if (globalState.groupEditingMode === 1) {
+        htmlElements.groupEditingButton.style.backgroundColor = "rgb(230, 203, 140)";
     } else {
         htmlElements.groupEditingButton.style.backgroundColor = "rgb(255,197,61)";
     }
@@ -235,7 +241,7 @@ htmlElements.modifyBoundariesButton.onclick = () => {
 // Setup dropdown buttons
 document.addEventListener("DOMContentLoaded", function () {
     const dropdowns = [
-        { button: htmlElements.fileDropdown, menu: htmlElements.fileDropdownContent },
+        { button: htmlElements.fileDropdownButton, menu: htmlElements.fileDropdownContent },
         // { button: htmlElements.algorithmsDropdown, menu: htmlElements.algorithmsDropdownContent },
         // { button: htmlElements.boundariesDropdown, menu: htmlElements.boundariesDropdownContent }
     ];

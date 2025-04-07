@@ -23,7 +23,7 @@ export let globalState = {
     headers: ["number", "start", "end", "label"],
     currentZoom: 10,
     timelines: [],
-    groupEditingMode: false,
+    groupEditingMode: 0,
     wavesurferWaveforms: [],
     markerNotes: [],
     regionType: [],
@@ -400,16 +400,15 @@ export function updateSegmentElementsList(elements, updateWaveform, waveformNum)
                     return;
                 }
 
-                if(globalState.groupEditingMode) {
+                if(globalState.groupEditingMode === 1) {
                     updateGroupSegmentLabel(element, event.target.value, waveformNum);
                     updateTrackColors(waveformNum);
-                } else {
+                } else if(globalState.groupEditingMode === 0) {
                     updateOneSegmentLabel(element, event.target.value, waveformNum);
                     updateTrackColors(waveformNum);
-                }
-
-                // TODO front end connect for all track editing
-                // updateAllTrackGroupSegmentLabel(element, event.target.value);                
+                } else {
+                    updateAllTrackGroupSegmentLabel(element, event.target.value);   
+                }              
             }
 
             labelInput.addEventListener("blur", handleLabelInput);
@@ -544,17 +543,21 @@ function updateGroupSegmentLabel(segmentElement, value, waveformNum) {
 // Updates the specified segment elements label value for all those labels
 function updateAllTrackGroupSegmentLabel(segmentElement, value) {
     let label = segmentElement.label;
-    let i = 0;
-    window.segmentData.forEach(track => {
-        track.forEach(element => {
-            if(element.label === label) {
-                element.label = value;
-            }
-        });
-        updateSegmentElementsList(track, false, i);
-        updateTrackColors(i);
-        i++;
-    });
+
+
+    for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+        const waveform = globalState.wavesurferWaveforms[i];
+        if(!waveform.getMuted()) {
+            console.log(i)
+            window.segmentData[i].forEach(element => {
+                if(element.label === label) {
+                    element.label = value;
+                }
+            });
+            updateSegmentElementsList(window.segmentData[i], false, i);
+            updateTrackColors(i);
+        }
+    }
 }
 
 // Gets the next color to be used for segment region
@@ -687,6 +690,7 @@ function createTrackTitle(waveformNum) {
         document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
         document.getElementById("track" + String(waveformNum)).remove();
         window.trackNames[waveformNum] = null;
+        globalState.wavesurferWaveforms[waveformNum].setMuted(true);
     })
 
     titleBar.appendChild(closeButton);
@@ -1320,7 +1324,7 @@ export function setupNextWaveform() {
             currentlyEditing = true;
             for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
                 const waveform = globalState.wavesurferWaveforms[i];
-                if(waveform.getDuration() > 0) {
+                if(!waveform.getMuted()) {
                     waveform.setScroll(currentScroll);
                     updateLabelPositions(i);
                     updateSegmentAnnotationPositions(i);
@@ -1343,7 +1347,7 @@ export function setupNextWaveform() {
             currentlyEditing = true;
             for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
                 const waveform = globalState.wavesurferWaveforms[i];
-                if(waveform.getDuration() > 0) {
+                if(!waveform.getMuted()) {
                     waveform.zoom(newPxPerSec);
                     updateLabelPositions(i);
                     updateSegmentAnnotationPositions(i);
@@ -1361,11 +1365,12 @@ export function setupNextWaveform() {
         clearTimeout(zoomTimeout);
         zoomTimeout = setTimeout(() => {
             if(globalState.globalTimelineMode) {
-                let i = 0;
-                window.segmentData.forEach(segmentData => {
-                    updateSegmentElementsList(segmentData, true, i);  
-                    i++;                  
-                });
+                for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {
+                    const waveform = globalState.wavesurferWaveforms[i];
+                    if(!waveform.getMuted()) {
+                        updateSegmentElementsList(window.segmentData[i], true, i);  
+                    }
+                }
             } else {
                 updateSegmentElementsList(window.segmentData[num], true, num);
             }
