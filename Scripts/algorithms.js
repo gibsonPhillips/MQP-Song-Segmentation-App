@@ -43,6 +43,7 @@ async function segment(algorithm, waveformNum) {
         // Add in segment annotation
         window.segmentData[waveformNum].forEach(obj => {
             obj.label = obj.label + 1;
+            obj.label = String(obj.label);
             obj.annotation = "";
         });
 
@@ -90,6 +91,8 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall,
 
         // Add in segment annotation
         segmentData.forEach(obj => {
+            obj.label = obj.label + 1;
+            obj.label = String(obj.label);
             obj.annotation = "";
         });
 
