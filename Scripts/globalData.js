@@ -503,6 +503,7 @@ function createTrackTitle(waveformNum) {
     // Create the title-bar div
     let titleBar = document.createElement('div');
     titleBar.classList.add('title-bar');
+    titleBar.classList.add('tooltip');
 
     // Create the close button
     let closeButton = document.createElement('button');
@@ -548,6 +549,14 @@ function createTrackTitle(waveformNum) {
     resizeButton.classList.add('hidden');
 
     titleBar.appendChild(resizeButton);
+    
+    // Create the tooltip
+    let titleTooltip = document.createElement('span');
+    titleTooltip.classList.add('tooltiptext');
+    titleTooltip.setAttribute('id', 'track-' + waveformNum + '-tooltip');
+    titleTooltip.innerHTML = 'Track ' + waveformNum;
+
+    titleBar.appendChild(titleTooltip);
 
     return(titleBar);
 }

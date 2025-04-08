@@ -455,11 +455,15 @@ input[type="color"] {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    overflow-x: auto;
+    overflow: visible; /* was previously overflow-x: auto */
     padding: 0.5rem 2rem;
     font-size: 18px;
     letter-spacing: -0.025em;
     white-space: nowrap;
+}
+
+.window {
+    overflow: visible;
 }
 
 .top-bar-btn {
