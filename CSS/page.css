@@ -65,6 +65,10 @@
     max-height: 90vh;
 }
 
+.track-container {
+    height: 202px;
+}
+
 #expanders {
     display: inline-block;
 }

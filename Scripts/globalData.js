@@ -1457,6 +1457,10 @@ function setupScroll(waveformNum) {
 
 // Sets up all the necessary variables for a new waveform and track
 function setupWaveformTrackVariables(waveformNum) {
+    let trackContainer = document.createElement("div");
+    trackContainer.className = "track-container";
+    trackContainer.id = "track-container" + String(waveformNum);
+
     let labelsContainer = document.createElement("div");
     labelsContainer.className = "labels-container";
     labelsContainer.id = "labels-container" + String(waveformNum);
@@ -1466,9 +1470,11 @@ function setupWaveformTrackVariables(waveformNum) {
     let segmentAnnotationContainer = document.createElement("div");
     segmentAnnotationContainer.className = "segment-annotation-container";
     segmentAnnotationContainer.id = "segment-annotation-container" + String(waveformNum);
-    htmlElements.timeline.appendChild(labelsContainer);
-    htmlElements.timeline.appendChild(waveform);
-    htmlElements.timeline.appendChild(segmentAnnotationContainer);
+    trackContainer.appendChild(labelsContainer);
+    trackContainer.appendChild(waveform);
+    trackContainer.appendChild(segmentAnnotationContainer);
+
+    htmlElements.timeline.appendChild(trackContainer);
 
     // Add necessary elements to global variables
     window.songFilePaths.push('');
