@@ -23,6 +23,7 @@ export let globalState = {
     markerNotes: [], // markers for each track
     regionType: [], // stores whether the region is a region or marker
     globalTimelineMode: false,
+    segmentAnnotationsPresent: false,
     editBoundaryMode: false,
     waveformNums: [], // stores track numbers
     labelColors: [], // label colors for each track
@@ -1160,7 +1161,7 @@ function createNewRegion(element, waveformNum, labelsContainerStr, annotationCon
         color: globalState.labelColors[waveformNum].get(element.label).color,
         drag: false,
         resize: false,
-        height: 161.3,
+        height: globalState.segmentAnnotationsPresent ? 113 : 163,
     });
 
     globalState.regionType[waveformNum].set(region, 'segment');
@@ -1481,7 +1482,7 @@ function setupWaveformTrackVariables(waveformNum) {
         progressColor: 'rgb(5, 5, 5)',
         minPxPerSec: 100,
         plugins: [globalState.regions[waveformNum], ZoomPlugin.create({scale:0.1})],
-        height: 161.3,
+        height: globalState.segmentAnnotationsPresent ? 113 : 163,
     }));
     globalState.markerNotes.push(new Map());
     globalState.regionType.push(new Map());
@@ -1497,6 +1498,14 @@ function setupWaveformTrackVariables(waveformNum) {
                     resize: globalState.editBoundaryMode
                 });
             }
+        });
+    }
+
+    // Enable segment annotations on waveform if true
+    if(globalState.segmentAnnotationsPresent) {
+        htmlElements.segmentAnnotationButton.style.backgroundColor = "rgb(255,197,61)";
+        document.querySelectorAll(".segment-annotation-container").forEach((container) => {
+            container.setAttribute('style', 'height: 50px; visibility: visible;');
         });
     }
 }
