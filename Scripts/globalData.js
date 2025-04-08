@@ -1160,7 +1160,7 @@ function createNewRegion(element, waveformNum, labelsContainerStr, annotationCon
         color: globalState.labelColors[waveformNum].get(element.label).color,
         drag: false,
         resize: false,
-        // height: waveformsHeight
+        height: 161.3,
     });
 
     globalState.regionType[waveformNum].set(region, 'segment');
