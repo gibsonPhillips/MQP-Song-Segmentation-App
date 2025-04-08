@@ -613,7 +613,13 @@ async function deleteTheProjectData(chosenProject) {
             console.log("FILE WIPED");
         }
 
-        await window.api.deleteDir(chosenProject);
+        // await window.api.deleteDir(chosenProject);
+        const result = await window.api.deleteDir(chosenProject);
+        if (!result.success) {
+            console.error('Deletion failed:', result.error);
+        } else {
+            console.log('Directory deleted!');
+        }
         console.log('PROJECT WIPED');
     } catch (error) {
         console.error('Issue deleting files or directory:\n' + error);
