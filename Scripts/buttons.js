@@ -1,6 +1,11 @@
 import { updateTrackName, updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
+
+// instanciate the scope editing button and icon index
+let button = document.getElementById("group-editing");
+let icons = button.querySelectorAll(".ripplers");
+let currentScopeEditingIndex = 0
 let segmentAnnotationsPresent = false;
 
 let externalSaveColorPreferences = null;
@@ -164,7 +169,17 @@ htmlElements.colorPreferencesButton.onclick = async () => {
     htmlElements.colorPreferenceDialog.showModal();
 }
 
+
+// helper function that cycles the icons when groupEditingButton is clicked / called
+function cycleGEIcons() {
+    icons[currentScopeEditingIndex].style.display = "none";
+    currentScopeEditingIndex = (currentScopeEditingIndex + 1) % 3
+    icons[currentScopeEditingIndex].style.display = "block";
+}
+
 htmlElements.groupEditingButton.onclick = () => {
+    cycleGEIcons();
+
     if(globalState.groupEditingMode === 2) {
         globalState.groupEditingMode = 0;
     } else {

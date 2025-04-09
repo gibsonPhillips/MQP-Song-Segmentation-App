@@ -164,7 +164,7 @@
 
     /* controls the buttons within */
     display: grid;
-    grid-template-rows: repeat(4, auto);
+    grid-template-rows: 23px 6px 39px 39px 39px;
     grid-template-columns: 1;
     gap: 5px;
 }
@@ -494,6 +494,31 @@ input[type="color"] {
     width: 0px;
     height: 0px;
     visibility: hidden;
+}
+
+.ripplers {
+    height: 19px;
+    width: 19px;
+    padding: 0px;
+    margin: 0px;
+}
+
+#ripple-single {
+    display: block;
+}
+
+#ripple-row {
+    display: none;
+}
+
+#ripple-all {
+    display: none;
+}
+
+
+#group-editing {
+    display: grid;
+    grid-template-columns: 80px 19px;
 }
 
 /* Hide text and show icons at smaller screen widths */

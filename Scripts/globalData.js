@@ -8,6 +8,7 @@ export function setExternalLoadColorPreferences(fn) {
     externalLoadColorPreferences = fn;
 }
 
+
 window.trackNames = [];
 window.songFilePaths = [];
 window.segmentData = [];
