@@ -522,6 +522,7 @@ function createTrackTitle(waveformNum) {
         document.getElementById("waveform" + String(waveformNum)).remove();
         document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
         document.getElementById("track" + String(waveformNum)).remove();
+        document.getElementById("track-container" + String(waveformNum)).remove();
         window.trackNames[waveformNum] = null;
         globalState.wavesurferWaveforms[waveformNum].setMuted(true);
     })
@@ -662,9 +663,9 @@ function createSegmentDropdownButton(waveformNum, segmentButton) {
         algorithmAuto.id = "auto-segment";
         algorithmAuto.textContent = "Auto Segment";
         dropdownContent.appendChild(algorithmAuto);
-        algorithmAuto.addEventListener("click", () => {
+        algorithmAuto.addEventListener("click", async () => {
             LoadingState(segmentButton);
-            externalAutoSegment(4, 4, 0, false, waveformNum);
+            await externalAutoSegment(4, 4, 0, false, waveformNum);
             ResetButtonContent(segmentButton);
         });
 
@@ -686,6 +687,33 @@ function createSegmentDropdownButton(waveformNum, segmentButton) {
 
         // Append dropdown to the body (or any other container)
         return(dropdown);
+}
+
+// helper function creates the dial to control the number of clusters
+function createClusterDial(waveformNum) {
+    const clusterDial = document.createElement("input");
+    clusterDial.type = "number";
+    // clusterDial.classList.add("btn");
+    clusterDial.classList.add("cluster-dial");
+    clusterDial.id = "cluster-dial" + String(waveformNum);
+
+    // constraints and placeholders
+    clusterDial.min = 1;
+    clusterDial.max = 99;
+    clusterDial.value = 4;
+
+
+    /*
+    // set the icon inside
+    const img = document.createElement("img");
+    img.src = "resources/icons/TrackButtons/segment.svg";
+    img.alt = "Segment Button";
+    img.style.setProperty("height", iconSize);
+    img.style.setProperty("width", iconSize);
+    clusterDial.appendChild(img);
+    */
+
+    return clusterDial;
 }
 
 // helper function to create the segment button
@@ -1031,6 +1059,7 @@ function NewTrack(waveformNum) {
     // make the buttons
     let segment = createSegmentButton(waveformNum);
     let algDropdown = createSegmentDropdownButton(waveformNum, segment);
+    let clusterDial = createClusterDial(waveformNum);
     let boundary = createBoundaryButton(waveformNum);
     let boundaryDropdown = createBoundaryDropdownButton(waveformNum);
     let saveTrackDropdown = createSaveTrackButton(waveformNum);
@@ -1063,6 +1092,8 @@ function NewTrack(waveformNum) {
     dropdownsCon.appendChild(segmentCombo);
     segmentCombo.appendChild(segment);
     segmentCombo.appendChild(algDropdown);
+    segmentCombo.appendChild(clusterDial);
+
 
     dropdownsCon.appendChild(boundaryCombo)
     boundaryCombo.appendChild(boundary);

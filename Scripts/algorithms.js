@@ -17,7 +17,7 @@ htmlElements.importButton.addEventListener('click', async () => {
 setExternalSegment(segment);
 async function segment(algorithm, waveformNum) {
     const inputName = window.songFilePaths[waveformNum];
-    window.clusters[waveformNum] = determineVariability();
+    window.clusters[waveformNum] = determineVariability(waveformNum);
     try {
         console.log("Segmenting begin");
 
@@ -54,14 +54,21 @@ async function segment(algorithm, waveformNum) {
 }
 
 // Determines the variability to be used for an algorithm
-function determineVariability() {
+function determineVariability(waveformNum) {
     //TODO fix with new slider
     // const target = document.getElementById('variability-slider');
     // let num = parseInt(Number(target.value)/100) + 2
     // console.log(num)
     // return num
 
-    return 4;
+    // new implimentation in the tracks
+    // !! put in try catch in case of fuckup id assignments
+    const target = document.getElementById('cluster-dial' + String(waveformNum));
+    let num = parseInt(target.value)
+    console.log(`cluster value: ${num}`)
+    return num
+
+    // return 4;
 }
 
 // Auto segments

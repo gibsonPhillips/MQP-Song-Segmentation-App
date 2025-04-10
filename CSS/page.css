@@ -168,7 +168,7 @@
 
     /* controls the buttons within */
     display: grid;
-    grid-template-rows: repeat(4, auto);
+    grid-template-rows: 23px 6px 39px 39px 39px;
     grid-template-columns: 1;
     gap: 5px;
 }
@@ -191,7 +191,7 @@
 
     display: grid;
     /* grid-template-rows: 1; */
-    grid-template-columns: 80px 80px;
+    grid-template-columns: 115px 60px;
     gap: 0px;
     justify-content: space-evenly;
 }
@@ -217,7 +217,7 @@
 /* adding these two for the two dropdown combo containers */
 .segment-combo-con {
     display: grid;
-    grid-template-columns: 29px 29px;
+    grid-template-columns: 34px 34px 37px;
 }
 
 .boundary-combo-con {
@@ -248,6 +248,7 @@
 }
 
 .segment-button-dropdown {
+    /* I don't know why this is here and I don't think it's real */
     width: 34px;
     height: 29px;
 
@@ -270,6 +271,18 @@
     padding: 0px;
     margin: 0px;
 
+    border-left: 0;
+    border-right: 0;
+}
+
+.cluster-dial {
+    border-image: url(dist/button.svg) 30 stretch;
+    height: 19px;
+    width: 34px;
+    padding: 0px;
+    border-style: solid;
+    border-width: 5.5px;
+    color: #000;
     border-left: 0;
 }
 
@@ -427,6 +440,7 @@
     gap: 10px;
     margin: 20px;
 }
+
 .color-box {
     width: 40px;
     height: 40px;
@@ -434,9 +448,11 @@
     border: 2px solid transparent;
     transition: transform 0.2s, border 0.2s;
 }
+
 .color-box:hover {
     transform: scale(1.1);
 }
+
 .selected {
     border: 3px solid black;
 }
@@ -467,7 +483,7 @@ input[type="color"] {
 
 .top-bar-btn {
     flex-shrink: 1;
-    padding: 0rem 0.5rem;   
+    padding: 0rem 0.5rem;
     transition: all 0.3s ease;
     white-space: normal;
     word-wrap: break-word;
@@ -481,6 +497,31 @@ input[type="color"] {
     width: 0px;
     height: 0px;
     visibility: hidden;
+}
+
+.ripplers {
+    height: 19px;
+    width: 19px;
+    padding: 0px;
+    margin: 0px;
+}
+
+#ripple-single {
+    display: block;
+}
+
+#ripple-row {
+    display: none;
+}
+
+#ripple-all {
+    display: none;
+}
+
+
+#group-editing {
+    display: grid;
+    grid-template-columns: 80px 19px;
 }
 
 /* Hide text and show icons at smaller screen widths */

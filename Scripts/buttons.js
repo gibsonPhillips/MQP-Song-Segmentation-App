@@ -1,7 +1,13 @@
 import { updateTrackName, updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
-// Set external functions
+
+// instanciate the scope editing button and icon index
+let button = document.getElementById("group-editing");
+let icons = button.querySelectorAll(".ripplers");
+let currentScopeEditingIndex = 0
+let segmentAnnotationsPresent = false;
+
 let externalSaveColorPreferences = null;
 export function setExternalSaveColorPreferences(fn) {
     externalSaveColorPreferences = fn;
@@ -116,8 +122,14 @@ htmlElements.colorLegendSave.addEventListener('click', () => {
     });
 
     // Update existing tracks
-    for (let i = 0; i < globalState.labelColors.length; i++) {
-        updateTrackColors(i);            
+    // for (let i = 0; i < globalState.labelColors.length; i++) {
+    //     updateTrackColors(i);            
+    // }
+    for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+        const waveform = globalState.wavesurferWaveforms[i];
+        if(!waveform.getMuted()) {
+            updateTrackColors(i);
+        }
     }
 
     // Save color preferences
@@ -165,7 +177,17 @@ htmlElements.colorPreferencesButton.onclick = async () => {
     htmlElements.colorPreferenceDialog.showModal();
 }
 
+
+// helper function that cycles the icons when groupEditingButton is clicked / called
+function cycleGEIcons() {
+    icons[currentScopeEditingIndex].style.display = "none";
+    currentScopeEditingIndex = (currentScopeEditingIndex + 1) % 3
+    icons[currentScopeEditingIndex].style.display = "block";
+}
+
 htmlElements.groupEditingButton.onclick = () => {
+    cycleGEIcons();
+
     if(globalState.groupEditingMode === 2) {
         globalState.groupEditingMode = 0;
     } else {
