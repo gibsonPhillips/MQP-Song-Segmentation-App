@@ -122,8 +122,14 @@ htmlElements.colorLegendSave.addEventListener('click', () => {
     });
 
     // Update existing tracks
-    for (let i = 0; i < globalState.labelColors.length; i++) {
-        updateTrackColors(i);            
+    // for (let i = 0; i < globalState.labelColors.length; i++) {
+    //     updateTrackColors(i);            
+    // }
+    for (let i = 0; i < globalState.wavesurferWaveforms.length; i++) {               
+        const waveform = globalState.wavesurferWaveforms[i];
+        if(!waveform.getMuted()) {
+            updateTrackColors(i);
+        }
     }
 
     // Save color preferences

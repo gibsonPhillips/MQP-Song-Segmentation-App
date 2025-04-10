@@ -522,6 +522,7 @@ function createTrackTitle(waveformNum) {
         document.getElementById("waveform" + String(waveformNum)).remove();
         document.getElementById("segment-annotation-container" + String(waveformNum)).remove();
         document.getElementById("track" + String(waveformNum)).remove();
+        document.getElementById("track-container" + String(waveformNum)).remove();
         window.trackNames[waveformNum] = null;
         globalState.wavesurferWaveforms[waveformNum].setMuted(true);
     })
@@ -662,9 +663,9 @@ function createSegmentDropdownButton(waveformNum, segmentButton) {
         algorithmAuto.id = "auto-segment";
         algorithmAuto.textContent = "Auto Segment";
         dropdownContent.appendChild(algorithmAuto);
-        algorithmAuto.addEventListener("click", () => {
+        algorithmAuto.addEventListener("click", async () => {
             LoadingState(segmentButton);
-            externalAutoSegment(4, 4, 0, false, waveformNum);
+            await externalAutoSegment(4, 4, 0, false, waveformNum);
             ResetButtonContent(segmentButton);
         });
 
