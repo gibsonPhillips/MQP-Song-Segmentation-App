@@ -1,8 +1,6 @@
 import { updateTrackName, updateTrackColors, updateLabelPositions, updateSegmentAnnotationPositions, updateTimeline, globalState } from './globalData.js';
 import htmlElements from './globalData.js';
 
-let segmentAnnotationsPresent = false;
-
 // Set external functions
 let externalSaveColorPreferences = null;
 export function setExternalSaveColorPreferences(fn) {
@@ -184,16 +182,29 @@ htmlElements.groupEditingButton.onclick = () => {
 }
 
 htmlElements.segmentAnnotationButton.onclick = () => {
-    segmentAnnotationsPresent = !segmentAnnotationsPresent;
-    if(segmentAnnotationsPresent) {
+    globalState.segmentAnnotationsPresent = !globalState.segmentAnnotationsPresent;
+    if(globalState.segmentAnnotationsPresent) {
         htmlElements.segmentAnnotationButton.style.backgroundColor = "rgb(255,197,61)";
         document.querySelectorAll(".segment-annotation-container").forEach((container) => {
             container.setAttribute('style', 'height: 50px; visibility: visible;');
         });
+
+        globalState.wavesurferWaveforms.forEach((waveform) => {
+            waveform.setOptions({
+                height: 113
+              });
+        });
+
     } else {
         htmlElements.segmentAnnotationButton.style.backgroundColor = "white";
         document.querySelectorAll(".segment-annotation-container").forEach((container) => {
             container.setAttribute('style', 'height: 0px; visibility: hidden;');
+        });
+
+        globalState.wavesurferWaveforms.forEach((waveform) => {
+            waveform.setOptions({
+                height: 163
+              });
         });
     }
 }

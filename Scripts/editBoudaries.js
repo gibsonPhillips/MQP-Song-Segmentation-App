@@ -118,8 +118,10 @@ function addMarkerButtonAction(waveformNum) {
     currentMarker = marker;
     window.currentWaveformNum = waveformNum;
 
-    htmlElements.markerTitle.value = "";
-    htmlElements.markerNote.value = "";
+    htmlElements.markerTitle.value = "Enter title";
+    htmlElements.markerNote.value = "Enter note";
+
+    globalState.markerNotes[window.currentWaveformNum].set(currentMarker.start, {start: currentMarker.start, title: htmlElements.markerTitle.value, note: htmlElements.markerNote.value});
 
     htmlElements.markerDialog.showModal();
 }

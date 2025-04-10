@@ -449,7 +449,7 @@ htmlElements.loadProjectButton.addEventListener('click', async () => {
 
 // Saves the track
 htmlElements.saveProjectButton.addEventListener('click', async () => {
-    selectSaveProject();
+    await selectSaveProject();
 });
 
 htmlElements.deleteProjectButton.addEventListener('click', async () => {
@@ -472,7 +472,7 @@ htmlElements.deleteProjectButton.addEventListener('click', async () => {
                     chosenProject = file
                     console.log(chosenProject);
                     htmlElements.deleteProjectMenuDialog.close();
-                    await deleteTheProjectData(chosenProject)
+                    await deleteTheProjectData(projectsWorkspace + '\\' + chosenProject)
                 })
                 vbox.appendChild(newButton)
             });
@@ -512,30 +512,29 @@ async function selectSaveProject() {
     vboxHeader.textContent = 'Replace Existing Project';
     vbox.appendChild(vboxHeader);
 
+
     window.api.getDirectoryContents(projectsWorkspace).then((files) => {
         if (files.length != 0) {
-        // Implement selecting the track
-        //placeholders
 
             files.forEach(file => {
-
                 // Create a button for each existing track
                 let newButton = document.createElement('button');
                 newButton.className='btn';
                 newButton.textContent = file
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
+                    console.log(chosenProject);
                     htmlElements.saveProjectMenuDialog.close();
-                    await deleteTheProject(projectsWorkspace + '\\' + chosenProject);
-
-                    checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                    await deleteTheProjectData(projectsWorkspace + '\\' + chosenProject);
+                    await checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked)
                 })
-                vbox.appendChild(newButton);
+                vbox.appendChild(newButton)
             });
         }
-        
+
         //Show the dialog
         htmlElements.saveProjectMenuDialog.showModal();
+
     }).catch((error) => {
         // Throw error if there is an issue getting the files within the directory
         console.error('Issue getting the files within the directory:\n' + error);
@@ -547,7 +546,7 @@ htmlElements.createNewProjectButton.addEventListener('click', async () => {
     let chosenProject = htmlElements.saveProjectInput.value;
     htmlElements.saveProjectMenuDialog.close();
     console.log('html saveprojectinp7ut' + htmlElements.saveProjectInput.value)
-    checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked);
+    await checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked);
 });
 
 async function checkToSaveProject(chosenProject, saveProjectAudioFile) {
@@ -604,19 +603,23 @@ async function saveTheProjectData(chosenProject, saveProjectAudioFile) {
 async function deleteTheProjectData(chosenProject) {
     console.log('Not defined: Deleting ' + chosenProject);
 
-    let projectPath = projectsWorkspace + '\\' + chosenProject;
-
     console.log("DELETING PROJECT BEGIN");
 
     try {
-        let files = await window.api.getDirectoryContents(projectPath);
+        let files = await window.api.getDirectoryContents(chosenProject);
 
         for (const file of files) {
-            await deleteTheTrack(projectPath + '\\' + file);
+            await deleteTheTrack(chosenProject + '\\' + file);
             console.log("FILE WIPED");
         }
 
-        await window.api.deleteDir(projectPath);
+        // await window.api.deleteDir(chosenProject);
+        const result = await window.api.deleteDir(chosenProject);
+        if (!result.success) {
+            console.error('Deletion failed:', result.error);
+        } else {
+            console.log('Directory deleted!');
+        }
         console.log('PROJECT WIPED');
     } catch (error) {
         console.error('Issue deleting files or directory:\n' + error);

@@ -1,8 +1,9 @@
 // const { app, BrowserWindow } = require('electron/main')
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
-const path = require('node:path');
+const path = require('path');
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
+const fspromises = require('fs/promises')
 
 let pythonProcess
 let filePath = '';
@@ -89,13 +90,18 @@ ipcMain.handle('copy-song-file', async (event, currentFilePath, newPath) => {
 });
 
 ipcMain.handle('delete-dir', async (event, dirPath) => {
-    fs.rmdir(dirPath, (err) => {
-        if (err) {
-            console.error("Error deleting directory:", err);
-        } else {
-            console.log('Directory ' + dirPath + ' deleted successfully');
-        }
-    });
+    try {
+        const resolvedPath = path.resolve(dirPath);
+        console.log('Deleting directory:', resolvedPath);
+
+        await fspromises.rm(resolvedPath, { recursive: true, force: true });
+
+        console.log('Successfully deleted:', resolvedPath);
+        return { success: true };
+    } catch (err) {
+        console.error('Error deleting directory:', err);
+        return { success: false, error: err.message };
+    }
 });
 
 ipcMain.handle('delete-file', async (event, filePath) => {
