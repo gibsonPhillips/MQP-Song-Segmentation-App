@@ -1,6 +1,5 @@
 import { updateTrackName, globalState, updateSegmentElementsList, updateTimeline, loadSong, setExternalSegment, setExternalAutoSegment } from './globalData.js';
 import htmlElements from './globalData.js';
-// import {LoadingState, ResetButtonContent} from "./loading_demo.js"
 
 // Import button
 htmlElements.importButton.addEventListener('click', async () => {
@@ -14,17 +13,13 @@ htmlElements.importButton.addEventListener('click', async () => {
     }
 });
 
-// Set the function in global.js
+// Runs the segmentation algorithm
 setExternalSegment(segment);
-
-// runs the segmentation algorithm
-// TODO handle multiple waveforms
 async function segment(algorithm, waveformNum) {
     const inputName = window.songFilePaths[waveformNum];
     window.clusters[waveformNum] = determineVariability(waveformNum);
     try {
         console.log("Segmenting begin");
-        // LoadingState(htmlElements.algorithmsDropdown);
 
         // Send a POST request to the Python server
         const response = await fetch('http://127.0.0.1:5000/call-python', {
@@ -36,7 +31,6 @@ async function segment(algorithm, waveformNum) {
         });
 
         console.log("Segmenting end");
-        // ResetButtonContent(0);
 
         // Parse the JSON response
         const data = await response.json();
@@ -49,6 +43,7 @@ async function segment(algorithm, waveformNum) {
         // Add in segment annotation
         window.segmentData[waveformNum].forEach(obj => {
             obj.label = obj.label + 1;
+            obj.label = String(obj.label);
             obj.annotation = "";
         });
 
@@ -76,10 +71,8 @@ function determineVariability(waveformNum) {
     // return 4;
 }
 
-// Set the function in global.js
+// Auto segments
 setExternalAutoSegment(autoSegment);
-
-// TODO handle multiple waveforms
 async function autoSegment(clusters, closestClusters, closestAverage, finalCall, waveformNum) {
     const inputName = window.songFilePaths[waveformNum];
     try {
@@ -105,6 +98,8 @@ async function autoSegment(clusters, closestClusters, closestAverage, finalCall,
 
         // Add in segment annotation
         segmentData.forEach(obj => {
+            obj.label = obj.label + 1;
+            obj.label = String(obj.label);
             obj.annotation = "";
         });
 

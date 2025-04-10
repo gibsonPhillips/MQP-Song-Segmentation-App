@@ -18,6 +18,7 @@ export function setExternalLoadColorPreferences2(fn) {
     externalLoadColorPreferences = fn;
 }
 
+
 // Button click actions
 htmlElements.closeDialogButton.onclick = () => {
     htmlElements.segmentDetailsDialog.close();
@@ -131,6 +132,7 @@ htmlElements.colorLegendSave.addEventListener('click', () => {
     htmlElements.colorLegendTextInput.value = '';
 });
 
+// Set up opening of the color preferences
 htmlElements.colorPreferencesButton.onclick = async () => {
     await externalLoadColorPreferences();
     htmlElements.colorLegend.textContent = '';
@@ -196,16 +198,29 @@ htmlElements.groupEditingButton.onclick = () => {
 }
 
 htmlElements.segmentAnnotationButton.onclick = () => {
-    segmentAnnotationsPresent = !segmentAnnotationsPresent;
-    if(segmentAnnotationsPresent) {
+    globalState.segmentAnnotationsPresent = !globalState.segmentAnnotationsPresent;
+    if(globalState.segmentAnnotationsPresent) {
         htmlElements.segmentAnnotationButton.style.backgroundColor = "rgb(255,197,61)";
         document.querySelectorAll(".segment-annotation-container").forEach((container) => {
             container.setAttribute('style', 'height: 50px; visibility: visible;');
         });
+
+        globalState.wavesurferWaveforms.forEach((waveform) => {
+            waveform.setOptions({
+                height: 113
+              });
+        });
+
     } else {
         htmlElements.segmentAnnotationButton.style.backgroundColor = "white";
         document.querySelectorAll(".segment-annotation-container").forEach((container) => {
             container.setAttribute('style', 'height: 0px; visibility: hidden;');
+        });
+
+        globalState.wavesurferWaveforms.forEach((waveform) => {
+            waveform.setOptions({
+                height: 163
+              });
         });
     }
 }
@@ -242,8 +257,8 @@ htmlElements.modifyBoundariesButton.onclick = () => {
         htmlElements.modifyBoundariesButton.style.backgroundColor = "rgb(255,197,61)";
     }
 
-    for(let i = 0; i < htmlElements.regions.length; i++) {
-        htmlElements.regions[i].regions.forEach(element => {
+    for(let i = 0; i < globalState.regions.length; i++) {
+        globalState.regions[i].regions.forEach(element => {
             if(globalState.regionType[i].get(element) === 'segment') {
                 element.setOptions({
                     resize: globalState.editBoundaryMode
