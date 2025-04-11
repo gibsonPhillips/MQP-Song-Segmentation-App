@@ -234,6 +234,32 @@
 
 /* styling every individual track button as needed */
 
+.file-button-dropdown {
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-left: 0;
+}
+
+.file-dropdown-button {
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-left: 0;
+}
+
 .segment-button {
     width: 34px;
     height: 29px;
@@ -541,9 +567,15 @@ input[type="color"] {
         height: 28px;
         visibility: visible;
     }
-}
 
-/* this makes the waveforms height adjustment work */
-/* #shadow-root.scroll {
-    height: 500px;
-} */
+    #group-editing {
+        display: block;
+    }
+
+    .ripplers {
+        height: 28px;
+        width: 28px;
+        padding: 0px;
+        margin: 0px;
+    }
+}
