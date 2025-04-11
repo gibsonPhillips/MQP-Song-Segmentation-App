@@ -225,7 +225,7 @@ function createWindow() {
 
     startPythonServer()
 
-    win.loadFile('index.html')
+    win.loadFile('page.html')
 }
 
 app.whenReady().then(() => {

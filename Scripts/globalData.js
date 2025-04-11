@@ -613,6 +613,28 @@ function createSegmentDropdownButton(waveformNum, segmentButton) {
         dropdownContent.classList.add("dropdown-content");
         dropdownContent.id = "algorithms-dropdown-content";
 
+        document.body.appendChild(dropdownContent);
+
+        function showDropdown() {
+            const rect = algoButton.getBoundingClientRect();
+            dropdownContent.style.position = "absolute";
+            dropdownContent.style.left = `${rect.left}px`;
+            dropdownContent.style.top = `${rect.bottom}px`;
+            dropdownContent.style.display = "block";
+        }
+
+        function hideDropdown(event) {
+            // Ensure dropdown only hides when cursor leaves both button & menu
+            if (!algoButton.contains(event.relatedTarget) && !dropdownContent.contains(event.relatedTarget)) {
+                dropdownContent.style.display = "none";
+            }
+        }
+
+        algoButton.addEventListener("mouseenter", showDropdown);
+        algoButton.addEventListener("mouseleave", hideDropdown);
+        dropdownContent.addEventListener("mouseleave", hideDropdown);
+        dropdownContent.addEventListener("mouseenter", showDropdown);
+
         // Create and append links for each algorithm
         const algorithm1 = document.createElement("a");
         algorithm1.href = "#";
@@ -671,21 +693,6 @@ function createSegmentDropdownButton(waveformNum, segmentButton) {
 
         // Append button and dropdown content to dropdown container
         dropdown.appendChild(algoButton);
-        dropdown.appendChild(dropdownContent);
-
-        // Toggle dropdown on button click
-        algoButton.addEventListener("click", function () {
-            dropdownContent.classList.toggle("show");
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener("click", function (event) {
-            if (!algoButton.contains(event.target) && !dropdownContent.contains(event.target)) {
-                dropdownContent.classList.remove("show");
-            }
-        });
-
-        // Append dropdown to the body (or any other container)
         return(dropdown);
 }
 
@@ -766,6 +773,28 @@ function createBoundaryDropdownButton(waveformNum) {
     dropdownContent.classList.add("dropdown-content");
     dropdownContent.id = "boundary-dropdown-content";
 
+    document.body.appendChild(dropdownContent);
+
+    function showDropdown() {
+        const rect = button.getBoundingClientRect();
+        dropdownContent.style.position = "absolute";
+        dropdownContent.style.left = `${rect.left}px`;
+        dropdownContent.style.top = `${rect.bottom}px`;
+        dropdownContent.style.display = "block";
+    }
+
+    function hideDropdown(event) {
+        // Ensure dropdown only hides when cursor leaves both button & menu
+        if (!button.contains(event.relatedTarget) && !dropdownContent.contains(event.relatedTarget)) {
+            dropdownContent.style.display = "none";
+        }
+    }
+
+    button.addEventListener("mouseenter", showDropdown);
+    button.addEventListener("mouseleave", hideDropdown);
+    dropdownContent.addEventListener("mouseleave", hideDropdown);
+    dropdownContent.addEventListener("mouseenter", showDropdown);
+
     const link1 = document.createElement("a");
     link1.href = "#";
     link1.id = "add-boundary";
@@ -789,20 +818,6 @@ function createBoundaryDropdownButton(waveformNum) {
 
     // Append button and dropdown content to dropdown container
     dropdown.appendChild(button);
-    dropdown.appendChild(dropdownContent);
-
-    // Toggle dropdown on button click
-    button.addEventListener("click", function () {
-        dropdownContent.classList.toggle("show");
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", function (event) {
-        if (!button.contains(event.target) && !dropdownContent.contains(event.target)) {
-            dropdownContent.classList.remove("show");
-        }
-    });
-
     return dropdown;
 }
 

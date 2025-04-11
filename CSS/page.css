@@ -120,6 +120,7 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     z-index: 1000;
+    font-family: Chicago_12;
 }
 
 /* Links inside the dropdown */
@@ -233,6 +234,32 @@
 /* ----------------------------------------------------------------------------------------------------- */
 
 /* styling every individual track button as needed */
+
+.file-button-dropdown {
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-left: 0;
+}
+
+.file-dropdown-button {
+    width: 34px;
+    height: 29px;
+
+    min-width: unset;
+    min-height: unset;
+
+    padding: 0px;
+    margin: 0px;
+
+    border-left: 0;
+}
 
 .segment-button {
     width: 34px;
@@ -458,9 +485,12 @@
 }
 
 .color-input-picker {
-    display: flex;
+    display: grid;
+    grid-template-columns: 150px 50px 150px;
+    
+    /* display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 10px; */
 }
 
 input[type="color"] {
@@ -541,9 +571,15 @@ input[type="color"] {
         height: 28px;
         visibility: visible;
     }
-}
 
-/* this makes the waveforms height adjustment work */
-/* #shadow-root.scroll {
-    height: 500px;
-} */
+    #group-editing {
+        display: block;
+    }
+
+    .ripplers {
+        height: 28px;
+        width: 28px;
+        padding: 0px;
+        margin: 0px;
+    }
+}
