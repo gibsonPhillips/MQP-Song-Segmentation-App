@@ -485,9 +485,12 @@
 }
 
 .color-input-picker {
-    display: flex;
+    display: grid;
+    grid-template-columns: 150px 50px 150px;
+    
+    /* display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 10px; */
 }
 
 input[type="color"] {
