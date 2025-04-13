@@ -3,7 +3,7 @@ import sys
 import os
 from flask import Flask, request, jsonify
 from waitress import serve
-from algorithms.librosaMusicSeg import runSegmentation
+from librosaMusicSeg import runSegmentation
 
 app = Flask(__name__)
 
