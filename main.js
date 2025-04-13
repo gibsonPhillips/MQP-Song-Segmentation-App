@@ -160,7 +160,7 @@ function startPythonServer() {
         return;
     }
 
-    // Path to the .exe (use path.join for compatibility)
+    // // Path to the .exe (use path.join for compatibility)
     // const pythonExecutable = path.join(__dirname, 'pythonServer.exe');
 
     // pythonProcess = spawn(pythonExecutable, [], {

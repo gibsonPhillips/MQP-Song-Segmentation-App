@@ -3,3 +3,4 @@ build
 py39env
 pythonServer.exe
 dist
+__pycache__
