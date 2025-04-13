@@ -101,6 +101,8 @@ htmlElements.colorLegendSave.addEventListener('click', () => {
 
     const text = document.createElement('span');
     text.textContent = htmlElements.colorLegendTextInput.value;
+    text.style.width = "150px";
+    text.style.textWrap = "wrap";
 
     const colorBox = document.createElement('div');
     colorBox.classList.add('color-box');
