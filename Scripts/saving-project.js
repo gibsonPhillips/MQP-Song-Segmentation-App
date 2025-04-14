@@ -524,6 +524,7 @@ htmlElements.deleteProjectButton.addEventListener('click', async () => {
 });
 
 async function loadTheProjectData(chosenProject) {
+    window.currentProject = chosenProject;
     console.log('loading ' + chosenProject);
     let projectPath = projectsWorkspace + '\\' + chosenProject;
     await window.api.getDirectoryContents(projectPath).then((files) => {
@@ -542,6 +543,9 @@ async function selectSaveProject() {
         vbox.removeChild(vbox.firstChild);
     }
 
+    //Set the default value for the input at the top
+    htmlElements.saveProjectInput.value = window.currentProject;
+
     //create the header for the pre-existing tracks
     let vboxHeader = document.createElement('h1');
     vboxHeader.textContent = 'Replace Existing Project';
@@ -559,10 +563,11 @@ async function selectSaveProject() {
                 newButton.addEventListener('click', async () => {
                     chosenProject = file
                     console.log(chosenProject);
+                    window.currentProject = htmlElements.saveProjectInput.value
                     htmlElements.saveProjectMenuDialog.close();
                     await saveAllAudioToTemp();
                     await deleteTheProjectData(projectsWorkspace + '\\' + chosenProject);
-                    await checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked)
+                    await checkToSaveProject(window.currentProject, htmlElements.saveProjectAudioCheckbox.checked)
                 })
                 vbox.appendChild(newButton)
             });
@@ -579,10 +584,11 @@ async function selectSaveProject() {
 }
 
 htmlElements.createNewProjectButton.addEventListener('click', async () => {
-    let chosenProject = htmlElements.saveProjectInput.value;
+    window.currentProject = htmlElements.saveProjectInput.value;
     htmlElements.saveProjectMenuDialog.close();
-    console.log('html saveprojectinp7ut' + htmlElements.saveProjectInput.value)
-    await checkToSaveProject(chosenProject, htmlElements.saveProjectAudioCheckbox.checked);
+    console.log('html saveprojectinp7ut' + window.currentProject)
+    await saveAllAudioToTemp();
+    await checkToSaveProject(window.currentProject, htmlElements.saveProjectAudioCheckbox.checked);
 });
 
 async function checkToSaveProject(chosenProject, saveProjectAudioFile) {
