@@ -287,7 +287,7 @@ async function saveTrackData(chosenTrack, waveformNum, saveTrackAudioFile) {
         presentErrorDialog('No data was saved (2)')
     }
 
-    // CLEAN TEMP
+    await cleanUpTemp();
 
     // Implement Saving of the song file
 }
@@ -634,10 +634,29 @@ async function saveTheProjectData(chosenProject, saveProjectAudioFile) {
         }
     });
 
+    await cleanUpTemp();
+
+}
+
+async function cleanUpTemp() {
+    console.log("WIPING TEMP BEGIN");
+
+    try {
+        let files = await window.api.getDirectoryContents(tempWorkspace);
+
+        for (const file of files) {
+            await window.api.deleteFile(tempWorkspace + '\\' + file);
+            console.log("Deleted: " + file);
+        }
+    } catch (error) {
+        console.error('Issue deleting files or directory:\n' + error);
+        presentErrorDialog('Issue deleting files or directory:\n' + error);
+    }
+
+    console.log("WIPING TEMP END");
 }
 
 async function deleteTheProjectData(chosenProject) {
-    console.log('Not defined: Deleting ' + chosenProject);
 
     console.log("DELETING PROJECT BEGIN");
 
