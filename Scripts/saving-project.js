@@ -624,21 +624,22 @@ async function saveTheProjectData(chosenProject, saveProjectAudioFile) {
     console.log('Chosen Project ' + chosenProject + ' ' + saveProjectAudioFile)
     let projectDirectory = projectsWorkspace + '\\' + chosenProject;
     
-    globalState.waveformNums.forEach(waveformNum => {
+    for (const waveformNum of globalState.waveformNums) {
         let trackName = window.trackNames[waveformNum];
         if (trackName != null) {
-            let projectTrackDirectory = projectDirectory + '\\' + trackName
-            window.api.createDirectory(projectTrackDirectory).then((result) => {
+            let projectTrackDirectory = projectDirectory + '\\' + trackName;
+            try {
+                await window.api.createDirectory(projectTrackDirectory);
                 console.log('Directory creation handled successfully.');
-                saveOneTrackData(projectTrackDirectory, trackName, waveformNum, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
-            }).catch((error) => {
+                await saveOneTrackData(projectTrackDirectory, trackName, waveformNum, htmlElements.saveProjectAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+            } catch (error) {
                 // Throw error if there is an issue creating the directory
                 console.error('Issue creating directory:\n' + error);
                 presentErrorDialog('Issue creating directory:\n' + error);
 
-            });
+            }
         }
-    });
+    }
 
     await cleanUpTemp();
 
