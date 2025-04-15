@@ -1,2 +1,6 @@
 node_modules
-algorithms/__pycache__
+build
+py39env
+pythonServer.exe
+dist
+__pycache__

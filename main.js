@@ -153,10 +153,21 @@ ipcMain.handle('wipe-dir', async (event, dirPath) => {
 
 // Function to start the Python server
 function startPythonServer() {
+    console.log("STARTING PYTHON SERVER");
+
     if (pythonProcess) {
-        console.log("Python server is already running.");
+        console.log("Python server already running.");
         return;
     }
+
+    // // Path to the .exe (use path.join for compatibility)
+    // const pythonExecutable = path.join(__dirname, 'pythonServer.exe');
+
+    // pythonProcess = spawn(pythonExecutable, [], {
+    //     cwd: __dirname, // ensure working directory is correct
+    //     shell: false,   // no need for shell when calling .exe directly
+    // });
+
     pythonProcess = spawn('python', ['pythonServer.py'], { shell: true });
 
     pythonProcess.stdout.on('data', (data) => {
@@ -170,13 +181,12 @@ function startPythonServer() {
     pythonProcess.on('close', (code) => {
         console.log(`Python process exited with code ${code}`);
         pythonProcess = null;
-        restartPythonServer();
+        restartPythonServer(); // optional: remove if not needed
     });
 
     pythonProcess.on('error', (error) => {
         console.error(`Failed to start Python server: ${error.message}`);
         pythonProcess = null;
-        restartPythonServer();
     });
 }
 
