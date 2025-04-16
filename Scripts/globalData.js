@@ -9,6 +9,7 @@ window.songFilePaths = []; // file paths for songs
 window.segmentData = []; // segment data for each track
 window.clusters = []; // cluster value being used for the track
 window.currentWaveformNum;
+window.currentProject = '';
 
 let currentlyEditing = false; // whether segment boundaries are being modified
 let zoomTimeout; // zoom timeout for updating display
