@@ -493,7 +493,12 @@ export async function loadSong(filePath) {
     if(num == -1) return;
     window.songFilePaths[num] = filePath;
     globalState.regions[num].clearRegions();
-    await globalState.wavesurferWaveforms[num].load(filePath);
+    try {
+        const audioBuffer = await window.api.readFileAsArrayBuffer(filePath);
+        await globalState.wavesurferWaveforms[num].loadBlob(new Blob([audioBuffer]));
+    } catch (err) {
+        console.error("Wavesurfer load failed:", err);
+    }
     globalState.currentZoom = 10;
     updateTimeline(num);
     return num;

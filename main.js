@@ -150,6 +150,11 @@ ipcMain.handle('wipe-dir', async (event, dirPath) => {
 
 });
 
+ipcMain.handle('read-file', async (event, path) => {
+    const buffer = await fs.promises.readFile(path);
+    return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+});
+
 
 // Function to start the Python server
 function startPythonServer() {
@@ -187,6 +192,14 @@ function startPythonServer() {
     pythonProcess.on('error', (error) => {
         console.error(`Failed to start Python server: ${error.message}`);
         pythonProcess = null;
+    });
+
+    pythonProcess.on('spawn', () => {
+        console.log('Python server started successfully');
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        fs.appendFileSync('error.log', `Python stderr: ${data}\n`);
     });
 }
 

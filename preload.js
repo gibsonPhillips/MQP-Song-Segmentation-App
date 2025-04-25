@@ -23,7 +23,8 @@ contextBridge.exposeInMainWorld('api', {
   copySongFile: (currentFilePath, newPath) => ipcRenderer.invoke('copy-song-file', currentFilePath, newPath),
   deleteDir: (dirPath) => ipcRenderer.invoke('delete-dir', dirPath),
   deleteFile: (filePath) => ipcRenderer.invoke('delete-file', filePath),
-  wipeDir: (dirPath) => ipcRenderer.invoke('wipe-dir', dirPath)
+  wipeDir: (dirPath) => ipcRenderer.invoke('wipe-dir', dirPath),
+  readFileAsArrayBuffer: (dirPath) => ipcRenderer.invoke('read-file', dirPath)
 });
 
 
