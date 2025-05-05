@@ -247,16 +247,19 @@ export function setExternalAutoSegment(fn) {
 
 let externalAddBoundary = null;
 export function setExternalAdd(fn) {
+    // undoState();
     externalAddBoundary = fn;
 }
 
 let externalRemoveBoundary = null;
 export function setExternalRemove(fn) {
+    // undoState();
     externalRemoveBoundary = fn;
 }
 
 let externalChangeBoundary = null;
 export function setExternalChange(fn) {
+    // undoState();
     externalChangeBoundary = fn;
 }
 

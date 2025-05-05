@@ -241,12 +241,12 @@ async function selectSaveTrack(waveformNum) {
     });
 }
 
-export async function undoState () {
+export default async function undoState () {
     let chosenTrack = htmlElements.saveTrackInput.value;
     console.log('html savetrackinp7ut' + htmlElements.saveTrackInput.value)
     console.log("undoState created")
-    await saveAudioToTemp(window.currentWaveformNum);
-    checkToSaveTrack(chosenTrack, window.currentWaveformNum, htmlElements.saveTrackAudioCheckbox.checked);
+    // await saveAudioToTemp(window.currentWaveformNum);
+    checkToSaveTrack(chosenTrack, window.currentWaveformNum, false);
 }
 
 async function checkToSaveTrack(chosenTrack, waveformNum, saveTrackAudioFile) {
