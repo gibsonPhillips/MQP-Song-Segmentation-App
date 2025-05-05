@@ -2,6 +2,11 @@ import htmlElements from './globalData.js';
 import { getNextUniqueTitle, updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences, updateTrackColors } from './globalData.js';
 import { setExternalSaveColorPreferences, setExternalLoadColorPreferences2 } from './buttons.js';
 
+// brand new stuff
+
+// mainly from saving.js
+
+
 // Sort out the save file system
 let workspace = ''
 let tracksWorkspace = ''
@@ -236,14 +241,13 @@ async function selectSaveTrack(waveformNum) {
     });
 }
 
-htmlElements.createNewTrackButton.addEventListener('click', async () => {
+export async function undoState () {
     let chosenTrack = htmlElements.saveTrackInput.value;
-    console.log(`chosent track: ${chosenTrack}`)
-    htmlElements.saveTrackMenuDialog.close();
     console.log('html savetrackinp7ut' + htmlElements.saveTrackInput.value)
+    console.log("undoState created")
     await saveAudioToTemp(window.currentWaveformNum);
     checkToSaveTrack(chosenTrack, window.currentWaveformNum, htmlElements.saveTrackAudioCheckbox.checked);
-})
+}
 
 async function checkToSaveTrack(chosenTrack, waveformNum, saveTrackAudioFile) {
 
