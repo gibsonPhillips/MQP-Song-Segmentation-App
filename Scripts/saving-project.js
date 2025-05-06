@@ -716,7 +716,7 @@ async function parseSegmentDataFile(segmentDataFilePath) {
     return rows;
 }
 
-async function loadOneTrackData(trackDirectory, trackName) {
+export async function loadOneTrackData(trackDirectory, trackName) {
     // important file paths
     let loadTrackSongFilePath = '';
     let loadTrackMetadataFilePath = '';

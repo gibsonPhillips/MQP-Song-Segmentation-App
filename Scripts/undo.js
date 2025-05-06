@@ -6,21 +6,42 @@ import workspace from './saving-project.js'
 import tracksWorkspace from './saving-project.js'
 import projectsWorkspace from './saving-project.js'
 import tempWorkspace from './saving-project.js'
+import loadOneTrackData from './saving-project.js';
+
+let undoStates = [];
+let availableStates = 6;
+let undoACC = 0;
 
 let undoButton = document.getElementById("undo-button")
 undoButton.addEventListener('click', async () => {
-    console.log("appdataPromise workspace tracksWorkspace projectsWorkspace tempWorkspace")
-    console.log(appdataPromise)
-    console.log(workspace)
-    console.log(tracksWorkspace)
-    console.log(projectsWorkspace)
-    console.log(tempWorkspace)
+    // get metadata from undoStates
+    // !!! temp track directory
+    fakeDirectory = "C:\\Users\\gcary\\AppData\\Roaming\\Song Segmentation\\undos"
+    loadOneTrackData(fakeDirectory, )
+
+    // load said metadata
+
+    // handle the potential redo states (wipe?)
+    // handle errors? 
+    undoACC--
 })
-console.log(`uh ${undoButton}`)
 
 export default function undoState() {
+    // grab metadata
+    // store metadata in undoStates
+    undoStates[undoACC%availableStates] = `it's ${undoACC}`
+    console.log(undoStates)
+    undoACC++;
     return 0;
 }
+
+// -------------------------------------------------------------
+// saving undo states
+// -------------------------------------------------------------
+
+
+
+
 /* /* /*
 
 // Sort out the save file system
