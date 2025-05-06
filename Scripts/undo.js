@@ -1,16 +1,34 @@
 import htmlElements from './globalData.js';
 import { getNextUniqueTitle, updateTrackName, globalState, loadSong, presentErrorDialog, updateSegmentElementsList, setExternalSaveTrack, setExternalExportData, setExternalLoadColorPreferences, updateTrackColors } from './globalData.js';
 import { setExternalSaveColorPreferences, setExternalLoadColorPreferences2 } from './buttons.js';
+import appdataPromise from './saving-project.js'
+import workspace from './saving-project.js'
+import tracksWorkspace from './saving-project.js'
+import projectsWorkspace from './saving-project.js'
+import tempWorkspace from './saving-project.js'
 
-export default function () {};
+let undoButton = document.getElementById("undo-button")
+undoButton.addEventListener('click', async () => {
+    console.log("appdataPromise workspace tracksWorkspace projectsWorkspace tempWorkspace")
+    console.log(appdataPromise)
+    console.log(workspace)
+    console.log(tracksWorkspace)
+    console.log(projectsWorkspace)
+    console.log(tempWorkspace)
+})
+console.log(`uh ${undoButton}`)
+
+export default function undoState() {
+    return 0;
+}
+/* /* /*
+
 // Sort out the save file system
-export let workspace = '';
-export let tracksWorkspace = '';
-export let projectsWorkspace = '';
-export let tempWorkspace = '';
+
+
 
 // gets the workspace
-export let appdataPromise = window.api.getAppData().then((appdata) => {
+let appdataPromise = window.api.getAppData().then((appdata) => {
     console.log(appdata);
     workspace = appdata + '\\Song Segmentation'
     console.log(workspace)
@@ -73,6 +91,7 @@ export let appdataPromise = window.api.getAppData().then((appdata) => {
     console.error(error);
     presentErrorDialog("Issue getting the appdata environment variable:\n" + error);
 });
+
 
 
 // When the workspace button is clicked
@@ -1104,3 +1123,4 @@ async function parseColorPreferencesFile(colorPreferencesFilePath) {
     }
     return colorPreferences;
 }
+ */

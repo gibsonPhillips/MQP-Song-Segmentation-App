@@ -1,11 +1,16 @@
 import { globalState, updateSegmentElementsList, setExternalOpenMarker, setExternalAdd, setExternalRemove, setExternalAddMarker } from './globalData.js';
 import htmlElements from './globalData.js';
+import undoState from './undo.js'
 
 let currentMarker;
 
 // Adds a boundary onto the specified track at the marker time
 setExternalAdd(addBoundaryButtonAction);
 function addBoundaryButtonAction(waveformNum) {
+
+    // set undo state to be undo'd later
+    undoState(waveformNum)
+
     // Reset edit mode
     globalState.editBoundaryMode = false;
     htmlElements.modifyBoundariesButton.style.backgroundColor = "white";
@@ -39,6 +44,10 @@ function addBoundaryButtonAction(waveformNum) {
 // Removes the closest boundary to the marker on the specified track
 setExternalRemove(removeBoundaryButtonAction);
 function removeBoundaryButtonAction(waveformNum) {
+
+    // set undo state to be undo'd later
+    undoState(waveformNum)
+        
     // Reset edit mode
     globalState.editBoundaryMode = false;
     htmlElements.modifyBoundariesButton.style.backgroundColor = "white";
