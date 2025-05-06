@@ -3,7 +3,9 @@ import { getNextUniqueTitle, updateTrackName, globalState, loadSong, presentErro
 import { setExternalSaveColorPreferences, setExternalLoadColorPreferences2 } from './buttons.js';
 
 // brand new stuff
-
+export let undoACC = 0;
+let undoStack = [];
+let redoStack = [];
 // mainly from saving.js
 
 
@@ -226,7 +228,7 @@ async function selectSaveTrack(waveformNum) {
                     await saveAudioToTemp(waveformNum);
                     await deleteTheTrack(tracksWorkspace + '\\' + chosenTrack);
                     
-                    checkToSaveTrack(htmlElements.saveTrackInput.value, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
+                    canSaveTrack(htmlElements.saveTrackInput.value, waveformNum, htmlElements.saveTrackAudioCheckbox.checked) // CHANGE WAVEFORM NUM
                 })
                 vbox.appendChild(newButton);
             });
@@ -241,41 +243,22 @@ async function selectSaveTrack(waveformNum) {
     });
 }
 
-export default async function undoState () {
-    let chosenTrack = htmlElements.saveTrackInput.value;
-    console.log('html savetrackinp7ut' + htmlElements.saveTrackInput.value)
-    console.log("undoState created")
+// entry point for saving undo states
+export default async function undoState (waveformNum) {
+    // let chosenTrack = document.getElementById(`track-${waveformNum}-header`)
+    console.log(`chosenTrack: ${chosenTrack}`)
     // await saveAudioToTemp(window.currentWaveformNum);
-    checkToSaveTrack(chosenTrack, window.currentWaveformNum, false);
+    await saveTrackData(chosenTrack, waveformNum, false);
+    console.log("undoState created")
 }
 
-async function checkToSaveTrack(chosenTrack, waveformNum, saveTrackAudioFile) {
+// old and rerouted
+async function canSaveTrack(chosenTrack, waveformNum, saveTrackAudioFile) {
 
     let uniqueTitle = false;
-    let currentTitle = chosenTrack;
-
-    // get a unique title
-    while (!uniqueTitle) {
-        
-        uniqueTitle = true;
-        //Run for loop to check if the initial title is taken
-        let tracks = await window.api.getDirectoryContents(tracksWorkspace);
-        for (const track of tracks) {
-            if (track == currentTitle) {
-                uniqueTitle = false;
-            };
-        };
-
-        if (!uniqueTitle) {
-            currentTitle = getNextUniqueTitle(currentTitle)
-        }
-    }
-    try {
-        await window.api.createDirectory(tracksWorkspace + '\\' + currentTitle);
-    } catch(error) {
-        console.error('Issue creating files or directory:\n' + error);
-    }
-    await saveTrackData(currentTitle, waveformNum, saveTrackAudioFile);
+    let currentTitle = chosenTrack + String(undoACC%6);
+    undoACC++;
+    return(undoACC)
 }
 
 //save the track data
@@ -780,6 +763,7 @@ async function loadOneTrackData(trackDirectory, trackName) {
 
 // helper function to save individual track
 async function saveOneTrackData(directory, trackName, waveformNum, saveTrackAudioFile) {
+
     if (window.segmentData[waveformNum] != null && window.segmentData[waveformNum].length != 0) {
 
         try {

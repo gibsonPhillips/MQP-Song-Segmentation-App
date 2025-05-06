@@ -7,7 +7,7 @@ let currentMarker;
 // Adds a boundary onto the specified track at the marker time
 setExternalAdd(addBoundaryButtonAction);
 function addBoundaryButtonAction(waveformNum) {
-    undoState();
+    undoState(waveformNum);
     console.log("here")
     // Reset edit mode
     globalState.editBoundaryMode = false;
@@ -43,7 +43,7 @@ function addBoundaryButtonAction(waveformNum) {
 // Removes the closest boundary to the marker on the specified track
 setExternalRemove(removeBoundaryButtonAction);
 function removeBoundaryButtonAction(waveformNum) {
-    undoState();
+    undoState(waveformNum);
 
     // Reset edit mode
     globalState.editBoundaryMode = false;
